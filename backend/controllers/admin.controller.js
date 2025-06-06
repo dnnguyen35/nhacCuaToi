@@ -1,0 +1,316 @@
+import songModel from "../models/song.model.js";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
+import userModel from "../models/user.model.js";
+
+import playlistModel from "../models/playlist.model.js";
+import sequelize from "../configs/db.js";
+
+const getUserStats = async (req, res) => {
+  try {
+    const userStats = await userModel.findAll({
+      attributes: {
+        exclude: ["password", "salt"],
+        include: [
+          [
+            sequelize.literal(`(
+              SELECT COUNT(*)
+              FROM playlists AS p
+              WHERE p.userId = User.id
+            )`),
+            "playlistCount",
+          ],
+          [
+            sequelize.literal(`(
+              SELECT COUNT(*)
+              FROM wishlists AS w
+              WHERE w.userId = User.id
+            )`),
+            "wishlistCount",
+          ],
+        ],
+      },
+    });
+
+    console.log("userstats: ", userStats);
+
+    if (!userStats) {
+      return res.status(400).json({ message: "UserStats not founded" });
+    }
+
+    res.status(200).json(userStats);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const blockUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await userModel.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not exists" });
+    }
+
+    if (user.isBlocked) {
+      return res.status(200).json({ message: "User was blocked" });
+    }
+
+    user.isBlocked = true;
+
+    await user.save();
+
+    res.status(200).json({ message: "User blocked successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const unBlockUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await userModel.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not exists" });
+    }
+
+    if (!user.isBlocked) {
+      return res.status(200).json({ message: "User was unblocked" });
+    }
+
+    user.isBlocked = false;
+
+    await user.save();
+
+    res.status(200).json({ message: "User unblocked successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getSongStats = async (req, res) => {
+  try {
+    const songStats = await songModel.findAll({
+      attributes: [
+        "id",
+        "title",
+        "artist",
+        "duration",
+        "imageUrl",
+        "createdAt",
+        [
+          sequelize.literal(`(
+            SELECT COUNT(*) 
+            FROM playlist_songs AS ps 
+            WHERE ps.songId = Song.id
+          )`),
+          "playlistCount",
+        ],
+        [
+          sequelize.literal(`(
+            SELECT COUNT(*) 
+            FROM wishlists AS w 
+            WHERE w.songId = Song.id
+          )`),
+          "wishlistCount",
+        ],
+      ],
+    });
+
+    console.log("songstats: ", songStats);
+
+    if (!songStats) {
+      return res.status(400).json({ message: "SongStats not founded" });
+    }
+
+    res.status(200).json(songStats);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const createSong = async (req, res) => {
+  try {
+    console.log("req.files:", req.files);
+    console.log("req.body:", req.body);
+    if (!req.files || !req.files.audioFile || !req.files.imageFile) {
+      return res
+        .status(400)
+        .json({ message: "Please upload audio and image files" });
+    }
+
+    const { title, artist } = req.body;
+    const duration = Number(req.body.duration);
+
+    const audioFile = req.files.audioFile;
+    const imageFile = req.files.imageFile;
+
+    const audioUrl = await uploadToCloudinary(audioFile);
+    const imageUrl = await uploadToCloudinary(imageFile);
+
+    const newSong = songModel.build({
+      title,
+      artist,
+      duration,
+      audioUrl,
+      imageUrl,
+    });
+    await newSong.save();
+
+    res.status(201).json(newSong);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const deleteSong = async (req, res) => {
+  try {
+    const { songId } = req.params;
+
+    const song = await songModel.findOne({ where: { id: songId } });
+
+    if (!song) {
+      return res.status(400).json({ message: "Song doesn't exists" });
+    }
+
+    await songModel.destroy({ where: { id: songId } });
+
+    res.status(200).json({ message: "Song deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const updateSong = async (req, res) => {
+  try {
+    const { songId } = req.params;
+    const { title, artist } = req.body;
+
+    const song = await songModel.findOne({ where: { id: songId } });
+
+    if (!song) {
+      return res.status(404).json({ message: "Song not founded" });
+    }
+
+    song.title = title !== "" ? title : song.title;
+    song.artist = artist !== "" ? artist : song.artist;
+
+    await song.save();
+
+    res.status(200).json({ message: "Song updated successfully", song });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getPlaylistStats = async (req, res) => {
+  try {
+    const playlistStats = await playlistModel.findAll({
+      attributes: [
+        "id",
+        "name",
+        "createdAt",
+        [
+          sequelize.literal(`(
+            SELECT COUNT(*) 
+            FROM playlist_songs AS ps 
+            WHERE ps.playlistId = Playlist.id
+          )`),
+          "songCount",
+        ],
+        [
+          sequelize.literal(`(
+            SELECT u.username
+            FROM users AS u
+            WHERE u.id = Playlist.userId
+          )`),
+          "username",
+        ],
+      ],
+    });
+
+    console.log("playliststats: ", playlistStats);
+
+    if (!playlistStats) {
+      return res.status(400).json({ message: "PlaylistStats not founded" });
+    }
+
+    res.status(200).json(playlistStats);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getArtistStats = async (req, res) => {
+  try {
+    const artistStats = await songModel.findAll({
+      attributes: [
+        "artist",
+        [sequelize.fn("COUNT", sequelize.col("Song.id")), "songCount"],
+        [
+          sequelize.literal(`(
+            SELECT COUNT(DISTINCT ps.playlistId)
+            FROM playlist_songs AS ps
+            INNER JOIN songs AS s 
+            ON s.id = ps.songId
+            WHERE s.artist = Song.artist
+          )`),
+          "playlistCount",
+        ],
+        [
+          sequelize.literal(`(
+            SELECT COUNT(DISTINCT w.userId)
+            FROM wishlists AS w
+            INNER JOIN songs AS s 
+            ON s.id = w.songId
+            WHERE s.artist = Song.artist
+          )`),
+          "wishlistCount",
+        ],
+      ],
+      group: ["artist"],
+    });
+
+    console.log("artiststats: ", artistStats);
+
+    if (!artistStats) {
+      return res.status(400).json({ message: "ArtistStats not founded" });
+    }
+
+    res.status(200).json(artistStats);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export default {
+  getUserStats,
+  blockUser,
+  unBlockUser,
+  getSongStats,
+  createSong,
+  deleteSong,
+  updateSong,
+  getPlaylistStats,
+  getArtistStats,
+};

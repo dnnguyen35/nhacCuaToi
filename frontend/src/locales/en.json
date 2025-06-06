@@ -1,0 +1,127 @@
+{
+  "songs": "songs",
+  "menu": {
+    "home": "home",
+    "search": "search",
+    "wishlist": "wishlist"
+  },
+  "homePage": {
+    "forYou": "for you",
+    "treanding": "trending",
+    "highRating": "high rating"
+  },
+  "userMenu": {
+    "changePassword": "change password",
+    "signOut": "sign out",
+    "signIn": "sign in",
+    "signUp": "sign up",
+    "forgotPassword": "forgot password",
+    "resetPassword": "reset password",
+    "createPlaylist": "create playlist",
+    "add": "add",
+    "cancel": "cancel"
+  },
+  "songTable": {
+    "image": "image",
+    "title": "title",
+    "artist": "artist",
+    "inPlaylists": "playlists",
+    "inWishlists": "wishlists",
+    "releasedDate": "released date",
+    "actions": "actions",
+    "thereNoSong": "There is no song now"
+  },
+  "formField": {
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "newPassword": "New password",
+    "enterOtp": "Enter OTP",
+    "choosePlaylist": "Choose playlist",
+
+    "playlistName": "Playlist name"
+  },
+  "validateField": {
+    "emailRequired": "Email is required",
+    "emailWrongFormat": "Email must be a valid @gmail.com address",
+    "emailInvalid": "Email is invalid",
+    "usernameRequired": "Username is required",
+    "passwordRequired": "Password is required",
+    "confirmPassword": "Confirm your password",
+    "usernameMin": "Min 5 characters",
+    "passwordMin": "Min 1 character",
+    "confirmPasswordNotMatch": "Password do not match"
+  },
+  "responseSuccess": {
+    "checkEmailOtp": "Please check your email for verify code",
+    "OTP has beeen send to email": "OTP has beeen send to email",
+    "Reset password successfully": "Please check new password in email",
+    "Password changed successfully": "Password changed successfully",
+    "Sign in successfully": "Sign in successfully",
+    "Sign up successfully": "Sign up successfully",
+
+    "Playlist deleted successfully": "Playlist deleted successfully",
+    "Removed song from playlist successfully": "Removed song from playlist successfully",
+    "Removed song from wishlist successfully": "Removed song from wishlist successfully",
+    "User was unblocked": "User was unblocked",
+    "User unblocked successfully": "User unblocked successfully",
+    "Song deleted successfully": "Song deleted successfully",
+    "Song updated successfully": "Song updated successfully",
+    "Playlist created successfully": "Playlist created successfully",
+    "Added song to playlist successfully": "Added song to playlist successfully"
+  },
+  "responseError": {
+    "Email already exists": "Email already exists",
+    "OTP has expired": "OTP has expired",
+    "OTP not match": "OTP not match",
+    "User not exists": "User not exists",
+    "Password incorrect": "Password incorrect",
+    "Your account is currently blocked": "Your account is currently blocked",
+    "Internal server error": "Internal server error",
+    "Opp sorry! some thing went wrong": "Opp sorry! some thing went wrong",
+    "User not founded": "User not founded",
+
+    "There is no song now": "There is no song now",
+    "Song doesn't exists": "Song doesn't exists",
+    "Song not exist": "Song not exist",
+    "Song not founded": "Song not founded",
+    "Playlist already existed": "Playlist already existed",
+    "Playlist doesn't exists": "Playlist doesn't exists",
+    "Song has been alredy added": "Song has been alredy added",
+    "Playlist or song does not exist": "Playlist or song does not exist",
+    "SongStats not founded": "SongStats not founded",
+    "Please upload audio and image files": "Please upload audio and image files",
+    "PlaylistStats not founded": "PlaylistStats not founded",
+    "ArtistStats not founded": "ArtistStats not founded",
+    "PlaylistName is required": "Playlist name is required",
+    "Please chose one playlist to add": "Please choose one playlist to add",
+    "Title is required": "Title is required",
+    "Artist is required": "Artist is required",
+    "Duration is required": "Duration is required",
+
+    "Refresh token exprired": "Refresh token exprired",
+    "Unauthorized": "Unauthorized",
+    "Unauthorized! Admin only": "Unauthorized! Admin only",
+
+    "Email is required": "Email is required",
+    "Email is not valid": "Email is not valid",
+    "Username is required": "Username is required",
+    "Username must be between 5 and 10 characters": "Username must be between 5 and 10 characters",
+    "Username must be letters, numbers, and underscores": "Username must be letters, numbers, and underscores",
+    "Password is required": "Password is required",
+    "Password minimum is 1 characters": "Password minimum is 1 characters",
+    "New password required": "New password required",
+    "New passsword minimun is 1 characters": "New passsword minimun is 1 characters",
+    "OTP is required": "OTP is required",
+    "OTP must be exactly 6 digits": "OTP must be exactly 6 digits",
+    "OTP must contain only numbers": "OTP must contain only numbers"
+  },
+  "sweetalert": {
+    "Are you sure?": "Are you sure?",
+    "Do you really want to delete": "Do you really want to delete",
+    "? This action cannot be undone.": "? This action cannot be undone.",
+    "Yes, delete it!": "Yes, delete it!",
+    "Cancel": "Cancel"
+  }
+}

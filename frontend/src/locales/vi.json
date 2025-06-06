@@ -1,0 +1,127 @@
+{
+  "songs": "bài hát",
+  "menu": {
+    "home": "xin chào",
+    "search": "tìm kiếm",
+    "wishlist": "yêu thích"
+  },
+  "homePage": {
+    "forYou": "dành cho bạn",
+    "treanding": "thịnh hành",
+    "highRating": "nổi bật"
+  },
+  "userMenu": {
+    "changePassword": "đổi mật khẩu",
+    "signOut": "thoát",
+    "signIn": "đăng nhập",
+    "signUp": "đăng ký",
+    "forgotPassword": "quên mật khẩu",
+    "resetPassword": "đặt lại mật khẩu",
+    "createPlaylist": "tạo playlist",
+    "add": "thêm",
+    "cancel": "hủy"
+  },
+  "songTable": {
+    "image": "ảnh bìa",
+    "title": "tên",
+    "artist": "nghệ sĩ",
+    "inPlaylists": "playlists",
+    "inWishlists": "yêu thích",
+    "releasedDate": "phát hànhh",
+    "actions": "chỉnh",
+    "thereNoSong": "Chưa thêm bài hát nào"
+  },
+  "formField": {
+    "email": "Email",
+    "username": "Tên",
+    "password": "Mật khẩu",
+    "confirmPassword": "Nhập lại mật khẩu",
+    "newPassword": "Mật khẩu mới",
+    "enterOtp": "Điền mã OTP",
+    "choosePlaylist": "Chọn playlist",
+
+    "playlistName": "Tên playlist"
+  },
+  "validateField": {
+    "emailRequired": "Thiếu email",
+    "emailWrongFormat": "Email phải là dạng @gmail.com",
+    "emailInvalid": "Email không chuẩn",
+    "usernameRequired": "Thiếu tên người dùng",
+    "passwordRequired": "Thiếu mật khẩu",
+    "confirmPassword": "Nhập lại mật khẩu",
+    "usernameMin": "Tối thiểu 5 kí tự",
+    "passwordMin": "Tối thiểu 1 kí tự",
+    "confirmPasswordNotMatch": "Mật khẩu không trùng khớp"
+  },
+  "responseSuccess": {
+    "checkEmailOtp": "Vui lòng kiểm tra email để xác thực",
+    "OTP has beeen send to email": "Đã gửi mã OTP đến email",
+    "Reset password successfully": "Mật khẩu mới đã gửi về email",
+    "Password changed successfully": "Đổi mật khẩu thành công",
+    "Sign in successfully": "Đăng nhập thành công",
+    "Sign up successfully": "Đăng ký thành công",
+
+    "Playlist deleted successfully": "Xóa playlist thành công",
+    "Removed song from playlist successfully": "Đã xóa bài hát khỏi playlist",
+    "Removed song from wishlist successfully": "Đã xóa bài hát khỏi danh sách yêu thích",
+    "User was unblocked": "Người dùng đã được mở khóa",
+    "User unblocked successfully": "Mở khóa người dùng thành công",
+    "Song deleted successfully": "Xóa bài hát thành công",
+    "Song updated successfully": "Cập nhật bài hát thành công",
+    "Playlist created successfully": "Thêm playlist thành công",
+    "Added song to playlist successfully": "Thêm vào playlist thành công"
+  },
+  "responseError": {
+    "Email already exists": "Email đã tồn tại",
+    "OTP has expired": "OTP đã hết hạn",
+    "OTP not match": "OTP không đúng",
+    "User not exists": "Người dùng không tồn tại",
+    "Password incorrect": "Mật khẩu không đúng",
+    "Your account is currently blocked": "Tài khoản đang bị khóa",
+    "Internal server error": "Lỗi máy chủ",
+    "Opp sorry! some thing went wrong": "Có lỗi xảy ra",
+    "User not founded": "Không tìm thấy người dùng",
+
+    "There is no song now": "Hiện không có bài hát nào",
+    "Song doesn't exists": "Bài hát không tồn tại",
+    "Song not exist": "Bài hát không tồn tại",
+    "Song not founded": "Không tìm thấy bài hát",
+    "Playlist already existed": "Playlist đã tồn tại",
+    "Playlist doesn't exists": "Playlist không tồn tại",
+    "Song has been alredy added": "Bài hát đã được thêm",
+    "Playlist or song does not exist": "Playlist hoặc bài hát không tồn tại",
+    "SongStats not founded": "Không tìm thấy thống kê bài hát",
+    "Please upload audio and image files": "Vui lòng tải lên file âm thanh và hình ảnh",
+    "PlaylistStats not founded": "Không tìm thấy thống kê playlist",
+    "ArtistStats not founded": "Không tìm thấy thống kê nghệ sĩ",
+    "PlaylistName is required": "Cần nhập tên playlist",
+    "Please chose one playlist to add": "Chọn 1 playlist để thêm",
+    "Title is required": "Cần nhập tiêu đề",
+    "Artist is required": "Cần nhập tên nghệ sĩ",
+    "Duration is required": "Cần nhập thời lượng",
+
+    "Refresh token exprired": "Refresh token đã hết hạn",
+    "Unauthorized": "Không được phép",
+    "Unauthorized! Admin only": "Không được phép! Chỉ dành cho Admin",
+
+    "Email is required": "Cần nhập email",
+    "Email is not valid": "Email không hợp lệ",
+    "Username is required": "Cần nhập tên người dùng",
+    "Username must be between 5 and 10 characters": "Tên người dùng dài 5-10 ký tự",
+    "Username must be letters, numbers, and underscores": "Tên người dùng chỉ gồm chữ, số, dấu gạch dưới",
+    "Password is required": "Cần nhập mật khẩu",
+    "Password minimum is 1 characters": "Mật khẩu phải có ít nhất 1 ký tự",
+    "New password required": "Cần nhập mật khẩu mới",
+    "New passsword minimun is 1 characters": "Mật khẩu mới ít nhất 1 ký tự",
+    "OTP is required": "Cần nhập OTP",
+    "OTP must be exactly 6 digits": "OTP phải đúng 6 chữ số",
+    "OTP must contain only numbers": "OTP chỉ được chứa số"
+  },
+  "sweetalert": {
+    "Are you sure?": "Bạn chắc chưa?",
+    "Do you really want to delete": "Bạn thật sự muốn xóa",
+    "? This action cannot be undone.": "? Hành động này không thể hoàn tác.",
+    "Yes, delete it!": "Vâng, hãy xóa!",
+    "Cancel": "Hủy"
+  }
+}
