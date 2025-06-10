@@ -14,7 +14,6 @@ import {
   Delete,
 } from "@mui/icons-material";
 import AddPlaylistDialog from "./AddPlaylistDialog";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import playlistApi from "../api/modules/playlist.api";
 import { toast } from "react-toastify";
@@ -22,17 +21,21 @@ import Swal from "sweetalert2";
 import PlaylistListSkeleton from "./skeletons/PlaylistListSkeleton";
 import { Link } from "react-router-dom";
 import { routesGen } from "../routes/routes";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { setAllPlaylist } from "../redux/slices/userSlice";
 import { useTranslation } from "react-i18next";
+import TextAvatar from "./TextAvatar";
+import { setQueue, setCurrentSong } from "../redux/slices/playerSlice";
 
 const PlaylistList = () => {
-  const { user } = useSelector((state) => state.user);
+  const { user, playlist } = useSelector((state) => state.user);
   const [playlistsList, setPlaylistsList] = useState([]);
   const [isAddPlaylistDialogOpen, setIsAddPlaylistDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeletePlaylistRequest, setIsDeletePlaylistRequest] = useState(false);
+  const [isDisplayPlaylistId, setIsDisplayPlaylistId] = useState(-1);
   const { t } = useTranslation();
+  const currentPlayedPlaylist = playlist;
 
   const dispatch = useDispatch();
 
@@ -95,6 +98,12 @@ const PlaylistList = () => {
 
     if (response) {
       toast.success(t(`responseSuccess.${response?.message}`));
+
+      if (currentPlayedPlaylist.id === playlist.id) {
+        dispatch(setQueue([]));
+        dispatch(setCurrentSong(null));
+      }
+
       const newPlaylistsList = playlistsList.filter(
         (pl) => pl.id !== playlist.id
       );
@@ -112,10 +121,12 @@ const PlaylistList = () => {
       sx={{
         bgcolor: "background.paper",
         borderRadius: 3,
-        height: "343px",
+        maxHeight: "100vh",
+        // flex: 1,
         display: "flex",
         flexDirection: "column",
         p: 2,
+        overflow: "hidden",
       }}
     >
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -139,7 +150,7 @@ const PlaylistList = () => {
           overflowY: "auto",
           scrollBehavior: "smooth",
           pr: 1,
-          "&::-webkit-scrollbar": { width: 5 },
+          "&::-webkit-scrollbar": { width: 5, height: 5 },
           "&::-webkit-scrollbar-thumb": {
             backgroundColor: "primary.main",
             borderRadius: 5,
@@ -162,30 +173,28 @@ const PlaylistList = () => {
                     cursor: "pointer",
                   }}
                   secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      className="delete-icon"
-                      sx={{
-                        opacity: 0,
-                        transition: "opacity 0.2s",
-                        color: "primary.main",
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeletePlaylistClick(playlist);
-                      }}
-                    >
-                      <Delete />
-                    </IconButton>
+                    isDisplayPlaylistId === playlist.id ? null : (
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        className="delete-icon"
+                        sx={{
+                          opacity: 0,
+                          transition: "opacity 0.2s",
+                          color: "primary.main",
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeletePlaylistClick(playlist);
+                        }}
+                      >
+                        <Delete />
+                      </IconButton>
+                    )
                   }
                 >
                   <ListItemAvatar>
-                    <Avatar
-                      src={
-                        "https://res.cloudinary.com/duccdrxot/image/upload/v1748339060/uv6xrfxtczqykyrrep9p.jpg"
-                      }
-                    />
+                    <TextAvatar text={playlist.name} />
                   </ListItemAvatar>
                   <ListItemText
                     component={Link}
@@ -195,7 +204,8 @@ const PlaylistList = () => {
                       color: "primary.contrastText",
                     }}
                     primary={playlist.name}
-                    secondary={`Songs ~ 25`}
+                    onClick={() => setIsDisplayPlaylistId(playlist.id)}
+                    // secondary={playlist.createdAt.}}
                   />
                 </ListItem>
               ))}

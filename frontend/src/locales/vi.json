@@ -40,7 +40,8 @@
     "enterOtp": "Điền mã OTP",
     "choosePlaylist": "Chọn playlist",
 
-    "playlistName": "Tên playlist"
+    "playlistName": "Tên playlist",
+    "searchInput": "Tìm bài hát theo tên hoặc nghệ sĩ! Vui lòng nhập để tìm"
   },
   "validateField": {
     "emailRequired": "Thiếu email",
@@ -81,6 +82,9 @@
     "Internal server error": "Lỗi máy chủ",
     "Opp sorry! some thing went wrong": "Có lỗi xảy ra",
     "User not founded": "Không tìm thấy người dùng",
+
+    "Hey what you want huh ?": "Cảm ơn vì đã đến",
+    "Please sign in to see this page": "Vui lòng đăng nhập để xem",
 
     "There is no song now": "Hiện không có bài hát nào",
     "Song doesn't exists": "Bài hát không tồn tại",

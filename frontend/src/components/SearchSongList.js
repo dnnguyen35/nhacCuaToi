@@ -1,9 +1,10 @@
+import { useState } from "react";
 import {
   Box,
-  Card,
-  CardMedia,
-  CardContent,
   Typography,
+  Card,
+  CardContent,
+  CardMedia,
   IconButton,
 } from "@mui/material";
 import {
@@ -13,9 +14,8 @@ import {
   Favorite,
   Pause,
 } from "@mui/icons-material";
-import { useSelector, useDispatch } from "react-redux";
 import Marquee from "react-fast-marquee";
-import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   togglePlay,
   setCurrentSong,
@@ -26,16 +26,15 @@ import wishlistApi from "../api/modules/wishlist.api";
 import { toast } from "react-toastify";
 import { setQueue } from "../redux/slices/playerSlice";
 
-const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
+const SearchSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
   const { user, wishlist } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
-
   const { isPlaying, currentSong, queueType } = useSelector(
     (state) => state.player
   );
-
   const [onAddSongToWishlistRequest, setOnAddSongToWishlistRequest] =
     useState(false);
+
+  const dispatch = useDispatch();
 
   const onAddSongToWishlistClick = async (song) => {
     if (onAddSongToWishlistRequest) return;
@@ -47,9 +46,7 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
 
     setOnAddSongToWishlistRequest(true);
 
-    const { response, error } = await wishlistApi.addSong({
-      songId: song.id,
-    });
+    const { response, error } = await wishlistApi.addSong({ songId: song.id });
 
     setOnAddSongToWishlistRequest(false);
 
@@ -83,26 +80,21 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
       toast.error(error.message);
     }
   };
+
+  if (!songs || songs.length === 0) return null;
+
   return (
-    <Box
-      sx={{
-        overflowX: "auto",
-        whiteSpace: "nowrap",
-        px: 2,
-        scrollBehavior: "smooth",
-        "&::-webkit-scrollbar": { height: 5 },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "primary.main",
-          borderRadius: 5,
-        },
-        cursor: "pointer",
-      }}
-    >
+    <>
       <Box
         sx={{
-          display: "flex",
-          gap: 3,
-          marginBottom: 2,
+          display: "grid",
+          gap: 2,
+          rowGap: 2,
+          gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+          maxWidth: "100%",
+          margin: "0 auto",
+          justifyContent: "center",
+          justifyItems: "center",
         }}
       >
         {songs.map((song, i) => (
@@ -148,14 +140,14 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
                   </>
                 ) : (
                   <Typography variant="body1" fontWeight="bold">
-                    {song.title.length > 12
-                      ? `${song.title.slice(0, 12)}...`
+                    {song.title.length > 7
+                      ? `${song.title.slice(0, 7)}...`
                       : song.title}
                   </Typography>
                 )}
                 <Typography variant="body2" color="text.secondary">
                   {song.artist.length > 12
-                    ? `${song.artist.slice(0, 12)}...`
+                    ? `${song.artist.slice(0, 7)}...`
                     : song.artist}
                 </Typography>
               </Box>
@@ -219,8 +211,13 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
           </Card>
         ))}
       </Box>
-    </Box>
+      {/* {songs.length > 0 && (
+        <Button variant="contained" sx={{ mt: 3 }}>
+          See More
+        </Button>
+      )} */}
+    </>
   );
 };
 
-export default GridSongList;
+export default SearchSongList;

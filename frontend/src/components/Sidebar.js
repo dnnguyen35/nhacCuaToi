@@ -8,12 +8,14 @@ const Sidebar = () => {
     <Box
       sx={{
         width: "20%",
+        maxHeight: { xs: "70vh", md: "81vh" },
         bgcolor: "background.default",
         marginTop: 2,
         marginLeft: 2,
         display: "flex",
         flexDirection: "column",
         gap: 2,
+        overflow: "hidden",
       }}
     >
       <SidebarMenu />

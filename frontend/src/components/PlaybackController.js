@@ -67,11 +67,10 @@ const PlaybackController = () => {
   }, [currentSong]);
 
   useEffect(() => {
-    if (currentSong?.isNull) {
+    if (currentSong?.isNull || !audioRef.current) {
       setDuration(0);
       return;
     }
-    audioRef.current = document.querySelector("audio");
 
     console.log("duration from playbakc: ", audioRef.current.duration);
 
@@ -181,6 +180,7 @@ const PlaybackController = () => {
               dispatch(setRepeatMode(-1));
               dispatch(playPrevious());
             }}
+            disabled={currentSong?.isNull ? true : false}
           >
             <SkipPrevious />
           </IconButton>
@@ -202,6 +202,7 @@ const PlaybackController = () => {
               dispatch(setRepeatMode(-1));
               dispatch(playNext());
             }}
+            disabled={currentSong?.isNull ? true : false}
           >
             <SkipNext />
           </IconButton>

@@ -40,7 +40,8 @@
     "enterOtp": "Enter OTP",
     "choosePlaylist": "Choose playlist",
 
-    "playlistName": "Playlist name"
+    "playlistName": "Playlist name",
+    "searchInput": "Search by song title or artist! Please type here"
   },
   "validateField": {
     "emailRequired": "Email is required",
@@ -81,6 +82,9 @@
     "Internal server error": "Internal server error",
     "Opp sorry! some thing went wrong": "Opp sorry! some thing went wrong",
     "User not founded": "User not founded",
+
+    "Hey what you want huh ?": "Hey what you want huh ?",
+    "Please sign in to see this page": "Please sign in to see this page",
 
     "There is no song now": "There is no song now",
     "Song doesn't exists": "Song doesn't exists",

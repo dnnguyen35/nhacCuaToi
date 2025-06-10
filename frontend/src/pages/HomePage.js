@@ -77,7 +77,11 @@ const HomePage = () => {
         {isLoading ? (
           <GridSongListSkeleton />
         ) : (
-          <GridSongList songs={trendingSongs} />
+          <GridSongList
+            songs={trendingSongs}
+            setSelectedSong={setSelectedSong}
+            setIsPlaylistPopupOpen={setIsPlaylistPopupOpen}
+          />
         )}
       </Box>
 
@@ -88,7 +92,11 @@ const HomePage = () => {
         {isLoading ? (
           <GridSongListSkeleton />
         ) : (
-          <GridSongList songs={trendingSongs} />
+          <GridSongList
+            songs={[...trendingSongs].reverse()}
+            setSelectedSong={setSelectedSong}
+            setIsPlaylistPopupOpen={setIsPlaylistPopupOpen}
+          />
         )}
       </Box>
 

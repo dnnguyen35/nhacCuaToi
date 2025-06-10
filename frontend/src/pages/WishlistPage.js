@@ -38,6 +38,8 @@ const WishlistPage = () => {
   const { currentSong, isPlaying, queue, queueType } = useSelector(
     (state) => state.player
   );
+  const { themeMode } = useSelector((state) => state.themeMode);
+
   const [onDeleteSongRequest, setOnDeleteSongRequest] = useState(false);
 
   const dispatch = useDispatch();
@@ -83,6 +85,7 @@ const WishlistPage = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: t("sweetalert.Yes, delete it!"),
       cancelButtonText: t("sweetalert.Cancel"),
+      theme: themeMode,
     });
 
     if (!confirm.isConfirmed) return;
@@ -122,7 +125,6 @@ const WishlistPage = () => {
 
   return (
     <Box height="100vh" position="relative">
-      {/* Background Gradient */}
       <Box
         position="absolute"
         inset={0}
@@ -134,7 +136,6 @@ const WishlistPage = () => {
         }}
       />
 
-      {/* Content */}
       <Box
         position="relative"
         zIndex={1}
@@ -143,7 +144,6 @@ const WishlistPage = () => {
         flexDirection="column"
         gap={2}
       >
-        {/* Playlist Info */}
         <Box display="flex" padding={3} gap={3}>
           <Box
             component="img"
@@ -178,7 +178,6 @@ const WishlistPage = () => {
           </Box>
         </Box>
 
-        {/* Play Playlist Button */}
         <Box paddingX={3} paddingBottom={2}>
           <Button
             onClick={handlePlayWishlist}
@@ -206,7 +205,6 @@ const WishlistPage = () => {
           </Button>
         </Box>
 
-        {/* Songs Table */}
         <Box paddingX={3} flexGrow={1} sx={{ overflowY: "auto" }} paddingY={2}>
           <TableContainer
             component={Paper}

@@ -3,6 +3,7 @@ import PlaylistPage from "../pages/PlaylistPage";
 import ProtectedPage from "../components/ProtectedPage";
 
 import WishlistPage from "../pages/WishlistPage";
+import SearchPage from "../pages/SearchPage";
 
 export const routesGen = {
   home: "/",
@@ -33,6 +34,11 @@ const routes = [
       </ProtectedPage>
     ),
     state: "wishlist",
+  },
+  {
+    path: "/search",
+    element: <SearchPage />,
+    state: "search",
   },
 ];
 

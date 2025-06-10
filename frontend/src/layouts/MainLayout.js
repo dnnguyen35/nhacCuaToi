@@ -28,7 +28,7 @@ const MainLayout = () => {
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            height: "81vh",
+            maxHeight: { xs: "70vh", md: "81vh" },
             marginTop: 2,
             marginRight: 2,
             borderRadius: 3,
@@ -46,7 +46,7 @@ const MainLayout = () => {
               overflowY: "auto",
               padding: 2,
               scrollBehavior: "smooth",
-              "&::-webkit-scrollbar": { width: 8 },
+              "&::-webkit-scrollbar": { width: 8, height: 8 },
               "&::-webkit-scrollbar-thumb": {
                 backgroundColor: "primary.main",
                 borderRadius: 5,

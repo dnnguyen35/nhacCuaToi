@@ -40,6 +40,7 @@ const PlaylistPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
   const [onDeleteSongRequest, setOnDeleteSongRequest] = useState(false);
+  const { themeMode } = useSelector((state) => state.themeMode);
   const { t } = useTranslation();
   console.log("playlistId: ", playlistId);
 
@@ -116,6 +117,7 @@ const PlaylistPage = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: t("sweetalert.Yes, delete it!"),
       cancelButtonText: t("sweetalert.Cancel"),
+      theme: themeMode,
     });
 
     if (!confirm.isConfirmed) return;
@@ -175,7 +177,6 @@ const PlaylistPage = () => {
 
   return (
     <Box height="100vh" position="relative">
-      {/* Background Gradient */}
       <Box
         position="absolute"
         inset={0}
@@ -187,7 +188,6 @@ const PlaylistPage = () => {
         }}
       />
 
-      {/* Content */}
       <Box
         position="relative"
         zIndex={1}
@@ -196,7 +196,6 @@ const PlaylistPage = () => {
         flexDirection="column"
         gap={2}
       >
-        {/* Playlist Info */}
         <Box display="flex" padding={3} gap={3}>
           <Box
             component="img"
@@ -237,7 +236,6 @@ const PlaylistPage = () => {
           </Box>
         </Box>
 
-        {/* Play Playlist Button */}
         <Box paddingX={3} paddingBottom={2}>
           <Button
             onClick={handlePlayPlaylist}
@@ -268,7 +266,6 @@ const PlaylistPage = () => {
           </Button>
         </Box>
 
-        {/* Songs Table */}
         <Box paddingX={3} flexGrow={1} sx={{ overflowY: "auto" }} paddingY={2}>
           <TableContainer
             component={Paper}

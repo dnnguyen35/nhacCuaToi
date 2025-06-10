@@ -7,4 +7,6 @@ router.get("/all-songs", songController.getAllSongs);
 
 router.get("/trending-songs", songController.getTrendingSongs);
 
+router.get("/search", songController.searchSong);
+
 export default router;

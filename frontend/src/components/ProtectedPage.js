@@ -2,9 +2,12 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthModalOpen } from "../redux/slices/authModalSlice";
 import { Box, Typography } from "@mui/material";
-import { setCurrentSong } from "../redux/slices/playerSlice";
+import { setCurrentSong, setQueue } from "../redux/slices/playerSlice";
+import { useTranslation } from "react-i18next";
 
 const PleaseLogin = () => {
+  const { t } = useTranslation();
+
   return (
     <Box position="relative" sx={{ marginTop: "7rem" }}>
       <Box
@@ -31,7 +34,7 @@ const PleaseLogin = () => {
             display: "inline-block",
           }}
         >
-          Please Signin
+          {t("responseError.Please sign in to see this page")}
         </Typography>
       </Box>
     </Box>
@@ -42,10 +45,14 @@ const ProtectedPage = ({ children }) => {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user);
+  const { queueType } = useSelector((state) => state.player);
 
   useEffect(() => {
     if (!user) {
-      dispatch(setCurrentSong(null));
+      if (queueType === "playlist" || queueType === "wishlist") {
+        dispatch(setQueue([]));
+        dispatch(setCurrentSong(null));
+      }
     }
     dispatch(setAuthModalOpen(!user));
   }, [user, dispatch]);
