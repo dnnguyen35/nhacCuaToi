@@ -106,7 +106,7 @@ const SearchPage = () => {
         {!onSearch && songs.length === 0 && <EmptySearch query={query} />}
 
         {onSearch ? (
-          <SearchSongListSkeleton count={{ xs: 1, sm: 2, md: 6, lg: 8 }} />
+          <SearchSongListSkeleton count={{ xs: 1, sm: 2, md: 6, lg: 10 }} />
         ) : (
           <SearchSongList
             songs={songs}

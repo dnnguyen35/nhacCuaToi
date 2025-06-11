@@ -1,5 +1,14 @@
 import { LoadingButton } from "@mui/lab";
-import { Alert, Box, Button, Stack, TextField } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Stack,
+  TextField,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,6 +24,9 @@ const SignupForm = ({ switchAuthState }) => {
   const [errorMessage, setErrorMessage] = useState();
   const [email, setEmail] = useState("");
   const [verifyOtpStep, setVerifyOtpStep] = useState(false);
+  const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
+  const [isShowPassword, setIsShowPassword] = useState(false);
+
   const { t } = useTranslation();
 
   const signupForm = useFormik({
@@ -97,7 +109,7 @@ const SignupForm = ({ switchAuthState }) => {
         />
 
         <TextField
-          type="password"
+          type={!isShowPassword ? "password" : "text"}
           placeholder={t("formField.password")}
           name="password"
           fullWidth
@@ -109,9 +121,24 @@ const SignupForm = ({ switchAuthState }) => {
             signupForm.errors.password !== undefined
           }
           helperText={signupForm.touched.password && signupForm.errors.password}
+          InputProps={{
+            readOnly: false,
+            onCopy: (e) => e.preventDefault(),
+            onCut: (e) => e.preventDefault(),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setIsShowPassword((prev) => !prev)}
+                  edge="end"
+                >
+                  {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
-          type="password"
+          type={!isShowPassword ? "password" : "text"}
           placeholder={t("formField.confirmPassword")}
           name="confirmPassword"
           fullWidth
@@ -126,6 +153,21 @@ const SignupForm = ({ switchAuthState }) => {
             signupForm.touched.confirmPassword &&
             signupForm.errors.confirmPassword
           }
+          InputProps={{
+            readOnly: false,
+            onCopy: (e) => e.preventDefault(),
+            onCut: (e) => e.preventDefault(),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setIsShowPassword((prev) => !prev)}
+                  edge="end"
+                >
+                  {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </Stack>
 

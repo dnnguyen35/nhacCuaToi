@@ -1,5 +1,14 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Alert, Button, Stack, TextField } from "@mui/material";
+import {
+  Box,
+  Alert,
+  Button,
+  Stack,
+  TextField,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -15,6 +24,8 @@ const SigninForm = ({ switchSignupState, switchForgotState }) => {
 
   const [isLoginRequest, setIsLoginRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
+
+  const [isShowPassword, setIsShowPassword] = useState(false);
 
   const { t } = useTranslation();
 
@@ -72,7 +83,7 @@ const SigninForm = ({ switchSignupState, switchForgotState }) => {
           helperText={signinForm.touched.email && signinForm.errors.email}
         />
         <TextField
-          type="password"
+          type={!isShowPassword ? "password" : "text"}
           placeholder={t("formField.password")}
           name="password"
           fullWidth
@@ -84,6 +95,21 @@ const SigninForm = ({ switchSignupState, switchForgotState }) => {
             signinForm.errors.password !== undefined
           }
           helperText={signinForm.touched.password && signinForm.errors.password}
+          InputProps={{
+            readOnly: false,
+            onCopy: (e) => e.preventDefault(),
+            onCut: (e) => e.preventDefault(),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setIsShowPassword((prev) => !prev)}
+                  edge="end"
+                >
+                  {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </Stack>
 

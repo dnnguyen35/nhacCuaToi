@@ -8,6 +8,7 @@ const userEndpoints = {
   resetPassword: "users/reset-password",
   changePassword: "users/change-password",
   verifyOtp: "users/verify-otp",
+  resendOtp: "users/resend-otp",
 };
 
 const userApi = {
@@ -89,6 +90,18 @@ const userApi = {
       const response = await publicClient.post(userEndpoints.verifyOtp, {
         email,
         otp,
+      });
+
+      return { response };
+    } catch (error) {
+      return { error };
+    }
+  },
+
+  resendOtp: async ({ email }) => {
+    try {
+      const response = publicClient.post(userEndpoints.resendOtp, {
+        email,
       });
 
       return { response };

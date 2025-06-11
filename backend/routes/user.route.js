@@ -27,6 +27,8 @@ router.post(
   userController.verifyOtpAndSignup
 );
 
+router.post("/resend-otp", userController.resendOtp);
+
 router.post(
   "/signin",
   validateSignin,

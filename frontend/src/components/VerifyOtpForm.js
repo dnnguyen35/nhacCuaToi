@@ -15,8 +15,29 @@ const VerifyOtpForm = ({ email }) => {
 
   const [isRequest, setIsRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
+  const [isResendOtpButtonDisplay, setIsResendOtpButtonDisplay] =
+    useState(false);
 
   const { t } = useTranslation();
+
+  const onResendOtpClick = async () => {
+    if (isRequest) return;
+
+    setIsRequest(true);
+
+    const { response, error } = await userApi.resendOtp({ email });
+
+    setIsRequest(false);
+
+    if (response) {
+      toast.success("New otp has been send");
+      setIsResendOtpButtonDisplay(false);
+    }
+
+    if (error) {
+      toast.error("Resend otp failed");
+    }
+  };
 
   const verifyOtpForm = useFormik({
     initialValues: {
@@ -50,6 +71,9 @@ const VerifyOtpForm = ({ email }) => {
 
       if (error) {
         console.log(error.message);
+        if (error.message === "OTP has expired") {
+          setIsResendOtpButtonDisplay(true);
+        }
         setErrorMessage(t(`responseError.${error.message}`));
       }
     },
@@ -94,9 +118,13 @@ const VerifyOtpForm = ({ email }) => {
         Verify
       </LoadingButton>
 
-      {/* <Button fullWidth sx={{ marginTop: 1 }} onClick={() => switchAuthState()}>
-        sign in
-      </Button> */}
+      <Button
+        fullWidth
+        sx={{ marginTop: 1 }}
+        onClick={() => onResendOtpClick()}
+      >
+        resend otp
+      </Button>
 
       {errorMessage && (
         <Box sx={{ marginTop: 2 }}>

@@ -2,10 +2,8 @@ import userModel from "../models/user.model.js";
 import songModel from "../models/song.model.js";
 import jsonwebtoken from "jsonwebtoken";
 import crypto from "crypto";
-
 import { sendEmail } from "../utils/sendEmail.js";
-
-const otpStore = new Map();
+import redis from "../configs/redis.js";
 
 const signup = async (req, res) => {
   try {
@@ -16,18 +14,24 @@ const signup = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 5 * 60 * 1000;
+    if (await redis.get(`signup-info:${email}`)) {
+      return res.status(200).json({ message: "OTP has beeen send to email" });
+    }
 
-    otpStore.set(email, { otp, username, password, expiresAt });
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const signupInfo = JSON.stringify({ username, password });
+
+    await redis.setex(`signup-otp:${email}`, 300, otp.toString());
+    await redis.setex(`signup-info:${email}`, 1800, signupInfo);
 
     console.log("email sending");
 
-    await sendEmail(email, username, otp);
+    await sendEmail(email, "otp", otp);
 
     console.log("email send");
 
-    return res.status(200).json({ message: "OTP has beeen send to email" });
+    res.status(200).json({ message: "OTP has beeen send to email" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -38,17 +42,33 @@ const verifyOtpAndSignup = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    const data = otpStore.get(email);
+    console.log("email: ", email);
 
-    if (!data || data.expiresAt < Date.now()) {
+    console.log("otp: ", typeof otp);
+
+    const signupOtp = await redis.get(`signup-otp:${email}`);
+    console.log("signupOtp: ", typeof signupOtp);
+
+    const signupInfo = await redis.get(`signup-info:${email}`);
+
+    if (!signupInfo) {
+      if (signupOtp) {
+        await redis.del(`signup-otp:${email}`);
+      }
+      return res
+        .status(400)
+        .json({ message: "Session expired! Please sign up again" });
+    }
+
+    if (!signupOtp) {
       return res.status(400).json({ message: "OTP has expired" });
     }
 
-    if (data.otp !== otp) {
+    if (signupOtp.toString() !== otp) {
       return res.status(400).json({ message: "OTP not match" });
     }
 
-    const { username, password } = data;
+    const { username, password } = signupInfo;
 
     const newUser = userModel.build({ email, username });
 
@@ -56,7 +76,8 @@ const verifyOtpAndSignup = async (req, res) => {
 
     await newUser.save();
 
-    otpStore.delete(email);
+    await redis.del(`signup-info:${email}`);
+    await redis.del(`signup-otp:${email}`);
 
     const access_token = jsonwebtoken.sign(
       { data: newUser.id },
@@ -77,6 +98,33 @@ const verifyOtpAndSignup = async (req, res) => {
     const wishlist = [];
 
     res.status(201).json({ access_token, refresh_token, userData, wishlist });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const signupInfo = await redis.get(`signup-info:${email}`);
+
+    if (!signupInfo) {
+      return res.status(400).json({ message: "Session expired" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await redis.setex(`signup-otp:${email}`, 300, otp.toString());
+
+    await sendEmail(email, "otp", otp);
+
+    res.status(200).json({ message: "OTP has beeen send to email" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -118,7 +166,7 @@ const signin = async (req, res) => {
       { data: user.id },
       process.env.ACTKN_SECRET_KEY,
       {
-        expiresIn: "2m",
+        expiresIn: "15m",
       }
     );
 
@@ -168,7 +216,7 @@ const resetPassword = async (req, res) => {
     user.resetPassword(newPassword);
     await user.save();
 
-    await sendEmail(email, "", newPassword);
+    await sendEmail(email, "resetPassword", newPassword);
 
     res.status(200).json({ message: "Reset password successfully" });
   } catch (err) {
@@ -205,6 +253,7 @@ const changePassword = async (req, res) => {
 export default {
   signup,
   verifyOtpAndSignup,
+  resendOtp,
   signin,
   resetPassword,
   changePassword,
