@@ -70,8 +70,8 @@ const PlaylistsTable = ({ listPlaylistsData }) => {
                   <TableCell>{playlist.id}</TableCell>
                   <TableCell>{playlist.name}</TableCell>
                   <TableCell>{playlist.username}</TableCell>
-                  <TableCell>{playlist.createdAt}</TableCell>
-                  <TableCell>{playlist.songsCount}</TableCell>
+                  <TableCell>{playlist.createdAt.split("T")[0]}</TableCell>
+                  <TableCell>{playlist.songCount}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

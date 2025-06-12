@@ -24,8 +24,8 @@ const SignupForm = ({ switchAuthState }) => {
   const [errorMessage, setErrorMessage] = useState();
   const [email, setEmail] = useState("");
   const [verifyOtpStep, setVerifyOtpStep] = useState(false);
-  const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(false);
+  const [otpExpireAt, setOtpExpireAt] = useState(null);
 
   const { t } = useTranslation();
 
@@ -64,6 +64,7 @@ const SignupForm = ({ switchAuthState }) => {
 
       if (response) {
         signupForm.resetForm();
+        setOtpExpireAt(response.otpExpireAt);
         setVerifyOtpStep(true);
         toast.success(t("responseSuccess.checkEmailOtp"));
       }
@@ -76,7 +77,11 @@ const SignupForm = ({ switchAuthState }) => {
   });
 
   return verifyOtpStep ? (
-    <VerifyOtpForm email={email} />
+    <VerifyOtpForm
+      email={email}
+      otpExpireAt={otpExpireAt}
+      setVefiryOtpStep={setVerifyOtpStep}
+    />
   ) : (
     <Box component="form" onSubmit={signupForm.handleSubmit}>
       <Stack spacing={3}>

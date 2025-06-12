@@ -9,6 +9,7 @@ import {
   VolumeUp,
   VolumeOff,
   RepeatOne,
+  MusicOff,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
@@ -134,7 +135,7 @@ const PlaybackController = () => {
         }}
       >
         <Avatar
-          src={currentSong.imageUrl}
+          src={currentSong.imageUrl ? currentSong.imageUrl : undefined}
           alt="Song"
           sx={{
             width: 55,
@@ -145,7 +146,9 @@ const PlaybackController = () => {
               to: { transform: "rotate(360deg)" },
             },
           }}
-        />
+        >
+          {!currentSong && <MusicOff fontSize="small" />}
+        </Avatar>
         <Box>
           <Typography variant="subtitle1" noWrap>
             {currentSong?.title}

@@ -4,6 +4,7 @@ import jsonwebtoken from "jsonwebtoken";
 import crypto from "crypto";
 import { sendEmail } from "../utils/sendEmail.js";
 import redis from "../configs/redis.js";
+import { verifyEmailExists } from "../utils/verifyEmailExists.js";
 
 const signup = async (req, res) => {
   try {
@@ -14,16 +15,35 @@ const signup = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
+    if (!(await verifyEmailExists(email))) {
+      return res.status(400).json({ message: "Email doesn't exist" });
+    }
+
     if (await redis.get(`signup-info:${email}`)) {
-      return res.status(200).json({ message: "OTP has beeen send to email" });
+      const newSignupInfo = JSON.stringify({ username, password });
+
+      const currentOtpRemaining = await redis.ttl(`signup-otp:${email}`);
+
+      let otpExpireAt = 0;
+
+      if (currentOtpRemaining) {
+        otpExpireAt = Math.floor(Date.now() / 1000) + currentOtpRemaining;
+      }
+
+      await redis.setex(`signup-info:${email}`, 900, newSignupInfo);
+      return res
+        .status(200)
+        .json({ message: "OTP has beeen send to email", otpExpireAt });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     const signupInfo = JSON.stringify({ username, password });
 
-    await redis.setex(`signup-otp:${email}`, 300, otp.toString());
-    await redis.setex(`signup-info:${email}`, 1800, signupInfo);
+    const otpExpireAt = Math.floor(Date.now() / 1000) + 120;
+
+    await redis.setex(`signup-otp:${email}`, 120, otp.toString());
+    await redis.setex(`signup-info:${email}`, 900, signupInfo);
 
     console.log("email sending");
 
@@ -31,7 +51,9 @@ const signup = async (req, res) => {
 
     console.log("email send");
 
-    res.status(200).json({ message: "OTP has beeen send to email" });
+    res
+      .status(200)
+      .json({ message: "OTP has beeen send to email", otpExpireAt });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -115,16 +137,22 @@ const resendOtp = async (req, res) => {
     const signupInfo = await redis.get(`signup-info:${email}`);
 
     if (!signupInfo) {
-      return res.status(400).json({ message: "Session expired" });
+      return res
+        .status(400)
+        .json({ message: "Session expired! Please sign up again" });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await redis.setex(`signup-otp:${email}`, 300, otp.toString());
+    const otpExpireAt = Math.floor(Date.now() / 1000) + 120;
+
+    await redis.setex(`signup-otp:${email}`, 120, otp.toString());
 
     await sendEmail(email, "otp", otp);
 
-    res.status(200).json({ message: "OTP has beeen send to email" });
+    res
+      .status(200)
+      .json({ message: "OTP has beeen send to email", otpExpireAt });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

@@ -19,7 +19,9 @@
     "resetPassword": "đặt lại mật khẩu",
     "createPlaylist": "tạo playlist",
     "add": "thêm",
-    "cancel": "hủy"
+    "cancel": "hủy",
+    "verifyOtp": "Xác thực",
+    "resendOtp": "Gửi lại otp"
   },
   "songTable": {
     "image": "ảnh bìa",
@@ -110,6 +112,7 @@
 
     "Email is required": "Cần nhập email",
     "Email is not valid": "Email không hợp lệ",
+    "Email doesn't exist": "Email không tồn tại",
     "Username is required": "Cần nhập tên người dùng",
     "Username must be between 5 and 10 characters": "Tên người dùng dài 5-10 ký tự",
     "Username must be letters, numbers, and underscores": "Tên người dùng chỉ gồm chữ, số, dấu gạch dưới",
@@ -119,7 +122,8 @@
     "New passsword minimun is 1 characters": "Mật khẩu mới ít nhất 1 ký tự",
     "OTP is required": "Cần nhập OTP",
     "OTP must be exactly 6 digits": "OTP phải đúng 6 chữ số",
-    "OTP must contain only numbers": "OTP chỉ được chứa số"
+    "OTP must contain only numbers": "OTP chỉ được chứa số",
+    "Session expired! Please sign up again": "Phiên hết hạn! Vui lòng đăng kí lại"
   },
   "sweetalert": {
     "Are you sure?": "Bạn chắc chưa?",

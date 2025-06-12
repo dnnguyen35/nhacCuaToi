@@ -1,5 +1,13 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Alert, Stack, TextField } from "@mui/material";
+import {
+  Box,
+  Alert,
+  Stack,
+  TextField,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -11,6 +19,8 @@ const ChangePasswordForm = ({ setChangePasswordModalOpen }) => {
   const [isChangePasswordRequest, setIsChangePasswordRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
   const { t } = useTranslation();
+
+  const [isShowPassword, setIsShowPassword] = useState(false);
 
   const changePasswordForm = useFormik({
     initialValues: {
@@ -57,7 +67,7 @@ const ChangePasswordForm = ({ setChangePasswordModalOpen }) => {
     <Box component="form" onSubmit={changePasswordForm.handleSubmit}>
       <Stack spacing={3}>
         <TextField
-          type="password"
+          type={!isShowPassword ? "password" : "text"}
           placeholder={t("formField.password")}
           name="password"
           fullWidth
@@ -72,9 +82,24 @@ const ChangePasswordForm = ({ setChangePasswordModalOpen }) => {
             changePasswordForm.touched.password &&
             changePasswordForm.errors.password
           }
+          InputProps={{
+            readOnly: false,
+            onCopy: (e) => e.preventDefault(),
+            onCut: (e) => e.preventDefault(),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setIsShowPassword((prev) => !prev)}
+                  edge="end"
+                >
+                  {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
-          type="password"
+          type={!isShowPassword ? "password" : "text"}
           placeholder={t("formField.newPassword")}
           name="newPassword"
           fullWidth
@@ -89,9 +114,24 @@ const ChangePasswordForm = ({ setChangePasswordModalOpen }) => {
             changePasswordForm.touched.newPassword &&
             changePasswordForm.errors.newPassword
           }
+          InputProps={{
+            readOnly: false,
+            onCopy: (e) => e.preventDefault(),
+            onCut: (e) => e.preventDefault(),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setIsShowPassword((prev) => !prev)}
+                  edge="end"
+                >
+                  {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
-          type="password"
+          type={!isShowPassword ? "password" : "text"}
           placeholder={t("formField.confirmPassword")}
           name="confirmPassword"
           fullWidth
@@ -106,6 +146,21 @@ const ChangePasswordForm = ({ setChangePasswordModalOpen }) => {
             changePasswordForm.touched.confirmPassword &&
             changePasswordForm.errors.confirmPassword
           }
+          InputProps={{
+            readOnly: false,
+            onCopy: (e) => e.preventDefault(),
+            onCut: (e) => e.preventDefault(),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setIsShowPassword((prev) => !prev)}
+                  edge="end"
+                >
+                  {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </Stack>
 

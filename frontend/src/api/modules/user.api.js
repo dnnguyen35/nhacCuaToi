@@ -100,7 +100,7 @@ const userApi = {
 
   resendOtp: async ({ email }) => {
     try {
-      const response = publicClient.post(userEndpoints.resendOtp, {
+      const response = await publicClient.post(userEndpoints.resendOtp, {
         email,
       });
 

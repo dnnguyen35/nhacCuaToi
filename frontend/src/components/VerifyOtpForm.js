@@ -1,5 +1,13 @@
 import { LoadingButton } from "@mui/lab";
-import { Alert, Box, Button, Stack, TextField } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Stack,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
+import { AvTimer } from "@mui/icons-material";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -9,16 +17,32 @@ import userApi from "../api/modules/user.api";
 import { setAuthModalOpen } from "../redux/slices/authModalSlice";
 import { setUser, setWishlist } from "../redux/slices/userSlice";
 import { useTranslation } from "react-i18next";
+import { formatDuration } from "../utils/formatDuration";
+import { useEffect } from "react";
 
-const VerifyOtpForm = ({ email }) => {
+const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
   const dispatch = useDispatch();
 
   const [isRequest, setIsRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
-  const [isResendOtpButtonDisplay, setIsResendOtpButtonDisplay] =
-    useState(false);
+  const [otpExpireTime, setOtpExpireTime] = useState(otpExpireAt);
+  const [otpRemaining, setOtpRemaining] = useState(0);
+  const [deactivateAllButton, setDeactivateAllButton] = useState(false);
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remainingSeconds = otpExpireTime - Math.floor(Date.now() / 1000);
+      if (remainingSeconds < 0) {
+        clearInterval(interval);
+      } else {
+        setOtpRemaining(remainingSeconds);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [otpExpireTime]);
 
   const onResendOtpClick = async () => {
     if (isRequest) return;
@@ -29,13 +53,19 @@ const VerifyOtpForm = ({ email }) => {
 
     setIsRequest(false);
 
+    console.log("newOtpExpriw: ", response);
+
     if (response) {
-      toast.success("New otp has been send");
-      setIsResendOtpButtonDisplay(false);
+      console.log("newOtpExpriw: ", response);
+      setOtpExpireTime(response.otpExpireAt);
+      toast.success(t(`responseSuccess.${response.message}`));
     }
 
     if (error) {
-      toast.error("Resend otp failed");
+      if (error.message === "Session expired! Please sign up again") {
+        setDeactivateAllButton(true);
+      }
+      setErrorMessage(t(`responseError.${error.message}`));
     }
   };
 
@@ -71,9 +101,10 @@ const VerifyOtpForm = ({ email }) => {
 
       if (error) {
         console.log(error.message);
-        if (error.message === "OTP has expired") {
-          setIsResendOtpButtonDisplay(true);
+        if (error.message === "Session expired! Please sign up again") {
+          setDeactivateAllButton(true);
         }
+
         setErrorMessage(t(`responseError.${error.message}`));
       }
     },
@@ -104,6 +135,19 @@ const VerifyOtpForm = ({ email }) => {
             verifyOtpForm.touched.otp && verifyOtpForm.errors.otp !== undefined
           }
           helperText={verifyOtpForm.touched.otp && verifyOtpForm.errors.otp}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end" sx={{ gap: 1 }}>
+                <AvTimer
+                  fontSize="small"
+                  color={otpRemaining > 0 ? "action" : "error"}
+                />
+                <span style={{ fontSize: "0.8rem", width: 35 }}>
+                  {formatDuration(otpRemaining)}
+                </span>
+              </InputAdornment>
+            ),
+          }}
         />
       </Stack>
 
@@ -114,17 +158,30 @@ const VerifyOtpForm = ({ email }) => {
         variant="contained"
         sx={{ marginTop: 4 }}
         loading={isRequest}
+        disabled={deactivateAllButton}
       >
-        Verify
+        {t("userMenu.verifyOtp")}
       </LoadingButton>
 
       <Button
         fullWidth
         sx={{ marginTop: 1 }}
-        onClick={() => onResendOtpClick()}
+        onClick={onResendOtpClick}
+        disabled={otpRemaining > 0 || isRequest || deactivateAllButton}
       >
-        resend otp
+        {t("userMenu.resendOtp")}
       </Button>
+
+      {deactivateAllButton && (
+        <Button
+          fullWidth
+          sx={{ marginTop: 1 }}
+          onClick={() => setVefiryOtpStep(false)}
+          disabled={!deactivateAllButton}
+        >
+          {t("userMenu.signUp")}
+        </Button>
+      )}
 
       {errorMessage && (
         <Box sx={{ marginTop: 2 }}>

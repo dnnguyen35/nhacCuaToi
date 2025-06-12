@@ -12,6 +12,7 @@ import {
   AddCircleOutlineSharp,
   QueueMusicSharp,
   Delete,
+  LibraryMusic,
 } from "@mui/icons-material";
 import AddPlaylistDialog from "./AddPlaylistDialog";
 import { useEffect, useState } from "react";
@@ -24,11 +25,11 @@ import { routesGen } from "../routes/routes";
 import { useSelector, useDispatch } from "react-redux";
 import { setAllPlaylist } from "../redux/slices/userSlice";
 import { useTranslation } from "react-i18next";
-import TextAvatar from "./TextAvatar";
 import { setQueue, setCurrentSong } from "../redux/slices/playerSlice";
 
 const PlaylistList = () => {
   const { user, playlist } = useSelector((state) => state.user);
+  const { isPlaying, queueType } = useSelector((state) => state.player);
   const [playlistsList, setPlaylistsList] = useState([]);
   const [isAddPlaylistDialogOpen, setIsAddPlaylistDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -122,7 +123,6 @@ const PlaylistList = () => {
         bgcolor: "background.paper",
         borderRadius: 3,
         maxHeight: "100vh",
-        // flex: 1,
         display: "flex",
         flexDirection: "column",
         p: 2,
@@ -194,7 +194,24 @@ const PlaylistList = () => {
                   }
                 >
                   <ListItemAvatar>
-                    <TextAvatar text={playlist.name} />
+                    <Avatar sx={{ bgcolor: "background.paper" }}>
+                      <LibraryMusic
+                        fontSize="medium"
+                        sx={{
+                          animation:
+                            isPlaying &&
+                            currentPlayedPlaylist.id === playlist.id &&
+                            queueType === "playlist"
+                              ? "spin 7s linear infinite"
+                              : "none",
+                          "@keyframes spin": {
+                            from: { transform: "rotate(0deg)" },
+                            to: { transform: "rotate(360deg)" },
+                          },
+                          color: "primary.main",
+                        }}
+                      />
+                    </Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     component={Link}

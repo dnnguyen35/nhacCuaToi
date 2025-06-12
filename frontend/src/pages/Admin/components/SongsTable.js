@@ -14,30 +14,33 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { DeleteForever, LibraryMusic, Edit } from "@mui/icons-material";
+import {
+  DeleteForever,
+  LibraryMusic,
+  Edit,
+  AccessTime,
+} from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import adminApi from "../../../api/modules/admin.api";
 import { toast } from "react-toastify";
 import AddSongDialog from "./AddSongDialog";
 import Swal from "sweetalert2";
 import UpdateSongDialog from "./UpdateSongDialog";
+import { useSelector } from "react-redux";
+import { formatDuration } from "../../../utils/formatDuration";
 
 const SongsTable = ({ listSongsData, onTotalSongsChange }) => {
   const [songs, setSongs] = useState([]);
   const [onRequest, setOnRequest] = useState(false);
   const [isUpdateSongDialogOpen, setIsUpdateSongDialogOpen] = useState(false);
 
+  const { themeMode } = useSelector((state) => state.themeMode);
+
   const [updateSong, setUpdateSong] = useState(null);
 
   useEffect(() => {
     setSongs(listSongsData);
   }, [listSongsData]);
-
-  const formatDuration = (seconds) => {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min}:${sec.toString().padStart(2, "0")}`;
-  };
 
   const updateSongsList = (newSongsList) => setSongs(newSongsList);
 
@@ -56,6 +59,7 @@ const SongsTable = ({ listSongsData, onTotalSongsChange }) => {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, delete it!",
+      theme: themeMode,
     });
 
     if (!confirm.isConfirmed) return;
@@ -120,7 +124,9 @@ const SongsTable = ({ listSongsData, onTotalSongsChange }) => {
                 <TableCell sx={{ color: "primary.main" }}>Image</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Title</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Artist</TableCell>
-                <TableCell sx={{ color: "primary.main" }}>Duration</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>
+                  <AccessTime />
+                </TableCell>
                 <TableCell
                   sx={{ color: "primary.main", width: 120, minWidth: 100 }}
                 >

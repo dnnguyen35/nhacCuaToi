@@ -1,16 +1,8 @@
 import nodemailer from "nodemailer";
-import { verifyEmailExists } from "./verifyEmailExists.js";
 
 export const sendEmail = async (toEmail, type, content) => {
   console.log(process.env.GMAIL_USER);
   try {
-    const isEmailExists = await verifyEmailExists(toEmail);
-
-    if (!isEmailExists) {
-      console.log("Email not exist(sendEmail): ", toEmail);
-      throw new Error("Email not exist");
-    }
-
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,

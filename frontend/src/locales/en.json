@@ -19,7 +19,9 @@
     "resetPassword": "reset password",
     "createPlaylist": "create playlist",
     "add": "add",
-    "cancel": "cancel"
+    "cancel": "cancel",
+    "verifyOtp": "Verify",
+    "resendOtp": "Resend Otp"
   },
   "songTable": {
     "image": "image",
@@ -110,6 +112,7 @@
 
     "Email is required": "Email is required",
     "Email is not valid": "Email is not valid",
+    "Email doesn't exist": "Email doesn't exist",
     "Username is required": "Username is required",
     "Username must be between 5 and 10 characters": "Username must be between 5 and 10 characters",
     "Username must be letters, numbers, and underscores": "Username must be letters, numbers, and underscores",
@@ -119,7 +122,8 @@
     "New passsword minimun is 1 characters": "New passsword minimun is 1 characters",
     "OTP is required": "OTP is required",
     "OTP must be exactly 6 digits": "OTP must be exactly 6 digits",
-    "OTP must contain only numbers": "OTP must contain only numbers"
+    "OTP must contain only numbers": "OTP must contain only numbers",
+    "Session expired! Please sign up again": "Session expired! Please sign up again"
   },
   "sweetalert": {
     "Are you sure?": "Are you sure?",
