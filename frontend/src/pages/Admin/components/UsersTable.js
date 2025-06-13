@@ -20,16 +20,15 @@ import {
   People,
 } from "@mui/icons-material";
 import adminApi from "../../../api/modules/admin.api";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
+import { useSelector, useDispatch } from "react-redux";
+import { setListUsers } from "../../../redux/slices/statsDataSlice";
 
-const UsersTable = ({ listUsersData, isLoading }) => {
-  const [listUsers, setListUsers] = useState([]);
+const UsersTable = () => {
+  const { listUsers, isLoading } = useSelector((state) => state.statsData);
   const [onRequest, setOnRequest] = useState(false);
-
-  useEffect(() => {
-    setListUsers(listUsersData);
-  }, [listUsersData]);
+  const dispatch = useDispatch();
 
   const onBlockUserClick = async (user) => {
     if (onRequest) return;
@@ -47,9 +46,10 @@ const UsersTable = ({ listUsersData, isLoading }) => {
 
     if (response) {
       toast.success("User locked successfully");
-      setListUsers((prevUsers) =>
-        prevUsers.map((u) => (u.id === user.id ? { ...u, isBlocked: 1 } : u))
+      const newListUsers = listUsers.map((u) =>
+        u.id === user.id ? { ...u, isBlocked: 1 } : u
       );
+      dispatch(setListUsers(newListUsers));
     }
   };
 
@@ -64,9 +64,10 @@ const UsersTable = ({ listUsersData, isLoading }) => {
 
     if (response) {
       toast.success("User unlocked successfully");
-      setListUsers((prevUsers) =>
-        prevUsers.map((u) => (u.id === userId ? { ...u, isBlocked: 0 } : u))
+      const newListUsers = listUsers.map((u) =>
+        u.id === userId ? { ...u, isBlocked: 0 } : u
       );
+      dispatch(setListUsers(newListUsers));
     }
   };
 
@@ -85,7 +86,7 @@ const UsersTable = ({ listUsersData, isLoading }) => {
         <TableContainer
           component={Paper}
           sx={{
-            maxHeight: { xs: 300, md: 250 },
+            maxHeight: { xs: 300, md: 250, ld: 500 },
             overflowY: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",

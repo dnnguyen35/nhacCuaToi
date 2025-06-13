@@ -13,14 +13,10 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const ArtistsTable = ({ listArtistsData }) => {
-  const [artists, setArtists] = useState(listArtistsData);
-
-  useEffect(() => {
-    setArtists(listArtistsData);
-  }, [listArtistsData]);
+  const { listArtists } = useSelector((state) => state.statsData);
 
   return (
     <Card>
@@ -37,7 +33,7 @@ const ArtistsTable = ({ listArtistsData }) => {
         <TableContainer
           component={Paper}
           sx={{
-            maxHeight: { xs: 300, md: 250 },
+            maxHeight: { xs: 300, md: 250, lg: 500 },
             overflowY: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",
@@ -69,7 +65,7 @@ const ArtistsTable = ({ listArtistsData }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {artists.map((artist, index) => (
+              {listArtists.map((artist, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{artist.artist}</TableCell>

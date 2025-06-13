@@ -147,7 +147,9 @@ const PlaybackController = () => {
             },
           }}
         >
-          {!currentSong && <MusicOff fontSize="small" />}
+          {(!currentSong || currentSong.isNull) && (
+            <MusicOff fontSize="small" />
+          )}
         </Avatar>
         <Box>
           <Typography variant="subtitle1" noWrap>

@@ -10,17 +10,10 @@ import SongsTable from "./SongsTable";
 import PlaylistsTable from "./PlaylistsTable";
 import ArtistsTable from "./ArtistsTable";
 
-const TabsMenu = ({
-  listUsersData,
-  listSongsData,
-  listPlaylistsData,
-  listArtistsData,
-  onTotalSongsChange,
-  isLoading,
-}) => {
+const TabsMenu = () => {
   const [value, setValue] = useState(0);
 
-  const tabsData = [
+  const tabsIcon = [
     { icon: <PeopleIcon />, label: "Users" },
     { icon: <LibraryMusicIcon />, label: "Songs" },
     { icon: <QueueMusicIcon />, label: "Playlists" },
@@ -50,7 +43,7 @@ const TabsMenu = ({
           "& .MuiTabs-indicator": { display: "none" },
         }}
       >
-        {tabsData.map((tab, index) => (
+        {tabsIcon.map((tab, index) => (
           <Tab
             key={index}
             icon={tab.icon}
@@ -67,19 +60,10 @@ const TabsMenu = ({
       </Tabs>
 
       <Box sx={{ mt: 2 }}>
-        {value === 0 && (
-          <UsersTable listUsersData={listUsersData} isLoading={isLoading} />
-        )}
-        {value === 1 && (
-          <SongsTable
-            listSongsData={listSongsData}
-            onTotalSongsChange={onTotalSongsChange}
-          />
-        )}
-        {value === 2 && (
-          <PlaylistsTable listPlaylistsData={listPlaylistsData} />
-        )}
-        {value === 3 && <ArtistsTable listArtistsData={listArtistsData} />}
+        {value === 0 && <UsersTable />}
+        {value === 1 && <SongsTable />}
+        {value === 2 && <PlaylistsTable />}
+        {value === 3 && <ArtistsTable />}
       </Box>
     </Box>
   );

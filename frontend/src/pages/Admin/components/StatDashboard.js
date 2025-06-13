@@ -4,39 +4,32 @@ import PeopleIcon from "@mui/icons-material/People";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import MicIcon from "@mui/icons-material/Mic";
+import { useSelector } from "react-redux";
 
-const StatDashboard = ({
-  totalUsersCount,
-  totalSongsCount,
-  totalPlaylistsCount,
-  totalArtistsCount,
-}) => {
-  console.log(
-    totalUsersCount,
-    totalSongsCount,
-    totalPlaylistsCount,
-    totalArtistsCount
+const StatDashboard = () => {
+  const { totalUsers, totalSongs, totalPlaylists, totalArtists } = useSelector(
+    (state) => state.statsData
   );
   const statsData = [
     {
       icon: <PeopleIcon fontSize="large" color="primary" />,
       label: "Total Users",
-      value: totalUsersCount ?? 0,
+      value: totalUsers ?? 0,
     },
     {
       icon: <LibraryMusicIcon fontSize="large" color="secondary" />,
       label: "Total Songs",
-      value: totalSongsCount ?? 0,
+      value: totalSongs ?? 0,
     },
     {
       icon: <QueueMusicIcon fontSize="large" color="error" />,
       label: "Total Playlists",
-      value: totalPlaylistsCount ?? 0,
+      value: totalPlaylists ?? 0,
     },
     {
       icon: <MicIcon fontSize="large" sx={{ color: "#6a1b9a" }} />,
       label: "Total Artists",
-      value: totalArtistsCount ?? 0,
+      value: totalArtists ?? 0,
     },
   ];
 

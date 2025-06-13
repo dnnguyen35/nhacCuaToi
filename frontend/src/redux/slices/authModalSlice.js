@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const authModalSlice = createSlice({
+const authModalSlice = createSlice({
   name: "AuthModal",
   initialState: {
     authModalOpen: false,

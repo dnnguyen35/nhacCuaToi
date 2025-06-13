@@ -28,8 +28,6 @@ const AuthModal = () => {
 
   const switchAuthState = (state) => setAction(state);
 
-  const switchSignupState = (state) => setAction(state);
-
   const switchForgotState = (state) => setAction(state);
 
   return (

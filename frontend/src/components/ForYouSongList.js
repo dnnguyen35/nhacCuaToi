@@ -2,7 +2,6 @@ import { Box, Typography, IconButton, Pagination } from "@mui/material";
 import {
   PlayArrow,
   Pause,
-  PlaylistAddCheckCircleOutlined,
   FavoriteBorderOutlined,
   Favorite,
   PlaylistAdd,
@@ -19,6 +18,7 @@ import { setWishlist } from "../redux/slices/userSlice";
 import wishlistApi from "../api/modules/wishlist.api";
 import { toast } from "react-toastify";
 import { setQueue } from "../redux/slices/playerSlice";
+import { useTranslation } from "react-i18next";
 
 const songsPerPage = 6;
 
@@ -32,6 +32,8 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     useState(false);
 
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -58,14 +60,14 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
 
     if (response) {
       dispatch(setWishlist([...wishlist, response]));
-      toast.success("Added song to wishlist successfully");
+      toast.success(t("responseSuccess.Added song to wishlist successfully"));
       if (queueType === "wishlist") {
         dispatch(setQueue([...wishlist, response]));
       }
     }
 
     if (error) {
-      toast.error(error.message);
+      toast.error(t(`responseError.${error.message}`));
     }
   };
 
@@ -79,11 +81,13 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     if (response) {
       const newWishlist = wishlist.filter((s) => s.id !== songId);
       dispatch(setWishlist([...newWishlist]));
-      toast.success("Removed song from wishlist successfully");
+      toast.success(
+        t("responseSuccess.Removed song from wishlist successfully")
+      );
     }
 
     if (error) {
-      toast.error(error.message);
+      toast.error(t(`responseError.${error.message}`));
     }
   };
 

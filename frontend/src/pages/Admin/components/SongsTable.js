@@ -20,29 +20,31 @@ import {
   Edit,
   AccessTime,
 } from "@mui/icons-material";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import adminApi from "../../../api/modules/admin.api";
 import { toast } from "react-toastify";
 import AddSongDialog from "./AddSongDialog";
 import Swal from "sweetalert2";
 import UpdateSongDialog from "./UpdateSongDialog";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { formatDuration } from "../../../utils/formatDuration";
+import {
+  setListSongs,
+  setTotalSongs,
+  setListArtists,
+  setTotalArtists,
+} from "../../../redux/slices/statsDataSlice";
 
-const SongsTable = ({ listSongsData, onTotalSongsChange }) => {
-  const [songs, setSongs] = useState([]);
+const SongsTable = () => {
+  const { listSongs, listArtists } = useSelector((state) => state.statsData);
   const [onRequest, setOnRequest] = useState(false);
   const [isUpdateSongDialogOpen, setIsUpdateSongDialogOpen] = useState(false);
+
+  const dispatch = useDispatch();
 
   const { themeMode } = useSelector((state) => state.themeMode);
 
   const [updateSong, setUpdateSong] = useState(null);
-
-  useEffect(() => {
-    setSongs(listSongsData);
-  }, [listSongsData]);
-
-  const updateSongsList = (newSongsList) => setSongs(newSongsList);
 
   const onUpdateSongClick = (openUpdateDialogStatus, song) => {
     setUpdateSong(song);
@@ -74,9 +76,20 @@ const SongsTable = ({ listSongsData, onTotalSongsChange }) => {
 
     if (response) {
       toast.success("Song deleted successfully");
-      const newSongs = songs.filter((s) => s.id !== song.id);
-      setSongs([...newSongs]);
-      onTotalSongsChange(newSongs.length);
+      const newListSongs = listSongs.filter((s) => s.id !== song.id);
+      dispatch(setListSongs(newListSongs));
+      dispatch(setTotalSongs(newListSongs.length));
+
+      const newListArtists = listArtists
+        .map((artist) =>
+          artist.artist === song.artist
+            ? { ...artist, songCount: artist.songCount - 1 }
+            : artist
+        )
+        .filter((artist) => artist.songCount > 0);
+
+      dispatch(setListArtists(newListArtists));
+      dispatch(setTotalArtists(newListArtists.length));
     }
   };
 
@@ -90,19 +103,13 @@ const SongsTable = ({ listSongsData, onTotalSongsChange }) => {
           </Box>
         }
         subheader="Manage your music tracks"
-        action={
-          <AddSongDialog
-            songsData={songs}
-            updateSongsList={updateSongsList}
-            onTotalSongsChange={onTotalSongsChange}
-          />
-        }
+        action={<AddSongDialog />}
       />
       <CardContent>
         <TableContainer
           component={Paper}
           sx={{
-            maxHeight: { xs: 300, md: 250 },
+            maxHeight: { xs: 300, md: 250, lg: 500 },
             overflowY: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",
@@ -144,7 +151,7 @@ const SongsTable = ({ listSongsData, onTotalSongsChange }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {songs.map((song) => (
+              {listSongs.map((song) => (
                 <TableRow key={song.id}>
                   <TableCell>{song.id}</TableCell>
                   <TableCell>
@@ -183,11 +190,9 @@ const SongsTable = ({ listSongsData, onTotalSongsChange }) => {
         </TableContainer>
         {updateSong !== null && (
           <UpdateSongDialog
-            songsData={songs}
             song={updateSong}
             isUpdateSongDialogOpen={isUpdateSongDialogOpen}
             setIsUpdateSongDialogOpen={setIsUpdateSongDialogOpen}
-            updateSongsList={updateSongsList}
           />
         )}
       </CardContent>

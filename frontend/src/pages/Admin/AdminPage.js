@@ -2,29 +2,29 @@ import DontHavePermission from "./components/DontHavePermission";
 import Header from "./components/Header";
 import StatDashboard from "./components/StatDashboard";
 import TabsMenu from "./components/TabsMenu";
-import { useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
 import adminApi from "../../api/modules/admin.api";
 import { toast } from "react-toastify";
+import {
+  setListUsers,
+  setListSongs,
+  setListPlaylists,
+  setListArtists,
+  setTotalUsers,
+  setTotalSongs,
+  setTotalPlaylists,
+  setTotalArtists,
+  setIsLoading,
+} from "../../redux/slices/statsDataSlice";
 
 const AdminPage = () => {
   const { user } = useSelector((state) => state.user);
-
-  const [totalUsersCount, setTotalUsersCount] = useState(0);
-  const [totalSongsCount, setTotalSongsCount] = useState(0);
-  const [totalPlaylistsCount, setTotalPlaylistsCount] = useState(0);
-  const [totalArtistsCount, setTotalArtistsCount] = useState(0);
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [listUsersData, setListUsersData] = useState([]);
-  const [listSongsData, setListSongsData] = useState([]);
-  const [listPlaylistsData, setListPlaylistsData] = useState([]);
-  const [listArtistsData, setListArtistsData] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      dispatch(setIsLoading(true));
 
       const [usersRes, songsRes, playlistsRes, artistsRes] = await Promise.all([
         adminApi.getUserStats(),
@@ -33,24 +33,23 @@ const AdminPage = () => {
         adminApi.getArtistStats(),
       ]);
 
-      setIsLoading(false);
+      dispatch(setIsLoading(false));
 
       if (usersRes.response) {
-        setTotalUsersCount(usersRes.response.length);
-        console.log("userCount: ", totalUsersCount);
-        setListUsersData(usersRes.response);
+        dispatch(setTotalUsers(usersRes.response.length));
+        dispatch(setListUsers(usersRes.response));
       }
       if (songsRes.response) {
-        setTotalSongsCount(songsRes.response.length);
-        setListSongsData(songsRes.response);
+        dispatch(setTotalSongs(songsRes.response.length));
+        dispatch(setListSongs(songsRes.response));
       }
       if (playlistsRes.response) {
-        setTotalPlaylistsCount(playlistsRes.response.length);
-        setListPlaylistsData(playlistsRes.response);
+        dispatch(setTotalPlaylists(playlistsRes.response.length));
+        dispatch(setListPlaylists(playlistsRes.response));
       }
       if (artistsRes.response) {
-        setTotalArtistsCount(artistsRes.response.length);
-        setListArtistsData(artistsRes.response);
+        dispatch(setTotalArtists(artistsRes.response.length));
+        dispatch(setListArtists(artistsRes.response));
       }
 
       if (usersRes.error) toast.error(usersRes.error.message);
@@ -64,27 +63,13 @@ const AdminPage = () => {
     }
   }, []);
 
-  const onTotalSongsChange = (totalSongs) => setTotalSongsCount(totalSongs);
-
   if (!user || !user?.isAdmin) return <DontHavePermission />;
 
   return (
     <>
       <Header displayName={"Abc"} />
-      <StatDashboard
-        totalUsersCount={totalUsersCount}
-        totalSongsCount={totalSongsCount}
-        totalPlaylistsCount={totalPlaylistsCount}
-        totalArtistsCount={totalArtistsCount}
-      />
-      <TabsMenu
-        listUsersData={listUsersData}
-        listSongsData={listSongsData}
-        listPlaylistsData={listPlaylistsData}
-        listArtistsData={listArtistsData}
-        onTotalSongsChange={onTotalSongsChange}
-        isLoading={isLoading}
-      />
+      <StatDashboard />
+      <TabsMenu />
     </>
   );
 };

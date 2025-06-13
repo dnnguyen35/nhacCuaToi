@@ -25,10 +25,13 @@ import { setWishlist } from "../redux/slices/userSlice";
 import wishlistApi from "../api/modules/wishlist.api";
 import { toast } from "react-toastify";
 import { setQueue } from "../redux/slices/playerSlice";
+import { useTranslation } from "react-i18next";
 
 const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
   const { user, wishlist } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const { isPlaying, currentSong, queueType } = useSelector(
     (state) => state.player
@@ -55,14 +58,15 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
 
     if (response) {
       dispatch(setWishlist([...wishlist, response]));
-      toast.success("Added song to wishlist successfully");
+      toast.success(t("responseSuccess.Added song to wishlist successfully"));
+
       if (queueType === "wishlist") {
         dispatch(setQueue([...wishlist, response]));
       }
     }
 
     if (error) {
-      toast.error(error.message);
+      toast.error(t(`responseError.${error.message}`));
     }
   };
 
@@ -76,11 +80,13 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     if (response) {
       const newWishlist = wishlist.filter((s) => s.id !== songId);
       dispatch(setWishlist([...newWishlist]));
-      toast.success("Removed song from wishlist successfully");
+      toast.success(
+        t("responseSuccess.Removed song from wishlist successfully")
+      );
     }
 
     if (error) {
-      toast.error(error.message);
+      toast.error(t(`responseError.${error.message}`));
     }
   };
   return (

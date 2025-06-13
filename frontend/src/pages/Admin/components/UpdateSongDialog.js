@@ -16,16 +16,22 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import adminApi from "../../../api/modules/admin.api";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setListSongs,
+  setListArtists,
+  setTotalArtists,
+} from "../../../redux/slices/statsDataSlice";
 
 const UpdateSongDialog = ({
-  songsData,
   song,
   isUpdateSongDialogOpen,
   setIsUpdateSongDialogOpen,
-  updateSongsList,
 }) => {
+  const { listSongs, listArtists } = useSelector((state) => state.statsData);
   const [isLoading, setIsLoading] = useState(false);
-  const [listSongsData, setListSongsData] = useState([]);
+  const dispatch = useDispatch();
+
   console.log("updateSong: ", song);
 
   const [updateSong, setUpdateSong] = useState({
@@ -35,9 +41,8 @@ const UpdateSongDialog = ({
   });
 
   useEffect(() => {
-    setListSongsData(songsData);
     setUpdateSong({ title: song.title, artist: song.artist, newArtist: "" });
-  }, [songsData, song]);
+  }, [song]);
 
   const handleSubmit = async () => {
     if (!updateSong.title || updateSong.title === "") {
@@ -68,10 +73,34 @@ const UpdateSongDialog = ({
     }
 
     if (response) {
+      if (updateSong.newArtist && updateSong.newArtist !== "") {
+        const newListArtists = [
+          ...listArtists,
+          {
+            artist: updateSong.newArtist,
+            songCount: 1,
+            playlistCount: 0,
+            wishlistCount: 0,
+          },
+        ];
+
+        dispatch(setListArtists(newListArtists));
+        dispatch(setTotalArtists(newListArtists.length));
+      } else {
+        const newListArtists = listArtists.map((artist) =>
+          artist.artist === updateSong.artist
+            ? { ...artist, songCount: artist.songCount + 1 }
+            : artist
+        );
+
+        dispatch(setListArtists(newListArtists));
+        dispatch(setTotalArtists(newListArtists.length));
+      }
+
       setIsUpdateSongDialogOpen(false);
       toast.success("Song updated succeefully");
       console.log("affter update song: ", response);
-      const newListSongsData = listSongsData.map((prevSong) =>
+      const newListSongs = listSongs.map((prevSong) =>
         prevSong.id === response.song.id
           ? {
               ...prevSong,
@@ -80,9 +109,8 @@ const UpdateSongDialog = ({
             }
           : prevSong
       );
-      console.log("list song after edit song: ", newListSongsData);
-      setListSongsData(newListSongsData);
-      updateSongsList(newListSongsData);
+      console.log("list song after edit song: ", newListSongs);
+      dispatch(setListSongs(newListSongs));
     }
   };
 
@@ -131,9 +159,9 @@ const UpdateSongDialog = ({
               }
             >
               <MenuItem value="otherArtist">Other artist</MenuItem>
-              {listSongsData.map((song) => (
-                <MenuItem key={song.id} value={song.artist}>
-                  {song.artist}
+              {listArtists.map((artist, index) => (
+                <MenuItem key={index} value={artist.artist}>
+                  {artist.artist}
                 </MenuItem>
               ))}
             </Select>

@@ -72,7 +72,8 @@
     "Song deleted successfully": "Song deleted successfully",
     "Song updated successfully": "Song updated successfully",
     "Playlist created successfully": "Playlist created successfully",
-    "Added song to playlist successfully": "Added song to playlist successfully"
+    "Added song to playlist successfully": "Added song to playlist successfully",
+    "Added song to wishlist successfully": "Added song to wishlist successfully"
   },
   "responseError": {
     "Email already exists": "Email already exists",

@@ -12,15 +12,11 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { useState, useEffect } from "react";
 import { QueueMusic } from "@mui/icons-material";
+import { useSelector } from "react-redux";
 
 const PlaylistsTable = ({ listPlaylistsData }) => {
-  const [playlists, setPlaylists] = useState([]);
-
-  useEffect(() => {
-    setPlaylists(listPlaylistsData);
-  }, [listPlaylistsData]);
+  const { listPlaylists } = useSelector((state) => state.statsData);
 
   return (
     <Card>
@@ -37,7 +33,7 @@ const PlaylistsTable = ({ listPlaylistsData }) => {
         <TableContainer
           component={Paper}
           sx={{
-            maxHeight: { xs: 300, md: 250 },
+            maxHeight: { xs: 300, md: 250, lg: 500 },
             overflowY: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",
@@ -65,7 +61,7 @@ const PlaylistsTable = ({ listPlaylistsData }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {playlists.map((playlist) => (
+              {listPlaylists.map((playlist) => (
                 <TableRow key={playlist.id}>
                   <TableCell>{playlist.id}</TableCell>
                   <TableCell>{playlist.name}</TableCell>

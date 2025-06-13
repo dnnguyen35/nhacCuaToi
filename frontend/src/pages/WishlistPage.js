@@ -11,7 +11,6 @@ import {
   Avatar,
   Typography,
   IconButton,
-  CircularProgress,
 } from "@mui/material";
 import {
   PlayArrow,

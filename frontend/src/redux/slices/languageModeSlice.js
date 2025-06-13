@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import i18n from "../../i18n";
 
-export const languageModeSlice = createSlice({
+const languageModeSlice = createSlice({
   name: "languageMode",
   initialState: {
     languageMode: localStorage.getItem("languageMode")

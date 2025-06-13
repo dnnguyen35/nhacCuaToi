@@ -5,6 +5,7 @@ import languageModeSlice from "./slices/languageModeSlice";
 import userSlice from "./slices/userSlice";
 import appStateSlice from "./slices/appStateSlice";
 import themeModeSlice from "./slices/themeModeSlice";
+import statsDataSlice from "./slices/statsDataSlice";
 
 import { injectStore } from "../utils/storeUtil";
 
@@ -16,6 +17,7 @@ const store = configureStore({
     themeMode: themeModeSlice,
     player: playerSlice,
     languageMode: languageModeSlice,
+    statsData: statsDataSlice,
   },
 });
 

@@ -66,13 +66,14 @@
 
     "Playlist deleted successfully": "Xóa playlist thành công",
     "Removed song from playlist successfully": "Đã xóa bài hát khỏi playlist",
-    "Removed song from wishlist successfully": "Đã xóa bài hát khỏi danh sách yêu thích",
+    "Removed song from wishlist successfully": "Đã xóa bài hát khỏi wishlist",
     "User was unblocked": "Người dùng đã được mở khóa",
     "User unblocked successfully": "Mở khóa người dùng thành công",
     "Song deleted successfully": "Xóa bài hát thành công",
     "Song updated successfully": "Cập nhật bài hát thành công",
     "Playlist created successfully": "Thêm playlist thành công",
-    "Added song to playlist successfully": "Thêm vào playlist thành công"
+    "Added song to playlist successfully": "Thêm vào playlist thành công",
+    "Added song to wishlist successfully": "Thêm vào wishlist thành công"
   },
   "responseError": {
     "Email already exists": "Email đã tồn tại",

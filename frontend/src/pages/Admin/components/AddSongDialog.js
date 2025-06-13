@@ -13,15 +13,24 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import adminApi from "../../../api/modules/admin.api";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setListSongs,
+  setTotalSongs,
+  setListArtists,
+  setTotalArtists,
+} from "../../../redux/slices/statsDataSlice";
 
-const AddSongDialog = ({ songsData, updateSongsList, onTotalSongsChange }) => {
+const AddSongDialog = () => {
+  const { listSongs, listArtists } = useSelector((state) => state.statsData);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [listSongsData, setListSongsData] = useState([]);
+
+  const dispatch = useDispatch();
 
   const [newSong, setNewSong] = useState({
     title: "",
@@ -37,10 +46,6 @@ const AddSongDialog = ({ songsData, updateSongsList, onTotalSongsChange }) => {
 
   const audioInputRef = useRef(null);
   const imageInputRef = useRef(null);
-
-  useEffect(() => {
-    setListSongsData(songsData);
-  }, [songsData]);
 
   const handleSubmit = async () => {
     if (!files.audio || !files.image) {
@@ -90,13 +95,39 @@ const AddSongDialog = ({ songsData, updateSongsList, onTotalSongsChange }) => {
     }
 
     if (response) {
+      if (newSong.newArtist && newSong.newArtist !== "") {
+        const newListArtists = [
+          ...listArtists,
+          {
+            artist: newSong.newArtist,
+            songCount: 1,
+            playlistCount: 0,
+            wishlistCount: 0,
+          },
+        ];
+
+        dispatch(setListArtists(newListArtists));
+        dispatch(setTotalArtists(newListArtists.length));
+      } else {
+        const newListArtists = listArtists.map((artist) =>
+          artist.artist === newSong.artist
+            ? { ...artist, songCount: artist.songCount + 1 }
+            : artist
+        );
+
+        dispatch(setListArtists(newListArtists));
+        dispatch(setTotalArtists(newListArtists.length));
+      }
+
       setOpen(false);
       toast.success("Song created succeefully");
       console.log("affter add song: ", response);
-      const newSongsData = [...listSongsData, response];
-      setListSongsData(newSongsData);
-      updateSongsList(newSongsData);
-      onTotalSongsChange(newSongsData.length);
+      const newListSongs = [
+        ...listSongs,
+        { ...response, playlistCount: 0, wishlistCount: 0 },
+      ];
+      dispatch(setListSongs(newListSongs));
+      dispatch(setTotalSongs(newListSongs.length));
       setNewSong({ title: "", artist: "", duration: "0", newArtist: "" });
       setFiles({ audio: null, image: null });
     }
@@ -208,9 +239,9 @@ const AddSongDialog = ({ songsData, updateSongsList, onTotalSongsChange }) => {
               }
             >
               <MenuItem value="otherArtist">Other artist</MenuItem>
-              {listSongsData.map((song) => (
-                <MenuItem key={song.id} value={song.artist}>
-                  {song.artist}
+              {listArtists.map((artist, index) => (
+                <MenuItem key={index} value={artist.artist}>
+                  {artist.artist}
                 </MenuItem>
               ))}
             </Select>
