@@ -6,8 +6,7 @@ import songApi from "../api/modules/song.api";
 import { toast } from "react-toastify";
 import ForYouSongListSkeleton from "../components/skeletons/ForYouSongListSkeleton";
 import GridSongListSkeleton from "../components/skeletons/GridSongListSkeleton";
-import { useDispatch } from "react-redux";
-import { initializeQueue } from "../redux/slices/playerSlice";
+
 import PlaylistPopup from "../components/PlaylistPopup";
 import { useTranslation } from "react-i18next";
 
@@ -19,8 +18,6 @@ const HomePage = () => {
   const [isPlaylistPopupOpen, setIsPlaylistPopupOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
   const { t } = useTranslation();
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchSongs = async () => {

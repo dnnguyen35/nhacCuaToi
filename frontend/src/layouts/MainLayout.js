@@ -6,6 +6,7 @@ import AuthModal from "../components/AuthModal";
 import PlaybackController from "../components/PlaybackController";
 import { Outlet } from "react-router-dom";
 import AudioPlayer from "../components/AudioPlayer";
+import BottomNavigate from "../components/BottomNavigate";
 
 const MainLayout = () => {
   return (
@@ -29,8 +30,9 @@ const MainLayout = () => {
             display: "flex",
             flexDirection: "column",
             maxHeight: { xs: "70vh", md: "81vh" },
-            marginTop: 2,
+            marginTop: { xs: 1, sm: 2 },
             marginRight: 2,
+            marginLeft: { xs: 2, md: 0 },
             borderRadius: 3,
             bgcolor: "background.paper",
             overflow: "hidden",
@@ -56,6 +58,8 @@ const MainLayout = () => {
             <Outlet />
           </Box>
         </Box>
+
+        <BottomNavigate />
 
         <PlaybackController />
       </Box>

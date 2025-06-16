@@ -34,7 +34,7 @@ const ArtistsTable = ({ listArtistsData }) => {
           component={Paper}
           sx={{
             maxHeight: { xs: 300, md: 250, lg: 500 },
-            overflowY: "auto",
+            overflow: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",
               height: "6px",

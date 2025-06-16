@@ -176,7 +176,7 @@ const PlaylistPage = () => {
     );
 
   return (
-    <Box height="100vh" position="relative">
+    <Box position="relative">
       <Box
         position="absolute"
         inset={0}
@@ -191,12 +191,16 @@ const PlaylistPage = () => {
       <Box
         position="relative"
         zIndex={1}
-        height="100vh"
         display="flex"
         flexDirection="column"
         gap={2}
       >
-        <Box display="flex" padding={3} gap={3}>
+        <Box
+          display="flex"
+          padding={3}
+          gap={3}
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
           <Box
             component="img"
             src={
@@ -221,7 +225,18 @@ const PlaylistPage = () => {
             <Typography variant="subtitle2" color="text.secondary">
               Playlist
             </Typography>
-            <Typography variant="h1" fontWeight="bold" marginY={2}>
+            <Typography
+              sx={{
+                fontSize: {
+                  xs: "1.5rem",
+                  sm: "3rem",
+                  md: "5rem",
+                },
+                fontWeight: "bold",
+              }}
+              fontWeight="bold"
+              marginY={2}
+            >
               {currentPlaylist?.name}
             </Typography>
             <Box
@@ -270,8 +285,8 @@ const PlaylistPage = () => {
           <TableContainer
             component={Paper}
             sx={{
-              maxHeight: { xs: 300, md: 350 },
-              overflowY: "auto",
+              maxHeight: { xs: 300, md: 300 },
+              overflow: "auto",
               "&::-webkit-scrollbar": {
                 width: "6px",
                 height: "6px",
@@ -308,6 +323,7 @@ const PlaylistPage = () => {
                   </TableCell>
                   <TableCell
                     sx={{
+                      display: { xs: "none", sm: "table-cell" },
                       color: "primary.main",
                       fontWeight: "bold",
                       textTransform: "uppercase",
@@ -390,7 +406,11 @@ const PlaylistPage = () => {
                             </Box>
                           </Box>
                         </TableCell>
-                        <TableCell>{song.createdAt.split("T")[0]}</TableCell>
+                        <TableCell
+                          sx={{ display: { xs: "none", sm: "table-cell" } }}
+                        >
+                          {song.createdAt.split("T")[0]}
+                        </TableCell>
                         <TableCell>{formatDuration(song.duration)}</TableCell>
                         <TableCell>
                           <IconButton

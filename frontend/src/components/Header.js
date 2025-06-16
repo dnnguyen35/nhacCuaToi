@@ -32,12 +32,17 @@ const Header = () => {
       position="static"
       color="transparent"
       elevation={0}
-      sx={{ bgcolor: "blue" }}
+      sx={{ bgcolor: "#87CEFA" }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
         <Logo />
 
-        <Stack spacing={3} direction="row" alignItems="center">
+        <Stack
+          spacing={3}
+          direction="row"
+          alignItems="center"
+          sx={{ display: { xs: "none", sm: "flex" } }}
+        >
           <LanguageToggle />
           <IconButton sx={{ color: "inherit" }} onClick={switchThemeToggle}>
             {themeMode === themeModes.light ? (
@@ -63,6 +68,24 @@ const Header = () => {
             </Link>
           ) : null}
           {user && <UserMenu />}
+        </Stack>
+
+        <Stack
+          spacing={3}
+          direction="row"
+          alignItems="center"
+          sx={{ display: { xs: "flex", sm: "none" } }}
+        >
+          {!user ? (
+            <Button
+              variant="contained"
+              onClick={() => dispatch(setAuthModalOpen(true))}
+            >
+              {t("userMenu.signIn")}
+            </Button>
+          ) : (
+            <UserMenu />
+          )}
         </Stack>
       </Toolbar>
     </AppBar>

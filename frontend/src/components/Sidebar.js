@@ -12,7 +12,7 @@ const Sidebar = () => {
         bgcolor: "background.default",
         marginTop: 2,
         marginLeft: 2,
-        display: "flex",
+        display: { xs: "none", md: "flex" },
         flexDirection: "column",
         gap: 2,
         overflow: "hidden",

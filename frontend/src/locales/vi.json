@@ -21,7 +21,12 @@
     "add": "thêm",
     "cancel": "hủy",
     "verifyOtp": "Xác thực",
-    "resendOtp": "Gửi lại otp"
+    "resendOtp": "Gửi lại otp",
+    "vi": "tiếng việt",
+    "en": "tiếng anh",
+    "darkMode": "nền tối",
+    "lightMode": "nền sáng",
+    "adminDashboard": "admin"
   },
   "songTable": {
     "image": "ảnh bìa",

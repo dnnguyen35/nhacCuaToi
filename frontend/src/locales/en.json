@@ -21,7 +21,12 @@
     "add": "add",
     "cancel": "cancel",
     "verifyOtp": "Verify",
-    "resendOtp": "Resend Otp"
+    "resendOtp": "Resend Otp",
+    "vi": "vietnamese",
+    "en": "english",
+    "darkMode": "dark mode",
+    "lightMode": "light mode",
+    "adminDashboard": "admin"
   },
   "songTable": {
     "image": "image",

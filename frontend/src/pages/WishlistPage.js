@@ -123,7 +123,7 @@ const WishlistPage = () => {
   };
 
   return (
-    <Box height="100vh" position="relative">
+    <Box position="relative">
       <Box
         position="absolute"
         inset={0}
@@ -138,12 +138,16 @@ const WishlistPage = () => {
       <Box
         position="relative"
         zIndex={1}
-        height="100vh"
         display="flex"
         flexDirection="column"
         gap={2}
       >
-        <Box display="flex" padding={3} gap={3}>
+        <Box
+          display="flex"
+          flexDirection={{ xs: "column", sm: "row" }}
+          padding={3}
+          gap={3}
+        >
           <Box
             component="img"
             src={
@@ -162,9 +166,7 @@ const WishlistPage = () => {
             <Typography variant="subtitle2" color="text.secondary">
               Wishlist
             </Typography>
-            <Typography variant="h1" fontWeight="bold" marginY={2}>
-              nhacCuaToi
-            </Typography>
+
             <Box
               display="flex"
               alignItems="center"
@@ -208,8 +210,8 @@ const WishlistPage = () => {
           <TableContainer
             component={Paper}
             sx={{
-              maxHeight: { xs: 300, md: 350 },
-              overflowY: "auto",
+              maxHeight: { xs: 300, md: 300 },
+              overflow: "auto",
               "&::-webkit-scrollbar": {
                 width: "6px",
                 height: "6px",
@@ -246,6 +248,7 @@ const WishlistPage = () => {
                   </TableCell>
                   <TableCell
                     sx={{
+                      display: { xs: "none", sm: "table-cell" },
                       color: "primary.main",
                       fontWeight: "bold",
                       textTransform: "uppercase",
@@ -327,7 +330,11 @@ const WishlistPage = () => {
                             </Box>
                           </Box>
                         </TableCell>
-                        <TableCell>{song.createdAt.split("T")[0]}</TableCell>
+                        <TableCell
+                          sx={{ display: { xs: "none", sm: "table-cell" } }}
+                        >
+                          {song.createdAt.split("T")[0]}
+                        </TableCell>
                         <TableCell>{formatDuration(song.duration)}</TableCell>
                         <TableCell>
                           <IconButton

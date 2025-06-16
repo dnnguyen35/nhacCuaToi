@@ -108,13 +108,14 @@ const PlaybackController = () => {
   return (
     <Box
       sx={{
+        maxHeight: 100,
         position: "fixed",
         bottom: 0,
         left: 0,
         right: 0,
         bgcolor: "background.paper",
         mx: 2,
-        mb: 1,
+        mb: 2,
         p: 1,
         px: { xs: 1, sm: 5 },
         borderRadius: 5,
@@ -128,7 +129,9 @@ const PlaybackController = () => {
     >
       <Box
         sx={{
-          display: "flex",
+          display: { xs: "none", sm: "flex" },
+          flexDirection: "row",
+          marginLeft: { xs: -20, sm: 0 },
           alignItems: "center",
           width: "20%",
           gap: 1,
@@ -267,9 +270,9 @@ const PlaybackController = () => {
 
       <Box
         sx={{
-          display: "flex",
+          display: { xs: "none", sm: "flex" },
           alignItems: "center",
-          width: { xs: "70%", sm: "20%", md: "10%" },
+          width: { xs: "70%", sm: "20%", md: "20%", lg: "10%" },
           gap: 1,
         }}
       >
