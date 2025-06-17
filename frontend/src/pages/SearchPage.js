@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Stack, TextField, Typography, Fade } from "@mui/material";
+import { Box, Stack, TextField, Typography } from "@mui/material";
 import SearchSongList from "../components/SearchSongList";
 import SearchSongListSkeleton from "../components/skeletons/SearchSongListSkeleton";
 import songApi from "../api/modules/song.api";

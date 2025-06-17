@@ -13,7 +13,7 @@ const onTokenRefreshed = (token) => {
   console.log("subscribers lenght: ", subscribers.length);
   subscribers.forEach((callback) => {
     callback(token);
-    console.log("from privateClient callback: ", callback);
+    console.log("from privateClient callback: ", callback.name);
   });
   subscribers = [];
 };

@@ -22,6 +22,7 @@ import {
   toggleShuffle,
 } from "../redux/slices/playerSlice";
 import { formatDuration } from "../utils/formatDuration";
+import Marquee from "react-fast-marquee";
 
 const PlaybackController = () => {
   const { currentSong, isPlaying, repeatMode, isShuffle } = useSelector(
@@ -242,8 +243,31 @@ const PlaybackController = () => {
             width: "70%",
             mt: 0.5,
             gap: 1,
+            position: "relative",
           }}
         >
+          <Box
+            sx={{
+              display: { xs: "block", sm: "none" },
+              position: "absolute",
+              top: -12,
+              left: "50%",
+              transform: "translateX(-50%)",
+              maxWidth: "80%",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+            }}
+          >
+            <Marquee
+              gradient={false}
+              speed={50}
+              pauseOnHover
+              play={isPlaying && currentSong}
+              style={{ fontSize: "0.75rem" }}
+            >
+              {currentSong?.title}
+            </Marquee>
+          </Box>
           <Typography
             variant="caption"
             sx={{ minWidth: 35, textAlign: "center" }}

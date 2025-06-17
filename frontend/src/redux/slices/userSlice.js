@@ -25,6 +25,11 @@ const userSlice = createSlice({
         localStorage.removeItem("wishlist");
         localStorage.removeItem("playlist");
         localStorage.removeItem("allPlaylist");
+
+        state.user = null;
+        state.allPlaylist = [];
+        state.wishlist = [];
+        state.playlist = [];
       } else {
         localStorage.setItem("user", JSON.stringify(action.payload.userData));
 

@@ -41,6 +41,7 @@ const PlaylistPage = () => {
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
   const [onDeleteSongRequest, setOnDeleteSongRequest] = useState(false);
   const { themeMode } = useSelector((state) => state.themeMode);
+
   const { t } = useTranslation();
   console.log("playlistId: ", playlistId);
 

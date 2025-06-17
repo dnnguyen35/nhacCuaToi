@@ -1,8 +1,10 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthModalOpen } from "../redux/slices/authModalSlice";
 import { Box, Typography } from "@mui/material";
 import { setCurrentSong, setQueue } from "../redux/slices/playerSlice";
+import { setAppState } from "../redux/slices/appStateSlice";
 import { useTranslation } from "react-i18next";
 
 const PleaseLogin = () => {
@@ -43,18 +45,27 @@ const PleaseLogin = () => {
 
 const ProtectedPage = ({ children }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.user);
+  const { appState } = useSelector((state) => state.appState);
   const { queueType } = useSelector((state) => state.player);
 
   useEffect(() => {
-    if (!user) {
+    if (!user && appState !== "playlist") {
       if (queueType === "playlist" || queueType === "wishlist") {
         dispatch(setQueue([]));
         dispatch(setCurrentSong(null));
       }
+      dispatch(setAuthModalOpen(!user));
+    } else if (!user && appState === "playlist") {
+      if (queueType === "playlist" || queueType === "wishlist") {
+        dispatch(setQueue([]));
+        dispatch(setCurrentSong(null));
+      }
+      dispatch(setAppState("home"));
+      navigate("/");
     }
-    dispatch(setAuthModalOpen(!user));
   }, [user, dispatch]);
 
   return user ? children : <PleaseLogin />;

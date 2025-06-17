@@ -71,6 +71,7 @@ const UserMenu = () => {
             <ListItemButton
               onClick={() => {
                 setChangePasswordModalOpen(true);
+                setAnchorEl(null);
               }}
             >
               <ListItemIcon>
@@ -87,7 +88,10 @@ const UserMenu = () => {
             </ListItemButton>
             <ListItemButton
               sx={{ display: { xs: "flex", sm: "none" }, borderRadius: "10px" }}
-              onClick={onSwitchLanguage}
+              onClick={() => {
+                onSwitchLanguage();
+                setAnchorEl(null);
+              }}
             >
               <ListItemIcon>
                 <Translate />
@@ -105,7 +109,10 @@ const UserMenu = () => {
             </ListItemButton>
             <ListItemButton
               sx={{ display: { xs: "flex", sm: "none" }, borderRadius: "10px" }}
-              onClick={onSwitchTheme}
+              onClick={() => {
+                onSwitchTheme();
+                setAnchorEl(null);
+              }}
             >
               <ListItemIcon>
                 {themeMode === "dark" ? (

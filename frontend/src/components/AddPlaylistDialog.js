@@ -10,20 +10,21 @@ import {
   Typography,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import playlistApi from "../api/modules/playlist.api";
 import { useTranslation } from "react-i18next";
+import { setAllPlaylist } from "../redux/slices/userSlice";
 
 const AddPlaylistDialog = ({
   isAddPlaylistDialogOpen,
   setIsAddPlaylistDialogOpen,
-  updatePlaylistsList,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
   const { allPlaylist } = useSelector((state) => state.user);
 
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -52,7 +53,7 @@ const AddPlaylistDialog = ({
 
     if (response) {
       toast.success(t("responseSuccess.Playlist created successfully"));
-      updatePlaylistsList([...allPlaylist, response]);
+      dispatch(setAllPlaylist([...allPlaylist, response]));
       setIsAddPlaylistDialogOpen(false);
       setPlaylistName("");
     }

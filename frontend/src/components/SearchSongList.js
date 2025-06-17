@@ -184,14 +184,14 @@ const SearchSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
                     </IconButton>
                   </>
                 )}
-                {isPlaying && currentSong.id === song.id ? (
+                {currentSong.id === song.id ? (
                   <IconButton
                     color="primary"
                     size="small"
                     sx={{ pr: 1 }}
                     onClick={() => dispatch(togglePlay())}
                   >
-                    <Pause />
+                    {isPlaying ? <Pause /> : <PlayArrow />}
                   </IconButton>
                 ) : (
                   <IconButton

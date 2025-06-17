@@ -123,6 +123,9 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
               boxShadow: song ? 1 : 0,
               px: 1,
               py: 1,
+              "@media (hover: hover) and (pointer: fine)": {
+                "&:hover": song ? { bgcolor: "grey.300" } : {},
+              },
             }}
           >
             {song && (
@@ -189,18 +192,28 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
                         </IconButton>
                       </>
                     )}
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      sx={{ pr: 1 }}
-                      onClick={() => dispatch(togglePlay())}
-                    >
-                      {isPlaying && currentSong.id === song.id ? (
-                        <Pause />
-                      ) : (
+                    {currentSong.id === song.id ? (
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        sx={{ pr: 1 }}
+                        onClick={() => dispatch(togglePlay())}
+                      >
+                        {isPlaying ? <Pause /> : <PlayArrow />}
+                      </IconButton>
+                    ) : (
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        sx={{ pr: 1 }}
+                        onClick={() => {
+                          dispatch(initializeQueue([...songs]));
+                          dispatch(setCurrentSong(song));
+                        }}
+                      >
                         <PlayArrow />
-                      )}
-                    </IconButton>
+                      </IconButton>
+                    )}
                   </Box>
                 </Box>
                 <Box
@@ -235,14 +248,14 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
                       </IconButton>
                     </>
                   )}
-                  {isPlaying && currentSong.id === song.id ? (
+                  {currentSong.id === song.id ? (
                     <IconButton
                       color="primary"
                       size="small"
                       sx={{ pr: 1 }}
                       onClick={() => dispatch(togglePlay())}
                     >
-                      <Pause />
+                      {isPlaying ? <Pause /> : <PlayArrow />}
                     </IconButton>
                   ) : (
                     <IconButton

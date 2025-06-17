@@ -13,6 +13,7 @@ import {
   QueueMusicSharp,
   Delete,
   LibraryMusic,
+  MusicNote,
 } from "@mui/icons-material";
 import AddPlaylistDialog from "./AddPlaylistDialog";
 import { useEffect, useState } from "react";
@@ -28,9 +29,8 @@ import { useTranslation } from "react-i18next";
 import { setQueue, setCurrentSong } from "../redux/slices/playerSlice";
 
 const PlaylistList = () => {
-  const { user, playlist } = useSelector((state) => state.user);
+  const { user, playlist, allPlaylist } = useSelector((state) => state.user);
   const { isPlaying, queueType } = useSelector((state) => state.player);
-  const [playlistsList, setPlaylistsList] = useState([]);
   const [isAddPlaylistDialogOpen, setIsAddPlaylistDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeletePlaylistRequest, setIsDeletePlaylistRequest] = useState(false);
@@ -51,7 +51,6 @@ const PlaylistList = () => {
 
       if (response) {
         console.log(response);
-        setPlaylistsList(response);
         dispatch(setAllPlaylist(response));
       }
 
@@ -65,11 +64,6 @@ const PlaylistList = () => {
       fetchPlaylists();
     }
   }, [user]);
-
-  const updatePlaylistsList = (newPlaylistsList) => {
-    setPlaylistsList(newPlaylistsList);
-    dispatch(setAllPlaylist(newPlaylistsList));
-  };
 
   const onDeletePlaylistClick = async (playlist) => {
     const confirm = await Swal.fire({
@@ -105,10 +99,9 @@ const PlaylistList = () => {
         dispatch(setCurrentSong(null));
       }
 
-      const newPlaylistsList = playlistsList.filter(
+      const newPlaylistsList = allPlaylist.filter(
         (pl) => pl.id !== playlist.id
       );
-      setPlaylistsList(newPlaylistsList);
       dispatch(setAllPlaylist(newPlaylistsList));
     }
 
@@ -122,6 +115,7 @@ const PlaylistList = () => {
       sx={{
         bgcolor: "background.paper",
         borderRadius: 3,
+        // minHeight: "100%",
         maxHeight: "100vh",
         display: "flex",
         flexDirection: "column",
@@ -147,7 +141,7 @@ const PlaylistList = () => {
       <Box
         sx={{
           flex: 1,
-          overflowY: "auto",
+          overflow: "auto",
           scrollBehavior: "smooth",
           pr: 1,
           "&::-webkit-scrollbar": { width: 5, height: 5 },
@@ -162,9 +156,9 @@ const PlaylistList = () => {
         ) : (
           user && (
             <List>
-              {playlistsList.map((playlist, index) => (
+              {allPlaylist.map((playlist) => (
                 <ListItem
-                  key={index}
+                  key={playlist.id}
                   sx={{
                     "&:hover .delete-icon": {
                       color: "primary.main",
@@ -234,7 +228,6 @@ const PlaylistList = () => {
       <AddPlaylistDialog
         isAddPlaylistDialogOpen={isAddPlaylistDialogOpen}
         setIsAddPlaylistDialogOpen={setIsAddPlaylistDialogOpen}
-        updatePlaylistsList={updatePlaylistsList}
       />
     </Box>
   );

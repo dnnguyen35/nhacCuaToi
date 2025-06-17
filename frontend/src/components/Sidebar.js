@@ -8,6 +8,7 @@ const Sidebar = () => {
     <Box
       sx={{
         width: "20%",
+        minHeight: { xs: "70vh", md: "81vh" },
         maxHeight: { xs: "70vh", md: "81vh" },
         bgcolor: "background.default",
         marginTop: 2,
