@@ -49,7 +49,11 @@ const UpdateSongDialog = ({
       return toast.error("Please fill out song title");
     }
 
-    if ((updateSong.artist === "") & (updateSong.newArtist === "")) {
+    if (updateSong.artist === "") {
+      return toast.error("Please choose artist");
+    }
+
+    if ((updateSong.artist === "otherArtist") & (updateSong.newArtist === "")) {
       return toast.error("Please choose artist");
     }
 

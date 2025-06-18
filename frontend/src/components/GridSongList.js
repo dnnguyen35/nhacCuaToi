@@ -24,7 +24,7 @@ import {
 import { setWishlist } from "../redux/slices/userSlice";
 import wishlistApi from "../api/modules/wishlist.api";
 import { toast } from "react-toastify";
-import { setQueue } from "../redux/slices/playerSlice";
+import { setQueue, deleteSongFromQueue } from "../redux/slices/playerSlice";
 import { useTranslation } from "react-i18next";
 
 const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
@@ -33,7 +33,7 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
 
   const { t } = useTranslation();
 
-  const { isPlaying, currentSong, queueType } = useSelector(
+  const { isPlaying, currentSong, queueType, queue } = useSelector(
     (state) => state.player
   );
 
@@ -44,7 +44,7 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     if (onAddSongToWishlistRequest) return;
 
     if (wishlist.some((s) => s.id === song.id)) {
-      onDeleteSongFromWishlist(song.id);
+      onDeleteSongFromWishlist(song);
       return;
     }
 
@@ -70,15 +70,29 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     }
   };
 
-  const onDeleteSongFromWishlist = async (songId) => {
+  const onDeleteSongFromWishlist = async (deleteSong) => {
     setOnAddSongToWishlistRequest(true);
 
-    const { response, error } = await wishlistApi.deleteSong({ songId });
+    const { response, error } = await wishlistApi.deleteSong({
+      songId: deleteSong.id,
+    });
 
     setOnAddSongToWishlistRequest(false);
 
     if (response) {
-      const newWishlist = wishlist.filter((s) => s.id !== songId);
+      const isCurrentWishlistPlaying = wishlist.some(
+        (song) => song.id === currentSong?.id
+      );
+
+      if (
+        isCurrentWishlistPlaying &&
+        queue.length > 0 &&
+        queueType === "wishlist"
+      ) {
+        dispatch(deleteSongFromQueue(deleteSong));
+      }
+
+      const newWishlist = wishlist.filter((s) => s.id !== deleteSong.id);
       dispatch(setWishlist([...newWishlist]));
       toast.success(
         t("responseSuccess.Removed song from wishlist successfully")
@@ -148,7 +162,7 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
                       play={isPlaying && currentSong.id === song.id}
                     >
                       <Typography variant="body1" fontWeight="bold">
-                        {song.title}
+                        {`${song.title}\u00A0\u00A0\u00A0`}
                       </Typography>
                     </Marquee>
                   </>

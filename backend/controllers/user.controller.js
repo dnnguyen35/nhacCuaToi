@@ -42,12 +42,13 @@ const signup = async (req, res) => {
 
     const otpExpireAt = Math.floor(Date.now() / 1000) + 120;
 
-    await redis.setex(`signup-otp:${email}`, 120, otp.toString());
-    await redis.setex(`signup-info:${email}`, 900, signupInfo);
-
     console.log("email sending");
 
-    await sendEmail(email, "otp", otp);
+    await Promise.all([
+      redis.setex(`signup-otp:${email}`, 120, otp.toString()),
+      redis.setex(`signup-info:${email}`, 900, signupInfo),
+      sendEmail(email, "otp", otp),
+    ]);
 
     console.log("email send");
 
@@ -90,7 +91,7 @@ const verifyOtpAndSignup = async (req, res) => {
       return res.status(400).json({ message: "OTP not match" });
     }
 
-    const { username, password } = signupInfo;
+    const { username, password } = JSON.parse(signupInfo);
 
     const newUser = userModel.build({ email, username });
 
@@ -98,8 +99,10 @@ const verifyOtpAndSignup = async (req, res) => {
 
     await newUser.save();
 
-    await redis.del(`signup-info:${email}`);
-    await redis.del(`signup-otp:${email}`);
+    await Promise.all([
+      redis.del(`signup-info:${email}`),
+      redis.del(`signup-otp:${email}`),
+    ]);
 
     const access_token = jsonwebtoken.sign(
       { data: newUser.id },
@@ -146,9 +149,10 @@ const resendOtp = async (req, res) => {
 
     const otpExpireAt = Math.floor(Date.now() / 1000) + 120;
 
-    await redis.setex(`signup-otp:${email}`, 120, otp.toString());
-
-    await sendEmail(email, "otp", otp);
+    await Promise.all([
+      redis.setex(`signup-otp:${email}`, 120, otp.toString()),
+      sendEmail(email, "otp", otp),
+    ]);
 
     res
       .status(200)

@@ -17,14 +17,14 @@ import {
 import { setWishlist } from "../redux/slices/userSlice";
 import wishlistApi from "../api/modules/wishlist.api";
 import { toast } from "react-toastify";
-import { setQueue } from "../redux/slices/playerSlice";
+import { setQueue, deleteSongFromQueue } from "../redux/slices/playerSlice";
 import { useTranslation } from "react-i18next";
 
 const songsPerPage = 6;
 
 const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
   const { user, wishlist } = useSelector((state) => state.user);
-  const { isPlaying, currentSong, queueType } = useSelector(
+  const { isPlaying, currentSong, queueType, queue } = useSelector(
     (state) => state.player
   );
   const [page, setPage] = useState(1);
@@ -48,7 +48,7 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     if (onAddSongToWishlistRequest) return;
 
     if (wishlist.some((s) => s.id === song.id)) {
-      onDeleteSongFromWishlist(song.id);
+      onDeleteSongFromWishlist(song);
       return;
     }
 
@@ -71,15 +71,29 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     }
   };
 
-  const onDeleteSongFromWishlist = async (songId) => {
+  const onDeleteSongFromWishlist = async (deleteSong) => {
     setOnAddSongToWishlistRequest(true);
 
-    const { response, error } = await wishlistApi.deleteSong({ songId });
+    const { response, error } = await wishlistApi.deleteSong({
+      songId: deleteSong.id,
+    });
 
     setOnAddSongToWishlistRequest(false);
 
     if (response) {
-      const newWishlist = wishlist.filter((s) => s.id !== songId);
+      const isCurrentWishlistPlaying = wishlist.some(
+        (song) => song.id === currentSong?.id
+      );
+
+      if (
+        isCurrentWishlistPlaying &&
+        queue.length > 0 &&
+        queueType === "wishlist"
+      ) {
+        dispatch(deleteSongFromQueue(deleteSong));
+      }
+
+      const newWishlist = wishlist.filter((s) => s.id !== deleteSong.id);
       dispatch(setWishlist([...newWishlist]));
       toast.success(
         t("responseSuccess.Removed song from wishlist successfully")
@@ -149,7 +163,7 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
                     play={isPlaying && currentSong.id === song.id}
                   >
                     <Typography variant="subtitle2" noWrap fontWeight="bold">
-                      {song.title}
+                      {`${song.title}\u00A0\u00A0\u00A0`}
                     </Typography>
                   </Marquee>
                   <Typography variant="body2" color="text.secondary" noWrap>

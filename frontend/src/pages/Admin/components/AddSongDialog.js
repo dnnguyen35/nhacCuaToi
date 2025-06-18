@@ -24,6 +24,8 @@ import {
   setListArtists,
   setTotalArtists,
 } from "../../../redux/slices/statsDataSlice";
+import { formatDuration } from "../../../utils/formatDuration";
+import { formatMinuteToSecond } from "../../../utils/formatMinuteToSecond";
 
 const AddSongDialog = () => {
   const { listSongs, listArtists } = useSelector((state) => state.statsData);
@@ -31,6 +33,18 @@ const AddSongDialog = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
+
+  const formatAudioDurationToMinute = async (audio) => {
+    if (!audio) {
+      setNewSong({ ...newSong, duration: "0" });
+      return;
+    }
+    const arrayBuffer = await audio.arrayBuffer();
+    const audioContext = new window.AudioContext();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const audioMinute = formatDuration(audioBuffer.duration);
+    setNewSong({ ...newSong, duration: audioMinute });
+  };
 
   const [newSong, setNewSong] = useState({
     title: "",
@@ -56,11 +70,11 @@ const AddSongDialog = () => {
       return toast.error("Please fill out songs title");
     }
 
-    if (!newSong.duration || newSong.duration === 0) {
-      return toast.error("Duration must be a number");
+    if (newSong.artist === "") {
+      return toast.error("Please choose artist");
     }
 
-    if ((newSong.artist === "") & (newSong.newArtist === "")) {
+    if ((newSong.artist === "otherArtist") & (newSong.newArtist === "")) {
       return toast.error("Please choose artist");
     }
 
@@ -76,7 +90,7 @@ const AddSongDialog = () => {
     const formData = new FormData();
     formData.append("title", newSong.title);
     formData.append("artist", artistName);
-    formData.append("duration", newSong.duration);
+    formData.append("duration", formatMinuteToSecond(newSong.duration));
     formData.append("audioFile", files.audio);
     formData.append("imageFile", files.image);
 
@@ -201,12 +215,13 @@ const AddSongDialog = () => {
             type="file"
             hidden
             accept=".mp3,audio/mpeg"
-            onChange={(e) =>
+            onChange={async (e) => {
               setFiles((prev) => ({
                 ...prev,
                 audio: e.target.files?.[0] || null,
-              }))
-            }
+              }));
+              await formatAudioDurationToMinute(e.target.files?.[0]);
+            }}
           />
 
           <TextField
@@ -218,9 +233,9 @@ const AddSongDialog = () => {
           />
 
           <TextField
-            label="Duration (seconds)"
-            type="number"
-            inputProps={{ min: 0 }}
+            label="Duration (minutes)"
+            type="text"
+            InputProps={{ readOnly: true }}
             variant="outlined"
             value={newSong.duration}
             onChange={(e) =>

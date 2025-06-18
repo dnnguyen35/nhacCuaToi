@@ -52,7 +52,7 @@ const PlaybackController = () => {
       console.log("time: ", audio.currentTime);
       setCurrentTime(audio.currentTime);
     };
-    const updateDuration = () => setDuration(audio.duration);
+    const updateDuration = () => setDuration(audio.duration || 0);
     const handleEndedSong = () => {
       dispatch(setIsPlaying(false));
     };
@@ -66,17 +66,6 @@ const PlaybackController = () => {
       audio.removeEventListener("loadedmetadata", updateDuration);
       audio.removeEventListener("ended", handleEndedSong);
     };
-  }, [currentSong]);
-
-  useEffect(() => {
-    if (currentSong?.isNull || !audioRef.current) {
-      setDuration(0);
-      return;
-    }
-
-    console.log("duration from playbakc: ", audioRef.current.duration);
-
-    setDuration(audioRef.current.duration);
   }, [currentSong]);
 
   const handleSeek = (time) => {
@@ -265,7 +254,7 @@ const PlaybackController = () => {
               play={isPlaying && currentSong}
               style={{ fontSize: "0.75rem" }}
             >
-              {currentSong?.title}
+              {`${currentSong?.title} - ${currentSong.artist}\u00A0\u00A0\u00A0`}
             </Marquee>
           </Box>
           <Typography

@@ -26,7 +26,7 @@ const songApi = {
       return { error };
     }
   },
-  searchSong: async ({ keyword, page = 1, limit = 10 }) => {
+  searchSong: async ({ keyword, page = 1, limit = 20 }) => {
     try {
       const response = await publicClient.get(
         songEndpoints.searchSong({ keyword, page, limit })
