@@ -60,7 +60,7 @@ const getAllSongsOfWishlist = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const user = await userModel.findByPk(userId, {
+    const userWishlist = await userModel.findByPk(userId, {
       include: [
         {
           model: songModel,
@@ -70,11 +70,17 @@ const getAllSongsOfWishlist = async (req, res) => {
       ],
     });
 
-    if (!user) {
+    if (!userWishlist) {
       return res.status(404).json({ message: "User not founded" });
     }
 
-    res.status(200).json(user);
+    const wishlist = userWishlist.toJSON();
+    delete wishlist.password;
+    delete wishlist.isAdmin;
+    delete wishlist.isBlocked;
+    delete wishlist.salt;
+
+    res.status(200).json(wishlist);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

@@ -1,0 +1,691 @@
+openapi: 3.0.0
+info:
+  title: nhacCuaToi API
+  version: 1.0.0
+  description: REST API documentation for nhacCuaToi project
+
+servers:
+  - url: http://localhost:5000/api/v1
+
+tags:
+  - name: User
+    description: Authentication and account management
+  - name: Auth
+    description: Authorization
+  - name: Song
+    description: Song endpoints
+  - name: Wishlist
+    description: Manage user's wishlist (add, remove)
+  - name: Playlist
+    description: Manage user's playlists (add, remove)
+  - name: Admin
+    description: Admin endpoints
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Song:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        artist:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+paths:
+  /users/signup:
+    post:
+      tags: [User]
+      summary: Sign up
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, username, password]
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: OTP sent
+
+  /users/verify-otp:
+    post:
+      tags: [User]
+      summary: Verify OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, otp]
+              properties:
+                email:
+                  type: string
+                otp:
+                  type: string
+      responses:
+        "201":
+          description: User created
+
+  /users/resend-otp:
+    post:
+      tags: [User]
+      summary: Resend OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: OTP resent
+
+  /users/signin:
+    post:
+      tags: [User]
+      summary: Sign in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+
+  /users/reset-password:
+    post:
+      tags: [User]
+      summary: Reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: Reset successful
+
+  /users/change-password:
+    put:
+      tags: [User]
+      summary: Change password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password, newPassword]
+              properties:
+                password:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        "200":
+          description: Password changed
+
+  /auth/renew-accesstoken:
+    post:
+      tags: [Auth]
+      summary: Renew access token using refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+                  example: your-refresh-token-here
+      responses:
+        "200":
+          description: New access token issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newAccessToken:
+                    type: string
+                    example: your-new-access-token-here
+        "401":
+          description: Refresh token expired or invalid
+
+  /songs/all-songs:
+    get:
+      tags: [Song]
+      summary: Get all songs
+      responses:
+        "200":
+          description: List of all songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Song"
+        "400":
+          description: No songs found
+        "500":
+          description: Internal server error
+
+  /songs/trending-songs:
+    get:
+      tags: [Song]
+      summary: Get trending songs (randomly selected)
+      responses:
+        "200":
+          description: List of trending songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Song"
+        "400":
+          description: No songs found
+        "500":
+          description: Internal server error
+
+  /songs/search:
+    get:
+      tags: [Song]
+      summary: Search songs by title or artist
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          required: true
+          description: Keyword to search (in title or artist)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 3
+      responses:
+        "200":
+          description: Paginated search result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  searchResult:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Song"
+                  currentPage:
+                    type: integer
+                  totalPages:
+                    type: integer
+        "400":
+          description: Missing keyword
+        "500":
+          description: Internal server error
+
+  /wishlists/all-songs:
+    get:
+      tags: [Wishlist]
+      summary: Get all songs in the user's wishlist
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successfully fetched wishlist songs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  WishlistedSongs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Song"
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+  /wishlists/add-song/{songId}:
+    post:
+      tags: [Wishlist]
+      summary: Add a song to user's wishlist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: songId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the song to add
+      responses:
+        "201":
+          description: Song added to wishlist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Song"
+        "400":
+          description: Song already added or does not exist
+        "500":
+          description: Internal server error
+  /wishlists/delete-song/{songId}:
+    delete:
+      tags: [Wishlist]
+      summary: Remove a song from user's wishlist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: songId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the song to remove
+      responses:
+        "200":
+          description: Song removed from wishlist successfully
+        "500":
+          description: Internal server error
+
+  /playlists/create:
+    post:
+      tags: [Playlist]
+      summary: Create a new playlist
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [playlistName]
+              properties:
+                playlistName:
+                  type: string
+      responses:
+        "201":
+          description: Playlist created successfully
+        "400":
+          description: Playlist already exists
+        "500":
+          description: Internal server error
+
+  /playlists/add-song/{playlistId}/{songId}:
+    post:
+      tags: [Playlist]
+      summary: Add a song to a playlist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: playlistId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: songId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Song added successfully
+        "400":
+          description: Song already in playlist or not found
+        "500":
+          description: Internal server error
+
+  /playlists/all-playlists:
+    get:
+      tags: [Playlist]
+      summary: Get all playlists of the user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of playlists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    userId:
+                      type: integer
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+        "500":
+          description: Internal server error
+
+  /playlists/all-songs/{playlistId}:
+    get:
+      tags: [Playlist]
+      summary: Get all songs in a specific playlist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: playlistId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Songs in the playlist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  Songs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        artist:
+                          type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                        updatedAt:
+                          type: string
+                          format: date-time
+        "500":
+          description: Internal server error
+
+  /playlists/delete/{playlistId}:
+    delete:
+      tags: [Playlist]
+      summary: Delete a playlist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: playlistId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Playlist deleted successfully
+        "400":
+          description: Playlist does not exist
+        "500":
+          description: Internal server error
+
+  /playlists/delete-song/{playlistId}/{songId}:
+    delete:
+      tags: [Playlist]
+      summary: Remove a song from a playlist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: playlistId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: songId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Song removed from playlist successfully
+        "500":
+          description: Internal server error
+
+  /admins/user-stats:
+    get:
+      tags: [Admin]
+      summary: Get user statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of users with playlist and wishlist counts
+        "400":
+          description: UserStats not found
+        "500":
+          description: Internal server error
+
+  /admins/block-user/{userId}:
+    put:
+      tags: [Admin]
+      summary: Block a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User blocked
+        "400":
+          description: User not exists
+        "500":
+          description: Internal server error
+
+  /admins/unblock-user/{userId}:
+    put:
+      tags: [Admin]
+      summary: Unblock a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User unblocked
+        "400":
+          description: User not exists
+        "500":
+          description: Internal server error
+
+  /admins/song-stats:
+    get:
+      tags: [Admin]
+      summary: Get song statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Song statistics with playlist and wishlist counts
+        "400":
+          description: SongStats not found
+        "500":
+          description: Internal server error
+
+  /admins/create-song:
+    post:
+      tags: [Admin]
+      summary: Create a new song
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [title, artist, duration, audioFile, imageFile]
+              properties:
+                title:
+                  type: string
+                artist:
+                  type: string
+                duration:
+                  type: number
+                audioFile:
+                  type: string
+                  format: binary
+                imageFile:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Song created
+        "400":
+          description: Missing files or invalid data
+        "500":
+          description: Internal server error
+
+  /admins/update-song/{songId}:
+    put:
+      tags: [Admin]
+      summary: Update song information
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: songId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                artist:
+                  type: string
+      responses:
+        "200":
+          description: Song updated successfully
+        "404":
+          description: Song not found
+        "500":
+          description: Internal server error
+
+  /admins/delete-song/{songId}:
+    delete:
+      tags: [Admin]
+      summary: Delete a song
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: songId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Song deleted successfully
+        "400":
+          description: Song does not exist
+        "500":
+          description: Internal server error
+
+  /admins/playlist-stats:
+    get:
+      tags: [Admin]
+      summary: Get playlist statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of playlists with song count and username
+        "400":
+          description: PlaylistStats not found
+        "500":
+          description: Internal server error
+
+  /admins/artist-stats:
+    get:
+      tags: [Admin]
+      summary: Get artist statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Artist statistics with song, playlist, wishlist counts
+        "400":
+          description: ArtistStats not found
+        "500":
+          description: Internal server error

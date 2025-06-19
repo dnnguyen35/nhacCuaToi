@@ -91,7 +91,7 @@ const verifyOtpAndSignup = async (req, res) => {
       return res.status(400).json({ message: "OTP not match" });
     }
 
-    const { username, password } = JSON.parse(signupInfo);
+    const { username, password } = signupInfo;
 
     const newUser = userModel.build({ email, username });
 

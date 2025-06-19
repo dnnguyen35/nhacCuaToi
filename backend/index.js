@@ -16,6 +16,8 @@ import {
   playlistSongModel,
   wishlistModel,
 } from "./models/main.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./docs/swagger.js";
 
 const app = express();
 const __dirname = path.resolve();
@@ -41,9 +43,15 @@ app.use(
 );
 
 app.get("/ok", (req, res) => {
-  res.send("Everything still ok");
+  res.json({
+    message: "Everything still ok",
+    timestamp: new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Ho_Chi_Minh",
+    }),
+  });
 });
 
+app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/v1", routes);
 
 const server = http.createServer(app);

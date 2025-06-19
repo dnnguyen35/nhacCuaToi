@@ -89,6 +89,7 @@ const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
       console.log("value: ", values);
       const { response, error } = await userApi.verifyOtp(values);
       console.log("response: ", response);
+      console.log("error: ", error);
       setIsRequest(false);
 
       if (response) {

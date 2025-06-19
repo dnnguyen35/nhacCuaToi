@@ -86,7 +86,7 @@ const UsersTable = () => {
         <TableContainer
           component={Paper}
           sx={{
-            maxHeight: { xs: 300, md: 250, ld: 500 },
+            maxHeight: { xs: 300, md: 250, lg: 500 },
             overflowY: "auto",
             "&::-webkit-scrollbar": {
               width: "6px",
