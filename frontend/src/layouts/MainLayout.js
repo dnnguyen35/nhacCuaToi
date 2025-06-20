@@ -5,7 +5,6 @@ import Header from "../components/Header";
 import AuthModal from "../components/AuthModal";
 import PlaybackController from "../components/PlaybackController";
 import { Outlet } from "react-router-dom";
-import AudioPlayer from "../components/AudioPlayer";
 import BottomNavigate from "../components/BottomNavigate";
 
 const MainLayout = () => {
