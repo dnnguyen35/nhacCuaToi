@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
-import userApi from "../api/modules/user.api";
+import authApi from "../api/modules/auth.api";
 import { setAuthModalOpen } from "../redux/slices/authModalSlice";
 import { setUser, setWishlist } from "../redux/slices/userSlice";
 import { useTranslation } from "react-i18next";
@@ -49,7 +49,7 @@ const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
 
     setIsRequest(true);
 
-    const { response, error } = await userApi.resendOtp({ email });
+    const { response, error } = await authApi.resendOtp({ email });
 
     setIsRequest(false);
 
@@ -87,7 +87,7 @@ const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
       setErrorMessage(undefined);
       setIsRequest(true);
       console.log("value: ", values);
-      const { response, error } = await userApi.verifyOtp(values);
+      const { response, error } = await authApi.verifyOtp(values);
       console.log("response: ", response);
       console.log("error: ", error);
       setIsRequest(false);

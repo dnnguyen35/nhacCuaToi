@@ -2,10 +2,9 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Box, Button, Stack, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
-import userApi from "../api/modules/user.api";
+import authApi from "../api/modules/auth.api";
 import { useTranslation } from "react-i18next";
 
 const ForgotPasswordForm = ({ switchAuthState }) => {
@@ -27,7 +26,7 @@ const ForgotPasswordForm = ({ switchAuthState }) => {
     onSubmit: async (values) => {
       setErrorMessage(undefined);
       setIsRequest(true);
-      const { response, error } = await userApi.resetPassword(values);
+      const { response, error } = await authApi.resetPassword(values);
       setIsRequest(false);
 
       if (response) {

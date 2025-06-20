@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
-import userApi from "../api/modules/user.api";
+import authApi from "../api/modules/auth.api";
 import { setAuthModalOpen } from "../redux/slices/authModalSlice";
 import { setUser, setWishlist } from "../redux/slices/userSlice";
 import { useTranslation } from "react-i18next";
@@ -47,7 +47,7 @@ const SigninForm = ({ switchSignupState, switchForgotState }) => {
       setErrorMessage(undefined);
       setIsLoginRequest(true);
 
-      const { response, error } = await userApi.signin(values);
+      const { response, error } = await authApi.signin(values);
       setIsLoginRequest(false);
 
       if (response) {

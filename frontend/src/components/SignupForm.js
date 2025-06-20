@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 
 import { toast } from "react-toastify";
 import * as Yup from "yup";
-import userApi from "../api/modules/user.api";
+import authApi from "../api/modules/auth.api";
 
 import VerifyOtpForm from "./VerifyOtpForm";
 
@@ -59,7 +59,7 @@ const SignupForm = ({ switchAuthState }) => {
       setErrorMessage(undefined);
       setIsSignupRequest(true);
       setEmail(values.email);
-      const { response, error } = await userApi.signup(values);
+      const { response, error } = await authApi.signup(values);
       setIsSignupRequest(false);
 
       if (response) {
