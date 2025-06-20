@@ -247,15 +247,17 @@ const PlaybackController = () => {
               overflow: "hidden",
             }}
           >
-            <Marquee
-              gradient={false}
-              speed={50}
-              pauseOnHover
-              play={isPlaying && currentSong}
-              style={{ fontSize: "0.75rem" }}
-            >
-              {`${currentSong?.title} - ${currentSong.artist}\u00A0\u00A0\u00A0`}
-            </Marquee>
+            {!currentSong?.isNull && (
+              <Marquee
+                gradient={false}
+                speed={50}
+                pauseOnHover
+                play={isPlaying && currentSong}
+                style={{ fontSize: "0.75rem" }}
+              >
+                {`${currentSong?.title} - ${currentSong?.artist}\u00A0\u00A0\u00A0`}
+              </Marquee>
+            )}
           </Box>
           <Typography
             variant="caption"

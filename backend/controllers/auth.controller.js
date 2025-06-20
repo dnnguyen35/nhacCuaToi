@@ -36,7 +36,7 @@ const signup = async (req, res) => {
         .json({ message: "OTP has beeen send to email", otpExpireAt });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(100000 + Math.random() * 900000);
 
     const signupInfo = JSON.stringify({ username, password });
 
@@ -73,6 +73,7 @@ const verifyOtpAndSignup = async (req, res) => {
     console.log("signupOtp: ", typeof signupOtp);
 
     const signupInfo = await redis.get(`signup-info:${email}`);
+    console.log("signupInfo: ", typeof signupInfo);
 
     if (!signupInfo) {
       if (signupOtp) {

@@ -33,6 +33,7 @@ import playlistApi from "../api/modules/playlist.api";
 import { setPlaylist } from "../redux/slices/userSlice";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
+import PageNotFound from "../components/PageNotFound";
 
 const PlaylistPage = () => {
   const { playlistId } = useParams();
@@ -40,6 +41,7 @@ const PlaylistPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
   const [onDeleteSongRequest, setOnDeleteSongRequest] = useState(false);
+  const [invalidPlaylistId, setInvalidPlaylistId] = useState(false);
   const { themeMode } = useSelector((state) => state.themeMode);
 
   const { t } = useTranslation();
@@ -61,11 +63,13 @@ const PlaylistPage = () => {
       setIsLoading(false);
 
       if (response) {
+        setInvalidPlaylistId(false);
         setCurrentPlaylist(response);
       }
 
       if (error) {
-        toast.error(error.message);
+        setInvalidPlaylistId(true);
+        toast.error(t(`responseError.${error.message}`));
       }
     };
 
@@ -163,6 +167,8 @@ const PlaylistPage = () => {
       toast.error(t(`responseError.${error.message}`));
     }
   };
+
+  if (invalidPlaylistId) return <PageNotFound />;
 
   if (isLoading)
     return (

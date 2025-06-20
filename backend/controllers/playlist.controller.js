@@ -57,6 +57,10 @@ const getAllSongsOfPlaylist = async (req, res) => {
       order: [[songModel, playlistSongModel, "id", "ASC"]],
     });
 
+    if (!allSongs) {
+      return res.status(400).json({ message: "Playlist doesn't exists" });
+    }
+
     res.status(200).json(allSongs);
   } catch (error) {
     console.log(error);

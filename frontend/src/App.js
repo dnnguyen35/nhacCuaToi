@@ -11,6 +11,7 @@ import AdminPage from "./pages/Admin/AdminPage";
 import AudioPlayer from "./components/AudioPlayer";
 
 import "react-toastify/dist/ReactToastify.css";
+import PageNotFound from "./components/PageNotFound";
 
 const App = () => {
   const { themeMode } = useSelector((state) => state.themeMode);
@@ -70,6 +71,8 @@ const App = () => {
                 />
               )
             )}
+
+            <Route path="*" element={<PageNotFound />} />
           </Route>
 
           <Route path="/admin" element={<AdminPage />} />

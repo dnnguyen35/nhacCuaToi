@@ -1,5 +1,7 @@
 {
   "songs": "bài hát",
+  "pageNotFound": "Không thấy trang",
+  "backToHome": "Trở về",
   "menu": {
     "home": "xin chào",
     "search": "tìm kiếm",

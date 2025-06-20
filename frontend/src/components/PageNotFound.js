@@ -1,8 +1,10 @@
 import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const DontHavePermission = () => {
+const PageNotFound = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Box position="relative" sx={{ marginTop: "7rem" }}>
@@ -31,7 +33,7 @@ const DontHavePermission = () => {
             display: "inline-block",
           }}
         >
-          You don't have admin permission !
+          {t("pageNotFound")}
         </Typography>
 
         <Button
@@ -39,11 +41,11 @@ const DontHavePermission = () => {
           sx={{ mt: 3, px: 4, fontSize: "1rem", textTransform: "none" }}
           onClick={() => navigate("/")}
         >
-          Back to Home
+          {t("backToHome")}
         </Button>
       </Box>
     </Box>
   );
 };
 
-export default DontHavePermission;
+export default PageNotFound;

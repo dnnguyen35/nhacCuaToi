@@ -1,5 +1,7 @@
 {
   "songs": "songs",
+  "pageNotFound": "Page not founded",
+  "backToHome": "Back to Home",
   "menu": {
     "home": "home",
     "search": "search",
