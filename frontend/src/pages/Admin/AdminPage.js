@@ -67,7 +67,7 @@ const AdminPage = () => {
 
   return (
     <>
-      <Header displayName={"Abc"} />
+      <Header currentUser={user} />
       <StatDashboard />
       <TabsMenu />
     </>

@@ -4,9 +4,16 @@ import userModel from "../models/user.model.js";
 
 import playlistModel from "../models/playlist.model.js";
 import sequelize from "../configs/db.js";
+import redis from "../configs/redis.js";
 
 const getUserStats = async (req, res) => {
   try {
+    const cachedUserStats = await redis.get("admin:user-stats");
+
+    if (cachedUserStats) {
+      return res.status(200).json(cachedUserStats);
+    }
+
     const userStats = await userModel.findAll({
       attributes: {
         exclude: ["password", "salt"],
@@ -37,6 +44,8 @@ const getUserStats = async (req, res) => {
       return res.status(400).json({ message: "UserStats not founded" });
     }
 
+    await redis.setex("admin:user-stats", 300, JSON.stringify(userStats));
+
     res.status(200).json(userStats);
   } catch (error) {
     console.log(error);
@@ -65,6 +74,8 @@ const blockUser = async (req, res) => {
     user.isBlocked = true;
 
     await user.save();
+
+    await redis.del("admin:user-stats");
 
     res.status(200).json({ message: "User blocked successfully" });
   } catch (error) {
@@ -95,6 +106,8 @@ const unBlockUser = async (req, res) => {
 
     await user.save();
 
+    await redis.del("admin:user-stats");
+
     res.status(200).json({ message: "User unblocked successfully" });
   } catch (error) {
     console.log(error);
@@ -104,6 +117,12 @@ const unBlockUser = async (req, res) => {
 
 const getSongStats = async (req, res) => {
   try {
+    const cachedSongStats = await redis.get("admin:song-stats");
+
+    if (cachedSongStats) {
+      return res.status(200).json(cachedSongStats);
+    }
+
     const songStats = await songModel.findAll({
       attributes: [
         "id",
@@ -136,6 +155,8 @@ const getSongStats = async (req, res) => {
     if (!songStats) {
       return res.status(400).json({ message: "SongStats not founded" });
     }
+
+    await redis.setex("admin:song-stats", 300, JSON.stringify(songStats));
 
     res.status(200).json(songStats);
   } catch (error) {
@@ -172,6 +193,12 @@ const createSong = async (req, res) => {
     });
     await newSong.save();
 
+    await Promise.all([
+      redis.del("admin:song-stats"),
+      redis.del("admin:playlist-stats"),
+      redis.del("artist-stats"),
+    ]);
+
     res.status(201).json(newSong);
   } catch (error) {
     console.log(error);
@@ -190,6 +217,12 @@ const deleteSong = async (req, res) => {
     }
 
     await songModel.destroy({ where: { id: songId } });
+
+    await Promise.all([
+      redis.del("admin:song-stats"),
+      redis.del("admin:playlist-stats"),
+      redis.del("artist-stats"),
+    ]);
 
     res.status(200).json({ message: "Song deleted successfully" });
   } catch (error) {
@@ -214,6 +247,11 @@ const updateSong = async (req, res) => {
 
     await song.save();
 
+    await Promise.all([
+      redis.del("admin:song-stats"),
+      redis.del("artist-stats"),
+    ]);
+
     res.status(200).json({ message: "Song updated successfully", song });
   } catch (error) {
     console.log(error);
@@ -223,6 +261,12 @@ const updateSong = async (req, res) => {
 
 const getPlaylistStats = async (req, res) => {
   try {
+    const cachedPlaylistStats = await redis.get("admin:playlist-stats");
+
+    if (cachedPlaylistStats) {
+      return res.status(200).json(cachedPlaylistStats);
+    }
+
     const playlistStats = await playlistModel.findAll({
       attributes: [
         "id",
@@ -253,6 +297,12 @@ const getPlaylistStats = async (req, res) => {
       return res.status(400).json({ message: "PlaylistStats not founded" });
     }
 
+    await redis.setex(
+      "admin:playlist-stats",
+      300,
+      JSON.stringify(playlistStats)
+    );
+
     res.status(200).json(playlistStats);
   } catch (error) {
     console.log(error);
@@ -262,6 +312,12 @@ const getPlaylistStats = async (req, res) => {
 
 const getArtistStats = async (req, res) => {
   try {
+    const cachedArtistStats = await redis.get("admin:artist-stats");
+
+    if (cachedArtistStats) {
+      return res.status(200).json(cachedArtistStats);
+    }
+
     const artistStats = await songModel.findAll({
       attributes: [
         "artist",
@@ -295,6 +351,8 @@ const getArtistStats = async (req, res) => {
     if (!artistStats) {
       return res.status(400).json({ message: "ArtistStats not founded" });
     }
+
+    await redis.setex("admin:artist-stats", 300, JSON.stringify(artistStats));
 
     res.status(200).json(artistStats);
   } catch (error) {

@@ -36,10 +36,10 @@ const PlaybackController = () => {
   const [volume, setVolume] = useState(75);
   const [isMute, setIsMute] = useState(false);
 
-  console.log("isplaying: ", isPlaying);
-  console.log("currentSong: ", currentSong);
-  console.log("isShuffle: ", isShuffle);
-  console.log("repeatMode: ", repeatMode);
+  // console.log("isplaying: ", isPlaying);
+  // console.log("currentSong: ", currentSong);
+  // console.log("isShuffle: ", isShuffle);
+  // console.log("repeatMode: ", repeatMode);
 
   useEffect(() => {
     audioRef.current = document.querySelector("audio");
@@ -49,7 +49,7 @@ const PlaybackController = () => {
     if (!audio) return;
 
     const updateCurrentTime = () => {
-      console.log("time: ", audio.currentTime);
+      // console.log("time: ", audio.currentTime);
       setCurrentTime(audio.currentTime);
     };
     const updateDuration = () => setDuration(audio.duration || 0);
@@ -67,6 +67,16 @@ const PlaybackController = () => {
       audio.removeEventListener("ended", handleEndedSong);
     };
   }, [currentSong]);
+
+  useEffect(() => {
+    audioRef.current = document.querySelector("audio");
+
+    const audio = audioRef.current;
+
+    if (currentSong) {
+      setDuration(audio.duration);
+    }
+  }, []);
 
   const handleSeek = (time) => {
     if (audioRef.current) {

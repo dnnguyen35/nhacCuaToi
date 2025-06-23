@@ -238,6 +238,14 @@ const resetPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
+    const resetPasswordTime = await redis.get(`reset-password-time:${email}`);
+
+    if (Number(resetPasswordTime) >= 2) {
+      return res
+        .status(400)
+        .json({ message: "You only can reset 2 times! Come back tomorrow" });
+    }
+
     const user = await userModel.findOne({ where: { email } });
 
     if (!user) {
@@ -249,7 +257,17 @@ const resetPassword = async (req, res) => {
     user.resetPassword(newPassword);
     await user.save();
 
-    await sendEmail(email, "resetPassword", newPassword);
+    if (!resetPasswordTime) {
+      await Promise.all([
+        redis.setex(`reset-password-time:${email}`, 86400, 1),
+        sendEmail(email, "resetPassword", newPassword),
+      ]);
+    } else {
+      await Promise.all([
+        redis.incr(`reset-password-time:${email}`),
+        sendEmail(email, "resetPassword", newPassword),
+      ]);
+    }
 
     res.status(200).json({ message: "Reset password successfully" });
   } catch (err) {

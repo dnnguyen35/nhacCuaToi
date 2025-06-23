@@ -1,6 +1,7 @@
 import userModel from "../models/user.model.js";
 import songModel from "../models/song.model.js";
 import wishlistModel from "../models/wishlist.model.js";
+import redis from "../configs/redis.js";
 
 const addSongToWishlist = async (req, res) => {
   try {
@@ -28,6 +29,8 @@ const addSongToWishlist = async (req, res) => {
 
     const newWishlistSong = songExist;
 
+    await redis.del(`wishlist:${userId}`);
+
     res.status(201).json(newWishlistSong);
   } catch (error) {
     console.log(error);
@@ -47,6 +50,8 @@ const deleteSongFromWishlist = async (req, res) => {
       },
     });
 
+    await redis.del(`wishlist:${userId}`);
+
     res
       .status(200)
       .json({ message: "Removed song from wishlist successfully" });
@@ -59,6 +64,12 @@ const deleteSongFromWishlist = async (req, res) => {
 const getAllSongsOfWishlist = async (req, res) => {
   try {
     const userId = req.user.id;
+
+    const cachedWishlist = await redis.get(`wishlist:${userId}`);
+
+    if (cachedWishlist) {
+      return res.status(200).json(cachedWishlist);
+    }
 
     const userWishlist = await userModel.findByPk(userId, {
       include: [
@@ -79,6 +90,8 @@ const getAllSongsOfWishlist = async (req, res) => {
     delete wishlist.isAdmin;
     delete wishlist.isBlocked;
     delete wishlist.salt;
+
+    await redis.setex(`wishlist:${userId}`, 300, JSON.stringify(wishlist));
 
     res.status(200).json(wishlist);
   } catch (error) {

@@ -1,8 +1,7 @@
 import { AppBar, Toolbar, Typography, Box, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import TextAvatar from "../../../components/TextAvatar";
 
-const Header = ({ displayName }) => {
+const Header = ({ currentUser = "" }) => {
   return (
     <AppBar
       position="static"
@@ -37,7 +36,11 @@ const Header = ({ displayName }) => {
           </Box>
         </Box>
 
-        <TextAvatar text={displayName} />
+        <Typography variant="h6" sx={{ cursor: "pointer", userSelect: "none" }}>
+          {currentUser?.username?.length > 5
+            ? `${currentUser?.username.slice(0, 5)}...`
+            : currentUser?.username}
+        </Typography>
       </Toolbar>
     </AppBar>
   );

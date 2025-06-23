@@ -1,6 +1,7 @@
 import playlistModel from "../models/playlist.model.js";
 import songModel from "../models/song.model.js";
 import playlistSongModel from "../models/playlistSong.model.js";
+import redis from "../configs/redis.js";
 
 const createPlaylist = async (req, res) => {
   try {
@@ -34,7 +35,21 @@ const getAllPlaylistsOfUser = async (req, res) => {
   try {
     const userId = req.user.id;
 
+    const cachedAllplaylists = await redis.get(
+      `playlist:all-playlists:${userId}`
+    );
+
+    if (cachedAllplaylists) {
+      return res.status(200).json(cachedAllplaylists);
+    }
+
     const allPlaylists = await playlistModel.findAll({ where: { userId } });
+
+    await redis.setex(
+      `playlist:all-playlists:${userId}`,
+      300,
+      JSON.stringify(allPlaylists)
+    );
 
     res.status(200).json(allPlaylists);
   } catch (error) {
@@ -46,6 +61,12 @@ const getAllPlaylistsOfUser = async (req, res) => {
 const getAllSongsOfPlaylist = async (req, res) => {
   try {
     const { playlistId } = req.params;
+
+    const cachedAllSongs = await redis.get(`playlist:all-songs:${playlistId}`);
+
+    if (cachedAllSongs) {
+      return res.status(200).json(cachedAllSongs);
+    }
 
     const allSongs = await playlistModel.findByPk(playlistId, {
       include: [
@@ -61,6 +82,12 @@ const getAllSongsOfPlaylist = async (req, res) => {
       return res.status(400).json({ message: "Playlist doesn't exists" });
     }
 
+    await redis.setex(
+      `playlist:all-songs:${playlistId}`,
+      300,
+      JSON.stringify(allSongs)
+    );
+
     res.status(200).json(allSongs);
   } catch (error) {
     console.log(error);
@@ -72,6 +99,8 @@ const deletePlaylist = async (req, res) => {
   try {
     const { playlistId } = req.params;
 
+    const userId = req.user.id;
+
     const playlist = await playlistModel.findOne({ where: { id: playlistId } });
 
     if (!playlist) {
@@ -80,7 +109,11 @@ const deletePlaylist = async (req, res) => {
 
     await playlistSongModel.destroy({ where: { playlistId } });
 
-    await playlistModel.destroy({ where: { id: playlistId } });
+    await Promise.all([
+      playlistModel.destroy({ where: { id: playlistId } }),
+      redis.del(`playlist:all-playlists:${userId}`),
+      redis.del(`playlist:all-songs:${playlistId}`),
+    ]);
 
     res.status(200).json({ message: "Playlist deleted successfully" });
   } catch (error) {
@@ -93,12 +126,17 @@ const deleteSongFromPlaylist = async (req, res) => {
   try {
     const { playlistId, songId } = req.params;
 
-    await playlistSongModel.destroy({
-      where: {
-        playlistId: playlistId,
-        songId: songId,
-      },
-    });
+    const userId = req.user.id;
+
+    await Promise.all([
+      playlistSongModel.destroy({
+        where: {
+          playlistId: playlistId,
+          songId: songId,
+        },
+      }),
+      redis.del(`playlist:all-songs:${playlistId}`),
+    ]);
 
     res
       .status(200)
@@ -112,6 +150,8 @@ const deleteSongFromPlaylist = async (req, res) => {
 const addSongToPlaylist = async (req, res) => {
   try {
     const { playlistId, songId } = req.params;
+
+    const userId = req.user.id;
 
     const isExist = await playlistSongModel.findOne({
       where: { playlistId, songId },
@@ -136,6 +176,8 @@ const addSongToPlaylist = async (req, res) => {
       playlistId,
       songId,
     });
+
+    await redis.del(`playlist:all-songs:${playlistId}`);
 
     res.status(201).json(songExist);
   } catch (error) {
