@@ -288,7 +288,7 @@ const PlaybackController = () => {
             variant="caption"
             sx={{ minWidth: 35, textAlign: "center" }}
           >
-            {formatDuration(duration)}
+            {isNaN(duration) ? "0:00" : formatDuration(duration)}
           </Typography>
         </Box>
       </Box>
