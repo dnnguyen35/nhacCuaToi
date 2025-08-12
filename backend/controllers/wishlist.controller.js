@@ -33,7 +33,6 @@ const addSongToWishlist = async (req, res) => {
 
     res.status(201).json(newWishlistSong);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -56,7 +55,6 @@ const deleteSongFromWishlist = async (req, res) => {
       .status(200)
       .json({ message: "Removed song from wishlist successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -100,8 +98,36 @@ const getAllSongsOfWishlist = async (req, res) => {
   }
 };
 
+const deleteMultipleSongFromWishlist = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const deletedSongList = req.body.deletedSongListId;
+
+    if (!Array.isArray(deletedSongList) || deletedSongList?.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Deleted song list must be array" });
+    }
+
+    await wishlistModel.destroy({
+      where: {
+        userId,
+        songId: deletedSongList,
+      },
+    });
+
+    res
+      .status(200)
+      .json({ message: "Removed song from wishlist successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export default {
   addSongToWishlist,
   deleteSongFromWishlist,
   getAllSongsOfWishlist,
+  deleteMultipleSongFromWishlist,
 };
