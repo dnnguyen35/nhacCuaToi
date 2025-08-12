@@ -16,7 +16,6 @@ const getInfo = async (req, res) => {
 
     res.status(200).json(userInfo);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -41,7 +40,6 @@ const changePassword = async (req, res) => {
 
     res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
