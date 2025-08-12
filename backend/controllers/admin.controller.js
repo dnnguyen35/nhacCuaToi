@@ -1,10 +1,11 @@
 import songModel from "../models/song.model.js";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
 import userModel from "../models/user.model.js";
-
+import paymentModel from "../models/payment.model.js";
 import playlistModel from "../models/playlist.model.js";
 import sequelize from "../configs/db.js";
 import redis from "../configs/redis.js";
+import { getIO, getUserSocketId } from "../configs/socket.js";
 
 const getUserStats = async (req, res) => {
   try {
@@ -38,8 +39,6 @@ const getUserStats = async (req, res) => {
       },
     });
 
-    console.log("userstats: ", userStats);
-
     if (!userStats) {
       return res.status(400).json({ message: "UserStats not founded" });
     }
@@ -48,7 +47,6 @@ const getUserStats = async (req, res) => {
 
     res.status(200).json(userStats);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -77,9 +75,16 @@ const blockUser = async (req, res) => {
 
     await redis.del("admin:user-stats");
 
+    const userSocketId = getUserSocketId(Number(userId));
+    console.log(userSocketId);
+
+    if (userSocketId) {
+      getIO().to(userSocketId).emit("user_blocked", { userId });
+      console.log("blocked done");
+    }
+
     res.status(200).json({ message: "User blocked successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -110,7 +115,6 @@ const unBlockUser = async (req, res) => {
 
     res.status(200).json({ message: "User unblocked successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -150,8 +154,6 @@ const getSongStats = async (req, res) => {
       ],
     });
 
-    console.log("songstats: ", songStats);
-
     if (!songStats) {
       return res.status(400).json({ message: "SongStats not founded" });
     }
@@ -160,15 +162,12 @@ const getSongStats = async (req, res) => {
 
     res.status(200).json(songStats);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
 const createSong = async (req, res) => {
   try {
-    console.log("req.files:", req.files);
-    console.log("req.body:", req.body);
     if (!req.files || !req.files.audioFile || !req.files.imageFile) {
       return res
         .status(400)
@@ -201,7 +200,6 @@ const createSong = async (req, res) => {
 
     res.status(201).json(newSong);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -226,7 +224,6 @@ const deleteSong = async (req, res) => {
 
     res.status(200).json({ message: "Song deleted successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -254,7 +251,6 @@ const updateSong = async (req, res) => {
 
     res.status(200).json({ message: "Song updated successfully", song });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -291,8 +287,6 @@ const getPlaylistStats = async (req, res) => {
       ],
     });
 
-    console.log("playliststats: ", playlistStats);
-
     if (!playlistStats) {
       return res.status(400).json({ message: "PlaylistStats not founded" });
     }
@@ -305,7 +299,6 @@ const getPlaylistStats = async (req, res) => {
 
     res.status(200).json(playlistStats);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -346,8 +339,6 @@ const getArtistStats = async (req, res) => {
       group: ["artist"],
     });
 
-    console.log("artiststats: ", artistStats);
-
     if (!artistStats) {
       return res.status(400).json({ message: "ArtistStats not founded" });
     }
@@ -355,6 +346,37 @@ const getArtistStats = async (req, res) => {
     await redis.setex("admin:artist-stats", 300, JSON.stringify(artistStats));
 
     res.status(200).json(artistStats);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getPaymentStats = async (req, res) => {
+  try {
+    const cachedPaymentStats = await redis.get("admin:payment-stats");
+
+    if (cachedPaymentStats) {
+      return res.status(200).json(cachedPaymentStats);
+    }
+
+    const paymentStats = await paymentModel.findAll();
+
+    if (!paymentStats || paymentStats.length === 0) {
+      return res.status(400).json({ message: "PaymentStats not founded" });
+    }
+
+    const totalProfit = paymentStats.reduce(
+      (sum, payment) => (payment.resultCode === 0 ? sum + payment.amount : sum),
+      0
+    );
+
+    await redis.setex(
+      "admin:payment-stats",
+      300,
+      JSON.stringify({ paymentStats, totalProfit })
+    );
+
+    res.status(200).json({ paymentStats, totalProfit });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -371,4 +393,5 @@ export default {
   updateSong,
   getPlaylistStats,
   getArtistStats,
+  getPaymentStats,
 };
