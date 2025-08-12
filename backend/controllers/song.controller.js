@@ -6,25 +6,69 @@ import redis from "../configs/redis.js";
 
 const getAllSongs = async (req, res) => {
   try {
-    const cachedAllSongs = await redis.get("songs:all-songs");
+    const { page, limit } = req.query;
 
-    if (cachedAllSongs) {
-      return res.status(200).json(cachedAllSongs);
+    if (!page && !limit) {
+      const cachedAllSongs = await redis.get("songs:all-songs:full");
+
+      if (cachedAllSongs) {
+        return res.status(200).json(cachedAllSongs);
+      }
+
+      const allSongs = await songModel.findAll({
+        order: [["createdAt", "DESC"]],
+      });
+
+      if (!allSongs || allSongs.length === 0) {
+        return res.status(400).json({ message: "There is no song now" });
+      }
+
+      await redis.setex(
+        "songs:all-songs:full",
+        300,
+        JSON.stringify({ allSongs })
+      );
+
+      return res.status(200).json({ allSongs });
+    } else {
+      const offset = (parseInt(page) - 1) * parseInt(limit);
+
+      const cachedAllSongs = await redis.get(
+        `songs:all-songs:${page}:${limit}`
+      );
+
+      if (cachedAllSongs) {
+        return res.status(200).json(cachedAllSongs);
+      }
+
+      const { rows: allSongs, count: totalRows } =
+        await songModel.findAndCountAll({
+          limit: parseInt(limit),
+          offset: parseInt(offset),
+          order: [["createdAt", "DESC"]],
+        });
+
+      if (!allSongs || allSongs.length === 0) {
+        return res.status(400).json({ message: "There is no song now" });
+      }
+
+      await redis.setex(
+        `songs:all-songs:${page}:${limit}`,
+        300,
+        JSON.stringify({
+          allSongs,
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(totalRows / parseInt(limit)),
+        })
+      );
+
+      res.status(200).json({
+        allSongs,
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalRows / parseInt(limit)),
+      });
     }
-
-    const allSongs = await songModel.findAll({
-      order: [["createdAt", "DESC"]],
-    });
-
-    if (!allSongs || allSongs.length === 0) {
-      return res.status(400).json({ message: "There is no song now" });
-    }
-
-    await redis.setex("songs:all-songs", 300, JSON.stringify(allSongs));
-
-    res.status(200).json(allSongs);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -54,14 +98,13 @@ const getTrendingSongs = async (req, res) => {
 
     res.status(200).json(featuredSongs);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
 const searchSong = async (req, res) => {
   try {
-    const { keyword, page = 1, limit = 3 } = req.query;
+    const { keyword, page = 1, limit = 20 } = req.query;
 
     if (!keyword || keyword === "") {
       return res.status(400).json({ message: "Keyword is required" });
@@ -73,8 +116,12 @@ const searchSong = async (req, res) => {
       await songModel.findAndCountAll({
         where: {
           [Op.or]: [
-            { title: { [Op.like]: `%${keyword}%` } },
-            { artist: { [Op.like]: `%${keyword}%` } },
+            sequelize.literal(
+              `title COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`
+            ),
+            sequelize.literal(
+              `artist COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`
+            ),
           ],
         },
         limit: parseInt(limit),
@@ -88,7 +135,7 @@ const searchSong = async (req, res) => {
       totalPages: Math.ceil(totalRows / parseInt(limit)),
     });
   } catch (error) {
-    console.log(error);
+    console.log("search error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
