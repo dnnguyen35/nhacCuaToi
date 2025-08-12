@@ -12,8 +12,7 @@ const tokenDecode = (req) => {
     }
 
     return false;
-  } catch (err) {
-    console.log({ err });
+  } catch (error) {
     return false;
   }
 };
@@ -30,7 +29,15 @@ const auth = async (req, res, next) => {
 
     const user = await userModel.findOne({
       where: { id: userId },
-      attributes: ["id", "username", "email", "isAdmin", "isBlocked"],
+      attributes: [
+        "id",
+        "username",
+        "email",
+        "isAdmin",
+        "isBlocked",
+        "playlistLimit",
+        "songLimit",
+      ],
     });
 
     if (!user) {
@@ -40,8 +47,7 @@ const auth = async (req, res, next) => {
     req.user = user;
 
     next();
-  } catch (err) {
-    console.log("Error is: ", err);
+  } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
 };
