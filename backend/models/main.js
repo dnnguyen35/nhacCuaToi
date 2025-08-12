@@ -4,6 +4,7 @@ import songModel from "./song.model.js";
 import playlistModel from "./playlist.model.js";
 import playlistSongModel from "./playlistSong.model.js";
 import wishlistModel from "./wishlist.model.js";
+import paymentModel from "./payment.model.js";
 
 userModel.hasMany(playlistModel, {
   foreignKey: "userId",
@@ -42,6 +43,16 @@ songModel.belongsToMany(userModel, {
   onDelete: "CASCADE",
 });
 
+userModel.hasMany(paymentModel, {
+  foreignKey: "userId",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+
+paymentModel.belongsTo(userModel, {
+  foreignKey: "userId",
+});
+
 export {
   sequelize,
   userModel,
@@ -49,4 +60,5 @@ export {
   playlistModel,
   playlistSongModel,
   wishlistModel,
+  paymentModel,
 };

@@ -19,6 +19,14 @@ const userModel = sequelize.define(
       unique: true,
       allowNull: false,
     },
+    playlistLimit: {
+      type: DataTypes.INTEGER,
+      defaultValue: 5,
+    },
+    songLimit: {
+      type: DataTypes.INTEGER,
+      defaultValue: 25,
+    },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
