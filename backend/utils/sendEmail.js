@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 
 export const sendEmail = async (toEmail, type, content) => {
-  console.log(process.env.GMAIL_USER);
   try {
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -22,7 +21,9 @@ export const sendEmail = async (toEmail, type, content) => {
       subject:
         type === "otp"
           ? "Verify your email for nhacCuaToi"
-          : "Reset password for nhacCuaToi acccount",
+          : type === "payment"
+            ? "Payment successfully"
+            : "Reset password for nhacCuaToi acccount",
       html:
         type === "otp"
           ? `
@@ -31,16 +32,19 @@ export const sendEmail = async (toEmail, type, content) => {
         <h3>Code: ${content}</h3>
         <p>This code will expire in 5 minutes.</p>
       `
-          : `<h2>Hello friend,</h2>
+          : type === "payment"
+            ? `<h2>Hello friend,</h2>
+        <p>Your payment for upgrade service</p>
+        <h3>OrderId: ${content} - Total: 10.000(VND)</h3>
+        <p>Thanks you</p>`
+            : `<h2>Hello friend,</h2>
         <p>Your reset password request was done</p>
         <h3>Password: ${content}</h3>
         <p>Please change your password after sign in</p>`,
     };
 
     const result = await transporter.sendMail(mailOptions);
-    console.log("Send email: ", result.response);
   } catch (error) {
-    console.error(error);
     throw error;
   }
 };

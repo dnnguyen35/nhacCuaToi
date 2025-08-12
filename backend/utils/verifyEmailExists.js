@@ -6,14 +6,14 @@ export const verifyEmailExists = async (email) => {
       params: {
         access_key: process.env.MAILBOXLAYER_API_KEY,
         email,
-        smtp: 1,
+        smtp: 0,
         format: 1,
       },
     });
 
-    return res.data.format_valid && res.data.smtp_check;
+    // return res.data.format_valid && res.data.smtp_check;
+    return res.data.format_valid && res.data.mx_found;
   } catch (error) {
-    console.error("Email verification error:", error.message);
     return false;
   }
 };

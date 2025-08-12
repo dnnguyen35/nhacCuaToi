@@ -44,4 +44,10 @@ router.delete(
   playlistController.deleteSongFromPlaylist
 );
 
+router.post(
+  "/delete-multiple-song",
+  authMiddleware.auth,
+  playlistController.deleteMultipleSongFromPlaylist
+);
+
 export default router;

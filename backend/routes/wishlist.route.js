@@ -22,4 +22,10 @@ router.delete(
   wishlistController.deleteSongFromWishlist
 );
 
+router.post(
+  "/delete-multiple-song",
+  authMiddleware.auth,
+  wishlistController.deleteMultipleSongFromWishlist
+);
+
 export default router;

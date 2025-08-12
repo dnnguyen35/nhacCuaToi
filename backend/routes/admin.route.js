@@ -76,4 +76,11 @@ router.get(
   adminController.getArtistStats
 );
 
+router.get(
+  "/payment-stats",
+  authMiddleware.auth,
+  authMiddleware.checkAdmin,
+  adminController.getPaymentStats
+);
+
 export default router;
