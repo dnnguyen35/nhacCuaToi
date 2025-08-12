@@ -6,7 +6,20 @@ import redis from "../configs/redis.js";
 const createPlaylist = async (req, res) => {
   try {
     const userId = req.user.id;
+    const userPlaylistLimit = req.user.playlistLimit;
     const { playlistName } = req.body;
+
+    const playlistCount = await playlistModel.count({
+      where: {
+        userId,
+      },
+    });
+
+    if (playlistCount >= userPlaylistLimit) {
+      return res
+        .status(400)
+        .json({ message: "You have exceed 5 playlist slot" });
+    }
 
     const isPlaylistExist = await playlistModel.findOne({
       where: {
@@ -24,9 +37,10 @@ const createPlaylist = async (req, res) => {
       userId,
     });
 
+    await redis.del(`playlist:all-playlists:${userId}`);
+
     res.status(201).json(newPlaylist);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -53,7 +67,6 @@ const getAllPlaylistsOfUser = async (req, res) => {
 
     res.status(200).json(allPlaylists);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -61,6 +74,15 @@ const getAllPlaylistsOfUser = async (req, res) => {
 const getAllSongsOfPlaylist = async (req, res) => {
   try {
     const { playlistId } = req.params;
+    const userId = req.user.id;
+
+    const playlist = await playlistModel.findOne({
+      where: { id: playlistId, userId },
+    });
+
+    if (!playlist) {
+      return res.status(403).json({ message: "Access denied" });
+    }
 
     const cachedAllSongs = await redis.get(`playlist:all-songs:${playlistId}`);
 
@@ -90,7 +112,6 @@ const getAllSongsOfPlaylist = async (req, res) => {
 
     res.status(200).json(allSongs);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -101,7 +122,9 @@ const deletePlaylist = async (req, res) => {
 
     const userId = req.user.id;
 
-    const playlist = await playlistModel.findOne({ where: { id: playlistId } });
+    const playlist = await playlistModel.findOne({
+      where: { id: playlistId, userId },
+    });
 
     if (!playlist) {
       return res.status(400).json({ message: "Playlist doesn't exists" });
@@ -117,7 +140,6 @@ const deletePlaylist = async (req, res) => {
 
     res.status(200).json({ message: "Playlist deleted successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -127,6 +149,14 @@ const deleteSongFromPlaylist = async (req, res) => {
     const { playlistId, songId } = req.params;
 
     const userId = req.user.id;
+
+    const playlist = await playlistModel.findOne({
+      where: { id: playlistId, userId },
+    });
+
+    if (!playlist) {
+      return res.status(400).json({ message: "Access denied" });
+    }
 
     await Promise.all([
       playlistSongModel.destroy({
@@ -142,7 +172,6 @@ const deleteSongFromPlaylist = async (req, res) => {
       .status(200)
       .json({ message: "Removed song from playlist successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -162,7 +191,7 @@ const addSongToPlaylist = async (req, res) => {
     }
 
     const playlistExist = await playlistModel.findOne({
-      where: { id: playlistId },
+      where: { id: playlistId, userId },
     });
     const songExist = await songModel.findOne({ where: { id: songId } });
 
@@ -181,7 +210,44 @@ const addSongToPlaylist = async (req, res) => {
 
     res.status(201).json(songExist);
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const deleteMultipleSongFromPlaylist = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const playlistId = req.body.playlistId;
+    const deletedSongList = req.body.deletedSongListId;
+
+    const playlist = await playlistModel.findOne({
+      where: { userId, id: playlistId },
+    });
+
+    if (!playlist) {
+      return res.status(400).json({ message: "Access denied" });
+    }
+
+    if (!Array.isArray(deletedSongList) || deletedSongList?.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Deleted song list must be array" });
+    }
+
+    await playlistSongModel.destroy({
+      where: {
+        playlistId,
+        songId: deletedSongList,
+      },
+    });
+
+    await redis.del(`playlist:all-songs:${playlistId}`);
+
+    res
+      .status(200)
+      .json({ message: "Removed song from playlist successfully" });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -193,4 +259,5 @@ export default {
   deletePlaylist,
   deleteSongFromPlaylist,
   addSongToPlaylist,
+  deleteMultipleSongFromPlaylist,
 };
