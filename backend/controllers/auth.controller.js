@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { sendEmail } from "../utils/sendEmail.js";
 import redis from "../configs/redis.js";
 import { verifyEmailExists } from "../utils/verifyEmailExists.js";
+import { getIO } from "../configs/socket.js";
 
 const signup = async (req, res) => {
   try {
@@ -15,9 +16,9 @@ const signup = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    if (!(await verifyEmailExists(email))) {
-      return res.status(400).json({ message: "Email doesn't exist" });
-    }
+    // if (!(await verifyEmailExists(email))) {
+    //   return res.status(400).json({ message: "Email doesn't exist" });
+    // }
 
     if (await redis.get(`signup-info:${email}`)) {
       const newSignupInfo = JSON.stringify({ username, password });
@@ -42,21 +43,16 @@ const signup = async (req, res) => {
 
     const otpExpireAt = Math.floor(Date.now() / 1000) + 120;
 
-    console.log("email sending");
-
     await Promise.all([
       redis.setex(`signup-otp:${email}`, 120, otp.toString()),
       redis.setex(`signup-info:${email}`, 900, signupInfo),
       sendEmail(email, "otp", otp),
     ]);
 
-    console.log("email send");
-
     res
       .status(200)
       .json({ message: "OTP has beeen send to email", otpExpireAt });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -65,15 +61,9 @@ const verifyOtpAndSignup = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    console.log("email: ", email);
-
-    console.log("otp: ", typeof otp);
-
     const signupOtp = await redis.get(`signup-otp:${email}`);
-    console.log("signupOtp: ", typeof signupOtp);
 
     const signupInfo = await redis.get(`signup-info:${email}`);
-    console.log("signupInfo: ", typeof signupInfo);
 
     if (!signupInfo) {
       if (signupOtp) {
@@ -123,9 +113,16 @@ const verifyOtpAndSignup = async (req, res) => {
 
     const wishlist = [];
 
+    if (getIO()) {
+      getIO()
+        .to("admin-room")
+        .emit("newUser", {
+          newUser: { ...userData, playlistCount: 0, wishlistCount: 0 },
+        });
+    }
+
     res.status(201).json({ access_token, refresh_token, userData, wishlist });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -159,7 +156,6 @@ const resendOtp = async (req, res) => {
       .status(200)
       .json({ message: "OTP has beeen send to email", otpExpireAt });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -195,7 +191,7 @@ const signin = async (req, res) => {
         .json({ message: "Your account is currently blocked" });
     }
 
-    const token = jsonwebtoken.sign(
+    const access_token = jsonwebtoken.sign(
       { data: user.id },
       process.env.ACTKN_SECRET_KEY,
       {
@@ -227,9 +223,8 @@ const signin = async (req, res) => {
 
     const wishlist = userWishlist.WishlistedSongs;
 
-    res.status(200).json({ token, refresh_token, userData, wishlist });
+    res.status(200).json({ access_token, refresh_token, userData, wishlist });
   } catch (err) {
-    console.log({ err });
     res.status(500).json({ message: "Opp sorry! some thing went wrong" });
   }
 };
@@ -271,7 +266,6 @@ const resetPassword = async (req, res) => {
 
     res.status(200).json({ message: "Reset password successfully" });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: "Opp sorry! some thing went wrong" });
   }
 };
@@ -288,12 +282,11 @@ const renewAccessToken = (req, res) => {
     const newAccessToken = jsonwebtoken.sign(
       { data: userData.data },
       process.env.ACTKN_SECRET_KEY,
-      { expiresIn: "2m" }
+      { expiresIn: "15m" }
     );
 
     res.status(200).json({ newAccessToken });
   } catch (error) {
-    console.log(error);
     res.status(401).json({ message: "Refresh token exprired" });
   }
 };
