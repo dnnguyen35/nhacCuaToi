@@ -7,11 +7,16 @@ const statsDataSlice = createSlice({
     totalSongs: 0,
     totalArtists: 0,
     totalPlaylists: 0,
+    totalPayments: 0,
+    totalProfit: 0,
 
     listUsers: [],
     listSongs: [],
     listArtists: [],
     listPlaylists: [],
+    listPayments: [],
+
+    userOnline: [],
 
     isLoading: false,
   },
@@ -28,6 +33,13 @@ const statsDataSlice = createSlice({
     setListArtists: (state, action) => {
       state.listArtists = action.payload;
     },
+    setListPayments: (state, action) => {
+      state.listPayments = action.payload;
+    },
+    setUserOnline: (state, action) => {
+      state.userOnline = action.payload;
+    },
+
     setTotalUsers: (state, action) => {
       state.totalUsers = action.payload;
     },
@@ -40,6 +52,35 @@ const statsDataSlice = createSlice({
     setTotalArtists: (state, action) => {
       state.totalArtists = action.payload;
     },
+    setTotalPayments: (state, action) => {
+      state.totalPayments = action.payload;
+    },
+    setTotalProfit: (state, action) => {
+      state.totalProfit = action.payload;
+    },
+
+    setNewPayment: (state, action) => {
+      const newPayment = action.payload;
+
+      state.totalPayments = state.totalPayments + 1;
+      state.listPayments = [...state.listPayments, newPayment];
+    },
+    setUpdatePayment: (state, action) => {
+      const updatePayment = action.payload;
+      const newListPayments = state.listPayments.map((p) =>
+        p.orderId === updatePayment.orderId ? updatePayment : p
+      );
+
+      state.listPayments = newListPayments;
+      state.totalProfit = state.totalProfit + updatePayment.amount;
+    },
+    setNewUser: (state, action) => {
+      const newUser = action.payload;
+
+      state.totalUsers = state.totalUsers + 1;
+      state.listUsers = [...state.listUsers, newUser];
+    },
+
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;
     },
@@ -51,10 +92,17 @@ export const {
   setListSongs,
   setListPlaylists,
   setListArtists,
+  setListPayments,
+  setUserOnline,
   setTotalUsers,
   setTotalSongs,
   setTotalPlaylists,
   setTotalArtists,
+  setTotalPayments,
+  setTotalProfit,
+  setNewPayment,
+  setUpdatePayment,
+  setNewUser,
   setIsLoading,
 } = statsDataSlice.actions;
 

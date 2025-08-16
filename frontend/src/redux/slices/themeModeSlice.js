@@ -1,16 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { themeModes } from "../../configs/theme.configs";
 
 const themeModeSlice = createSlice({
   name: "ThemeMode",
   initialState: {
     themeMode: localStorage.getItem("themeMode")
       ? localStorage.getItem("themeMode")
-      : "dark",
+      : themeModes.dark,
   },
   reducers: {
     setThemeMode: (state, action) => {
       state.themeMode = action.payload;
-      console.log("themeMode", action.payload);
+
       localStorage.setItem("themeMode", action.payload);
     },
   },

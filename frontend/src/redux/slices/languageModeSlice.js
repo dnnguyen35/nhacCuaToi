@@ -1,17 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 import i18n from "../../i18n";
+import { languageModes } from "../../configs/language.configs";
 
 const languageModeSlice = createSlice({
   name: "languageMode",
   initialState: {
     languageMode: localStorage.getItem("languageMode")
       ? localStorage.getItem("languageMode")
-      : "en",
+      : languageModes.en,
   },
   reducers: {
     setLanguageMode: (state, action) => {
       state.languageMode = action.payload;
-      console.log("languageMode", action.payload);
+
       localStorage.setItem("languageMode", action.payload);
       i18n.changeLanguage(action.payload);
     },

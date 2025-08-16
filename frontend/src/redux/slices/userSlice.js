@@ -3,54 +3,54 @@ import { createSlice } from "@reduxjs/toolkit";
 const userSlice = createSlice({
   name: "User",
   initialState: {
-    user: localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user"))
+    user: sessionStorage.getItem("user")
+      ? JSON.parse(sessionStorage.getItem("user"))
       : null,
-    wishlist: localStorage.getItem("wishlist")
-      ? JSON.parse(localStorage.getItem("wishlist"))
+    wishlist: sessionStorage.getItem("wishlist")
+      ? JSON.parse(sessionStorage.getItem("wishlist"))
       : [],
-    allPlaylist: localStorage.getItem("allPlaylist")
-      ? JSON.parse(localStorage.getItem("allPlaylist"))
+    allPlaylist: sessionStorage.getItem("allPlaylist")
+      ? JSON.parse(sessionStorage.getItem("allPlaylist"))
       : [],
-    playlist: localStorage.getItem("playlist")
-      ? JSON.parse(localStorage.getItem("playlist"))
+    playlist: sessionStorage.getItem("playlist")
+      ? JSON.parse(sessionStorage.getItem("playlist"))
       : { id: -1, isNull: true },
   },
   reducers: {
     setUser: (state, action) => {
       if (action.payload === null) {
-        localStorage.removeItem("actkn");
-        localStorage.removeItem("user");
-        localStorage.removeItem("refreshtkn");
-        localStorage.removeItem("wishlist");
-        localStorage.removeItem("playlist");
-        localStorage.removeItem("allPlaylist");
+        sessionStorage.removeItem("actkn");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("refreshtkn");
+        sessionStorage.removeItem("wishlist");
+        sessionStorage.removeItem("playlist");
+        sessionStorage.removeItem("allPlaylist");
 
         state.user = null;
         state.allPlaylist = [];
         state.wishlist = [];
         state.playlist = [];
       } else {
-        localStorage.setItem("user", JSON.stringify(action.payload.userData));
+        sessionStorage.setItem("user", JSON.stringify(action.payload.userData));
 
         if (action.payload.token)
-          localStorage.setItem("actkn", action.payload.token);
+          sessionStorage.setItem("actkn", action.payload.access_token);
 
         if (action.payload.refresh_token)
-          localStorage.setItem("refreshtkn", action.payload.refresh_token);
+          sessionStorage.setItem("refreshtkn", action.payload.refresh_token);
       }
       state.user = action.payload?.userData;
     },
     setWishlist: (state, action) => {
-      localStorage.setItem("wishlist", JSON.stringify(action.payload));
+      sessionStorage.setItem("wishlist", JSON.stringify(action.payload));
       state.wishlist = action.payload;
     },
     setAllPlaylist: (state, action) => {
-      localStorage.setItem("allPlaylist", JSON.stringify(action.payload));
+      sessionStorage.setItem("allPlaylist", JSON.stringify(action.payload));
       state.allPlaylist = action.payload;
     },
     setPlaylist: (state, action) => {
-      localStorage.setItem("playlist", JSON.stringify(action.payload));
+      sessionStorage.setItem("playlist", JSON.stringify(action.payload));
       state.playlist = action.payload;
     },
   },

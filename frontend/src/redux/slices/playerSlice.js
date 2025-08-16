@@ -13,7 +13,6 @@ const playerSlice = createSlice({
   },
   reducers: {
     initializeQueue: (state, action) => {
-      console.log("action.payload: ", action.payload);
       state.queue = action.payload;
       state.currentSong = action.payload[0];
       state.currentIndex = state.currentIndex === -1 ? 0 : state.currentIndex;
@@ -21,9 +20,8 @@ const playerSlice = createSlice({
     },
 
     playPlaylist: (state, action) => {
-      console.log("action.payload: ", action.payload);
       const { songs, startIndex = 0 } = action.payload;
-      console.log("song", songs);
+
       if (songs.length === 0) return;
 
       state.queue = songs;
@@ -107,6 +105,10 @@ const playerSlice = createSlice({
       state.repeatMode = -1;
     },
 
+    setShuffle: (state, action) => {
+      state.isShuffle = action.payload;
+    },
+
     playShuffle: (state) => {
       if (state.queue.length === 0) return;
 
@@ -125,11 +127,12 @@ const playerSlice = createSlice({
       if (state.queue.length === 0) return;
 
       if (state.repeatMode === 1) {
+        state.currentSong = { ...state.currentSong };
         state.isPlaying = true;
         return;
       }
 
-      if (state.repeatMode === 0) {
+      if (state.repeatMode === 0 && state.queueType !== "init") {
         const nextIndex = state.currentIndex + 1;
         if (nextIndex < state.queue.length) {
           state.currentIndex = nextIndex;
@@ -173,6 +176,37 @@ const playerSlice = createSlice({
         state.queue = newQueue;
       }
     },
+    deleteMultipleSongsFromQueue: (state, action) => {
+      const deletedSongListId = action.payload;
+
+      const newQueue = state.queue.filter(
+        (song) => !deletedSongListId.includes(song.id)
+      );
+      const isDeletedCurrentSong = deletedSongListId.includes(
+        state.currentSong?.id
+      );
+      const deletedSongsBeforeCurrentSong = state.queue
+        .slice(0, state.currentIndex)
+        .filter((song) => deletedSongListId.includes(song.id)).length;
+
+      if (newQueue.length === 0) {
+        state.queue = [];
+        state.currentIndex = -1;
+        state.currentSong = { isNull: true };
+        state.isPlaying = false;
+        return;
+      }
+
+      state.queue = newQueue;
+      state.currentIndex = Math.max(
+        0,
+        state.currentIndex - deletedSongsBeforeCurrentSong
+      );
+
+      if (isDeletedCurrentSong) {
+        state.currentSong = newQueue[state.currentIndex] ?? newQueue[0];
+      }
+    },
   },
 });
 
@@ -188,9 +222,11 @@ export const {
   playPrevious,
   setRepeatMode,
   toggleShuffle,
+  setShuffle,
   playShuffle,
   playRepeat,
   deleteSongFromQueue,
+  deleteMultipleSongsFromQueue,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;
