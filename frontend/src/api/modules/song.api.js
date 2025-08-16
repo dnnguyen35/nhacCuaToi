@@ -3,14 +3,15 @@ import publicClient from "../client/public.client";
 const songEndpoints = {
   allSongs: "songs/all-songs",
   trendingSongs: "songs/trending-songs",
-  searchSong: ({ keyword, page, limit }) =>
-    `songs/search?keyword=${keyword}&page=${page}&limit=${limit}`,
+  searchSong: "songs/search",
 };
 
 const songApi = {
-  getAllSongs: async () => {
+  getAllSongs: async ({ page = 1, limit = 6 }) => {
     try {
-      const response = await publicClient.get(songEndpoints.allSongs);
+      const response = await publicClient.get(songEndpoints.allSongs, {
+        params: { page, limit },
+      });
 
       return { response };
     } catch (error) {
@@ -28,9 +29,9 @@ const songApi = {
   },
   searchSong: async ({ keyword, page = 1, limit = 20 }) => {
     try {
-      const response = await publicClient.get(
-        songEndpoints.searchSong({ keyword, page, limit })
-      );
+      const response = await publicClient.get(songEndpoints.searchSong, {
+        params: { keyword, page, limit },
+      });
 
       return { response };
     } catch (error) {

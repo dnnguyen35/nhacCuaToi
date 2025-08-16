@@ -10,6 +10,7 @@ const playlistEndpoints = {
   deletePlaylist: ({ playlistId }) => `playlists/delete/${playlistId}`,
   deleteSongFromPlaylist: ({ playlistId, songId }) =>
     `playlists/delete-song/${playlistId}/${songId}`,
+  deleteMultipleSong: "playlists/delete-multiple-song",
 };
 
 const playlistApi = {
@@ -30,7 +31,6 @@ const playlistApi = {
       const response = await privateClient.get(
         playlistEndpoints.getAllPlaylistsOfUser
       );
-      console.log(response);
 
       return { response };
     } catch (error) {
@@ -74,6 +74,18 @@ const playlistApi = {
     try {
       const response = await privateClient.delete(
         playlistEndpoints.deleteSongFromPlaylist({ playlistId, songId })
+      );
+
+      return { response };
+    } catch (error) {
+      return { error };
+    }
+  },
+  deleteMultipleSong: async ({ playlistId, deletedSongListId }) => {
+    try {
+      const response = await privateClient.post(
+        playlistEndpoints.deleteMultipleSong,
+        { playlistId, deletedSongListId }
       );
 
       return { response };

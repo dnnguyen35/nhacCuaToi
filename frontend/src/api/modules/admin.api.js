@@ -5,6 +5,7 @@ const adminEndpoints = {
   getSongStats: "admins/song-stats",
   getPlaylistStats: "admins/playlist-stats",
   getArtistStats: "admins/artist-stats",
+  getPaymentStats: "admins/payment-stats",
   createSong: "admins/create-song",
   blockUser: ({ userId }) => `admins/block-user/${userId}`,
   unBlockUser: ({ userId }) => `admins/unblock-user/${userId}`,
@@ -43,6 +44,15 @@ const adminApi = {
   getArtistStats: async () => {
     try {
       const response = await privateClient.get(adminEndpoints.getArtistStats);
+
+      return { response };
+    } catch (error) {
+      return { error };
+    }
+  },
+  getPaymentStats: async () => {
+    try {
+      const response = await privateClient.get(adminEndpoints.getPaymentStats);
 
       return { response };
     } catch (error) {

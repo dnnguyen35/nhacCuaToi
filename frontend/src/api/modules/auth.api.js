@@ -19,7 +19,6 @@ const authApi = {
 
       return { response };
     } catch (error) {
-      console.log("error", error);
       return { error };
     }
   },
@@ -42,7 +41,6 @@ const authApi = {
 
       return { response };
     } catch (error) {
-      console.log("error", error);
       return { error };
     }
   },
