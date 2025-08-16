@@ -17,9 +17,9 @@ const PageNotFound = () => {
         height="50vh"
       >
         <img
-          src="/ronaldo_siuuu.jpg"
+          src="/page_not_found.png"
           alt=""
-          width="150"
+          width="350"
           style={{ maxWidth: "100%", borderRadius: "50%" }}
         />
         <Typography

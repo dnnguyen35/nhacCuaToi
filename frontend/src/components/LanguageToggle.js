@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Box, Typography, useTheme } from "@mui/material";
 import { languageModes } from "../configs/language.configs";
 import { setLanguageMode } from "../redux/slices/languageModeSlice";
+import { themeModes } from "../configs/theme.configs";
 
 const LanguageToggle = () => {
   const theme = useTheme();
@@ -10,7 +11,8 @@ const LanguageToggle = () => {
   const dispatch = useDispatch();
 
   const onSwitchLanguage = () => {
-    const newLanguage = languageMode === languageModes.en ? "vi" : "en";
+    const newLanguage =
+      languageMode === languageModes.en ? languageModes.vi : languageModes.en;
     dispatch(setLanguageMode(newLanguage));
   };
 
@@ -30,7 +32,8 @@ const LanguageToggle = () => {
           height: 27,
           borderRadius: 16,
           border: `2px solid ${theme.palette.primary.main}`,
-          backgroundColor: theme.palette.mode === "dark" ? "#444" : "#ddd",
+          backgroundColor:
+            theme.palette.mode === themeModes.dark ? "#444" : "#ddd",
           position: "relative",
           padding: "2px",
           display: "flex",
@@ -44,11 +47,14 @@ const LanguageToggle = () => {
             fontWeight: "bold",
             color: theme.palette.primary.main,
             position: "absolute",
-            left: languageMode === "vi" ? "8px" : "40px",
+            left: languageMode === languageModes.vi ? "8px" : "40px",
             transition: "left 0.3s ease-in-out",
+            textTransform: "uppercase",
           }}
         >
-          {languageMode === "vi" ? "VI" : "EN"}
+          {languageMode === languageModes.vi
+            ? languageModes.vi
+            : languageModes.en}
         </Typography>
 
         <Box
@@ -57,7 +63,7 @@ const LanguageToggle = () => {
             height: 26,
             borderRadius: "50%",
             position: "absolute",
-            left: languageMode === "vi" ? "40px" : "1px",
+            left: languageMode === languageModes.vi ? "40px" : "1px",
             transition: "left 0.3s ease-in-out",
             overflow: "hidden",
             border: "2px solid white",
@@ -65,11 +71,11 @@ const LanguageToggle = () => {
         >
           <img
             src={
-              languageMode === "vi"
+              languageMode === languageModes.vi
                 ? "/Flag_of_Vietnam.svg"
                 : "/Flag_of_the_United_Kingdom.svg"
             }
-            alt={languageMode === "vi" ? "Vietnam Flag" : "UK Flag"}
+            alt={languageMode === languageModes.vi ? "Vietnam Flag" : "UK Flag"}
             width="100%"
             height="100%"
             style={{

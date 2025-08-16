@@ -17,7 +17,7 @@ import authApi from "../api/modules/auth.api";
 import { setAuthModalOpen } from "../redux/slices/authModalSlice";
 import { setUser, setWishlist } from "../redux/slices/userSlice";
 import { useTranslation } from "react-i18next";
-import { formatDuration } from "../utils/formatDuration";
+import { formatDurationToHMS } from "../utils/formatDurationToHMS";
 import { useEffect } from "react";
 
 const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
@@ -144,7 +144,7 @@ const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
                   color={otpRemaining > 0 ? "action" : "error"}
                 />
                 <span style={{ fontSize: "0.8rem", width: 35 }}>
-                  {formatDuration(otpRemaining)}
+                  {formatDurationToHMS(otpRemaining)}
                 </span>
               </InputAdornment>
             ),

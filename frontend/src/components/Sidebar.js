@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import SidebarMenu from "./SidebarMenu";
-import PlaylistList from "./PlaylistList";
+import PlaylistList from "../features/Playlist/components/PlaylistList";
 
 const Sidebar = () => {
   return (

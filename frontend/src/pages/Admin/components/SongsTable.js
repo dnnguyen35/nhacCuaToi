@@ -27,7 +27,7 @@ import AddSongDialog from "./AddSongDialog";
 import Swal from "sweetalert2";
 import UpdateSongDialog from "./UpdateSongDialog";
 import { useSelector, useDispatch } from "react-redux";
-import { formatDuration } from "../../../utils/formatDuration";
+import { formatDuration } from "../../../utils/formatDurationToHMS";
 import {
   setListSongs,
   setTotalSongs,

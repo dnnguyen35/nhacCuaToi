@@ -20,14 +20,14 @@ import {
   setIsPlaying,
   setRepeatMode,
   toggleShuffle,
+  setShuffle,
 } from "../redux/slices/playerSlice";
-import { formatDuration } from "../utils/formatDuration";
 import Marquee from "react-fast-marquee";
+import { formatDurationToHMS } from "../utils/formatDurationToHMS";
 
 const PlaybackController = () => {
-  const { currentSong, isPlaying, repeatMode, isShuffle } = useSelector(
-    (state) => state.player
-  );
+  const { currentSong, isPlaying, repeatMode, isShuffle, queue, currentIndex } =
+    useSelector((state) => state.player);
   const dispatch = useDispatch();
   const audioRef = useRef(null);
 
@@ -36,11 +36,6 @@ const PlaybackController = () => {
   const [volume, setVolume] = useState(75);
   const [isMute, setIsMute] = useState(false);
 
-  // console.log("isplaying: ", isPlaying);
-  // console.log("currentSong: ", currentSong);
-  // console.log("isShuffle: ", isShuffle);
-  // console.log("repeatMode: ", repeatMode);
-
   useEffect(() => {
     audioRef.current = document.querySelector("audio");
 
@@ -48,8 +43,11 @@ const PlaybackController = () => {
 
     if (!audio) return;
 
+    if (isNaN(audio.duration)) {
+      setDuration(0);
+    }
+
     const updateCurrentTime = () => {
-      // console.log("time: ", audio.currentTime);
       setCurrentTime(audio.currentTime);
     };
     const updateDuration = () => setDuration(audio.duration || 0);
@@ -73,10 +71,16 @@ const PlaybackController = () => {
 
     const audio = audioRef.current;
 
-    if (currentSong) {
+    if (currentSong && audio) {
       setDuration(audio.duration);
     }
   }, []);
+
+  useEffect(() => {
+    if (queue.length < 2) {
+      dispatch(setShuffle(false));
+    }
+  }, [queue]);
 
   const handleSeek = (time) => {
     if (audioRef.current) {
@@ -177,6 +181,7 @@ const PlaybackController = () => {
           <IconButton
             onClick={() => dispatch(toggleShuffle())}
             sx={{ color: isShuffle && "primary.main" }}
+            disabled={currentSong?.isNull || queue?.length < 2}
           >
             <Shuffle />
           </IconButton>
@@ -188,7 +193,9 @@ const PlaybackController = () => {
               dispatch(setRepeatMode(-1));
               dispatch(playPrevious());
             }}
-            disabled={currentSong?.isNull ? true : false}
+            disabled={
+              currentSong?.isNull || queue?.length < 2 || currentIndex === 0
+            }
           >
             <SkipPrevious />
           </IconButton>
@@ -210,7 +217,11 @@ const PlaybackController = () => {
               dispatch(setRepeatMode(-1));
               dispatch(playNext());
             }}
-            disabled={currentSong?.isNull ? true : false}
+            disabled={
+              currentSong?.isNull ||
+              queue?.length < 2 ||
+              currentIndex === queue.length - 1
+            }
           >
             <SkipNext />
           </IconButton>
@@ -273,13 +284,13 @@ const PlaybackController = () => {
             variant="caption"
             sx={{ minWidth: 35, textAlign: "center" }}
           >
-            {formatDuration(currentTime)}
+            {formatDurationToHMS(currentTime)}
           </Typography>
           <Slider
             size="small"
             sx={{ flexGrow: 1 }}
             value={currentTime}
-            max={duration}
+            max={isNaN(duration) ? 0 : duration}
             step={1}
             aria-label="duration slider"
             onChange={(event, value) => handleSeek(value)}
@@ -288,7 +299,7 @@ const PlaybackController = () => {
             variant="caption"
             sx={{ minWidth: 35, textAlign: "center" }}
           >
-            {isNaN(duration) ? "0:00" : formatDuration(duration)}
+            {isNaN(duration) ? "0:00" : formatDurationToHMS(duration)}
           </Typography>
         </Box>
       </Box>

@@ -20,7 +20,7 @@ import {
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { formatDuration } from "../utils/formatDuration";
+import { formatDuration } from "../utils/formatDurationToHMS";
 import {
   deleteSongFromQueue,
   playWishlist,

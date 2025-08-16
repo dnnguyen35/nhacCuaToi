@@ -24,7 +24,7 @@ import {
   setListArtists,
   setTotalArtists,
 } from "../../../redux/slices/statsDataSlice";
-import { formatDuration } from "../../../utils/formatDuration";
+import { formatDuration } from "../../../utils/formatDurationToHMS";
 import { formatMinuteToSecond } from "../../../utils/formatMinuteToSecond";
 
 const AddSongDialog = () => {

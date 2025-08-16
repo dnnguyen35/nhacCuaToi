@@ -10,7 +10,7 @@ import { setThemeMode } from "../redux/slices/themeModeSlice";
 import { themeModes } from "../configs/theme.configs";
 import { Link } from "react-router-dom";
 import Logo from "./Logo";
-import UserMenu from "./UserMenu";
+import UserMenu from "../features/User/components/UserMenu";
 import LanguageToggle from "./LanguageToggle";
 import { useTranslation } from "react-i18next";
 
