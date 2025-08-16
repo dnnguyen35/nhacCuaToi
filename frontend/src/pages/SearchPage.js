@@ -1,47 +1,57 @@
 import { useState, useEffect } from "react";
 import { Box, Stack, TextField, Typography } from "@mui/material";
-import SearchSongList from "../components/SearchSongList";
-import SearchSongListSkeleton from "../components/skeletons/SearchSongListSkeleton";
-import songApi from "../api/modules/song.api";
+import SearchSongList from "../features/Song/components/SearchSongList";
+import SearchSongListSkeleton from "../features/Song/components/skeletons/SearchSongListSkeleton";
+import songApi from "../features/Song/api/song.api";
 import { toast } from "react-toastify";
-import PlaylistPopup from "../components/PlaylistPopup";
+import PlaylistPopup from "../features/Playlist/components/PlaylistPopup";
 import { useTranslation } from "react-i18next";
+import { AnimatePresence, motion } from "framer-motion";
 
 const EmptySearch = ({ query }) => {
   const { t } = useTranslation();
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-      height="35vh"
+    <motion.div
+      key="empty"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4 }}
     >
-      <img
-        src="/ronaldo_hands_up1-removebg-preview.png"
-        alt="Search Placeholder"
-        width="300"
-        style={{ maxWidth: "100%" }}
-      />
-      <Typography
-        mt={1}
-        fontSize={{ xs: "1.0rem", md: "1.7rem" }}
-        fontWeight={700}
-        textAlign="center"
-        sx={{
-          background: "linear-gradient(90deg, #4ADE80, #14B8A6, #3B82F6)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          display: "inline-block",
-        }}
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        width="100%"
+        height="35vh"
+        pt={9}
       >
-        {!query
-          ? t("responseError.Hey what you want huh ?")
-          : t("responseError.Song not founded")}
-      </Typography>
-    </Box>
+        <img
+          src="/musicWaveIcon.png"
+          alt="nhaccuatoi"
+          width="300"
+          style={{ maxWidth: "100%" }}
+        />
+        <Typography
+          mt={1}
+          fontSize={{ xs: "1.0rem", md: "1.7rem" }}
+          fontWeight={700}
+          textAlign="center"
+          sx={{
+            background: "linear-gradient(90deg, #4ADE80, #14B8A6, #3B82F6)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            display: "inline-block",
+          }}
+        >
+          {!query
+            ? t("responseError.Hey what you want huh ?")
+            : t("responseError.Song not founded")}
+        </Typography>
+      </Box>
+    </motion.div>
   );
 };
 
@@ -103,17 +113,35 @@ const SearchPage = () => {
           onChange={(e) => setDebounceQuery(e.target.value)}
         />
 
-        {!onSearch && songs.length === 0 && <EmptySearch query={query} />}
-
-        {onSearch ? (
-          <SearchSongListSkeleton count={{ xs: 1, sm: 2, md: 6, lg: 10 }} />
-        ) : (
-          <SearchSongList
-            songs={songs}
-            setSelectedSong={setSelectedSong}
-            setIsPlaylistPopupOpen={setIsPlaylistPopupOpen}
-          />
-        )}
+        <AnimatePresence mode="wait">
+          {onSearch ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <SearchSongListSkeleton count={{ xs: 1, sm: 2, md: 6, lg: 7 }} />
+            </motion.div>
+          ) : songs.length === 0 ? (
+            <EmptySearch key="empty" query={query} />
+          ) : (
+            <motion.div
+              key={query}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <SearchSongList
+                songs={songs}
+                setSelectedSong={setSelectedSong}
+                setIsPlaylistPopupOpen={setIsPlaylistPopupOpen}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Stack>
 
       <PlaylistPopup

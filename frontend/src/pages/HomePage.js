@@ -1,17 +1,15 @@
 import { Box, Typography } from "@mui/material";
-import ForYouSongList from "../components/ForYouSongList";
-import GridSongList from "../components/GridSongList";
+import ForYouSongList from "../features/Song/components/ForYouSongList";
+import GridSongList from "../features/Song/components/GridSongList";
 import { useState, useEffect } from "react";
-import songApi from "../api/modules/song.api";
+import songApi from "../features/Song/api/song.api";
 import { toast } from "react-toastify";
-import ForYouSongListSkeleton from "../components/skeletons/ForYouSongListSkeleton";
-import GridSongListSkeleton from "../components/skeletons/GridSongListSkeleton";
-
-import PlaylistPopup from "../components/PlaylistPopup";
+import GridSongListSkeleton from "../features/Song/components/skeletons/GridSongListSkeleton";
+import PaginationBar from "../components/PaginationBar";
+import PlaylistPopup from "../features/Playlist/components/PlaylistPopup";
 import { useTranslation } from "react-i18next";
 
 const HomePage = () => {
-  const [allSongs, setAllSongs] = useState([]);
   const [trendingSongs, setTrendingSongs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,35 +17,26 @@ const HomePage = () => {
   const [selectedSong, setSelectedSong] = useState(null);
   const { t } = useTranslation();
 
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
-    const fetchSongs = async () => {
+    const fetchTrendingSongs = async () => {
       setIsLoading(true);
 
-      const [allSongsRes, trendingSongsRes] = await Promise.all([
-        songApi.getAllSongs(),
-        songApi.getTrendingSongs(),
-      ]);
+      const { response, error } = await songApi.getTrendingSongs();
 
       setIsLoading(false);
 
-      if (allSongsRes.response) {
-        setAllSongs(allSongsRes.response);
+      if (response) {
+        setTrendingSongs(response);
       }
 
-      if (trendingSongsRes.response) {
-        setTrendingSongs(trendingSongsRes.response);
-      }
-
-      if (allSongsRes.error) {
-        toast.error(allSongsRes.error.message);
-      }
-
-      if (trendingSongsRes.error) {
-        toast.error(trendingSongsRes.error.message);
+      if (error) {
+        toast.error(error.message);
       }
     };
 
-    fetchSongs();
+    fetchTrendingSongs();
   }, []);
 
   return (
@@ -56,15 +45,15 @@ const HomePage = () => {
         <Typography variant="h6" sx={{ mb: 2 }} textTransform="uppercase">
           {t("homePage.forYou")}
         </Typography>
-        {isLoading ? (
-          <ForYouSongListSkeleton />
-        ) : (
+
+        <Box>
           <ForYouSongList
-            songs={allSongs}
+            currentPage={currentPage}
             setSelectedSong={setSelectedSong}
             setIsPlaylistPopupOpen={setIsPlaylistPopupOpen}
           />
-        )}
+          <PaginationBar setCurrentPage={setCurrentPage} />
+        </Box>
       </Box>
 
       <Box sx={{ p: 3 }}>
