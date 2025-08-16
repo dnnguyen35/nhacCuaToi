@@ -10,10 +10,8 @@ let isRefreshing = false;
 let subscribers = [];
 
 const onTokenRefreshed = (token) => {
-  console.log("subscribers lenght: ", subscribers.length);
   subscribers.forEach((callback) => {
     callback(token);
-    console.log("from privateClient callback: ", callback.name);
   });
   subscribers = [];
 };
@@ -31,7 +29,7 @@ const privateClient = axios.create({
 
 privateClient.interceptors.request.use(async (config) => {
   const headers = {
-    Authorization: `Bearer ${localStorage.getItem("actkn")}`,
+    Authorization: `Bearer ${sessionStorage.getItem("actkn")}`,
   };
 
   if (!(config.data instanceof FormData)) {
@@ -51,13 +49,12 @@ privateClient.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    console.log("originalRequest from privateclient: ", originalRequest);
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (!isRefreshing) {
         isRefreshing = true;
         try {
-          const refreshToken = localStorage.getItem("refreshtkn");
+          const refreshToken = sessionStorage.getItem("refreshtkn");
           const response = await axios.post(
             `${baseURL}/auth/renew-accesstoken`,
             {
@@ -66,17 +63,16 @@ privateClient.interceptors.response.use(
           );
 
           const newAccessToken = response.data.newAccessToken;
-          localStorage.setItem("actkn", newAccessToken);
-          console.log("newAccessToken: ", newAccessToken);
+          sessionStorage.setItem("actkn", newAccessToken);
 
           onTokenRefreshed(newAccessToken);
 
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
           return privateClient(originalRequest);
-        } catch (err) {
+        } catch (error) {
           getStore().dispatch(setUser(null));
-          return Promise.reject(err);
+          return Promise.reject(error);
         } finally {
           isRefreshing = false;
         }

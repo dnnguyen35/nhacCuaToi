@@ -6,7 +6,7 @@ const baseURL = process.env.REACT_APP_API_URL;
 const publicClient = axios.create({
   baseURL,
   paramsSerializer: {
-    encode: (params) => queryString.stringify(params),
+    serialize: (params) => queryString.stringify(params),
   },
 });
 
@@ -24,8 +24,8 @@ publicClient.interceptors.response.use(
     if (response && response.data) return response.data;
     return response;
   },
-  (err) => {
-    throw err.response.data;
+  (error) => {
+    throw error.response.data;
   }
 );
 
