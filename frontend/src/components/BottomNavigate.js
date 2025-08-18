@@ -126,7 +126,6 @@ const BottomNavigate = () => {
               textTransform: "capitalize",
             }}
             key={index}
-            label={item.display}
             value={item.display}
             icon={item.icon}
             component={Link}

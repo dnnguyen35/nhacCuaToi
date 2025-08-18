@@ -57,7 +57,6 @@ const ChangePasswordForm = ({ setChangePasswordModalOpen }) => {
       }
 
       if (error) {
-        console.log(error.message);
         setErrorMessage(t(`responseError.${error.message}`));
       }
     },

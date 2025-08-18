@@ -12,6 +12,7 @@ import {
   WbSunnyOutlined,
   DarkModeOutlined,
   SettingsOutlined,
+  AttachMoney,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,6 +24,9 @@ import { setLanguageMode } from "../redux/slices/languageModeSlice";
 import { themeModes } from "../configs/theme.configs";
 import { setThemeMode } from "../redux/slices/themeModeSlice";
 import { useNavigate } from "react-router-dom";
+import socket from "../api/socket/socket";
+import { Link } from "react-router-dom";
+import { routesGen } from "../routes/routes";
 
 const UserMenu = () => {
   const { user } = useSelector((state) => state.user);
@@ -39,7 +43,8 @@ const UserMenu = () => {
   const toggleMenu = (e) => setAnchorEl(e.currentTarget);
 
   const onSwitchLanguage = () => {
-    const newLanguage = languageMode === languageModes.en ? "vi" : "en";
+    const newLanguage =
+      languageMode === languageModes.en ? languageModes.vi : languageModes.en;
     dispatch(setLanguageMode(newLanguage));
   };
 
@@ -100,7 +105,7 @@ const UserMenu = () => {
                 disableTypography
                 primary={
                   <Typography textTransform="uppercase">
-                    {languageMode === "vi"
+                    {languageMode === languageModes.vi
                       ? t("userMenu.en")
                       : t("userMenu.vi")}
                   </Typography>
@@ -115,7 +120,7 @@ const UserMenu = () => {
               }}
             >
               <ListItemIcon>
-                {themeMode === "dark" ? (
+                {themeMode === themeModes.dark ? (
                   <WbSunnyOutlined />
                 ) : (
                   <DarkModeOutlined />
@@ -125,9 +130,26 @@ const UserMenu = () => {
                 disableTypography
                 primary={
                   <Typography textTransform="uppercase">
-                    {themeMode === "dark"
+                    {themeMode === themeModes.dark
                       ? t("userMenu.lightMode")
                       : t("userMenu.darkMode")}
+                  </Typography>
+                }
+              />
+            </ListItemButton>
+            <ListItemButton
+              component={Link}
+              to={routesGen.payment}
+              sx={{ borderRadius: "10px" }}
+            >
+              <ListItemIcon>
+                <AttachMoney />
+              </ListItemIcon>
+              <ListItemText
+                disableTypography
+                primary={
+                  <Typography textTransform="uppercase">
+                    {t("paymentTable.payment")}
                   </Typography>
                 }
               />
@@ -155,7 +177,10 @@ const UserMenu = () => {
             )}
             <ListItemButton
               sx={{ borderRadius: "10px" }}
-              onClick={() => dispatch(setUser(null))}
+              onClick={() => {
+                socket.disconnect();
+                dispatch(setUser(null));
+              }}
             >
               <ListItemIcon>
                 <LogoutOutlined />

@@ -18,6 +18,7 @@ import {
 } from "./models/main.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger.js";
+import { initializeSocket } from "./configs/socket.js";
 
 const app = express();
 const __dirname = path.resolve();
@@ -55,6 +56,7 @@ app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/v1", routes);
 
 const server = http.createServer(app);
+initializeSocket(server);
 
 sequelize
   .authenticate()
