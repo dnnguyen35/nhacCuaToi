@@ -20,7 +20,7 @@ const GridSongListSkeleton = () => {
         },
       }}
     >
-      <Box sx={{ display: "flex", gap: 3 }}>
+      <Box sx={{ display: "flex", gap: 3, mb: 2 }}>
         {Array.from({ length: 10 }).map((_, i) => (
           <Card
             key={i}
