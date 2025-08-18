@@ -2,47 +2,20 @@ import { DataTypes } from "sequelize";
 import sequelize from "../configs/db.js";
 import userModel from "./user.model.js";
 
-const paymentModel = sequelize.define(
-  "Payment",
+const playlistModel = sequelize.define(
+  "Playlist",
   {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    orderId: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
-    },
-    requestId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    amount: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    orderInfo: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    payUrl: {
-      type: DataTypes.STRING,
-    },
-    resultCode: {
-      type: DataTypes.INTEGER,
-    },
-    message: {
-      type: DataTypes.STRING,
-    },
-    status: {
-      type: DataTypes.ENUM("pending", "completed", "uncompleted"),
-      defaultValue: "pending",
     },
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       references: {
         model: userModel,
         key: "id",
@@ -51,9 +24,9 @@ const paymentModel = sequelize.define(
     },
   },
   {
-    tableName: "payments",
+    tableName: "playlists",
     timestamps: true,
   }
 );
 
-export default paymentModel;
+export default playlistModel;
