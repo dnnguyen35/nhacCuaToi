@@ -24,7 +24,7 @@ import {
   setListArtists,
   setTotalArtists,
 } from "../../../redux/slices/statsDataSlice";
-import { formatDuration } from "../../../utils/formatDurationToHMS";
+import { formatDurationToHMS } from "../../../utils/formatDurationToHMS";
 import { formatMinuteToSecond } from "../../../utils/formatMinuteToSecond";
 
 const AddSongDialog = () => {
@@ -42,7 +42,7 @@ const AddSongDialog = () => {
     const arrayBuffer = await audio.arrayBuffer();
     const audioContext = new window.AudioContext();
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    const audioMinute = formatDuration(audioBuffer.duration);
+    const audioMinute = formatDurationToHMS(audioBuffer.duration);
     setNewSong({ ...newSong, duration: audioMinute });
   };
 

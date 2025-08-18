@@ -17,8 +17,9 @@ import authApi from "../api/modules/auth.api";
 import { setAuthModalOpen } from "../redux/slices/authModalSlice";
 import { setUser, setWishlist } from "../redux/slices/userSlice";
 import { useTranslation } from "react-i18next";
-import { formatDurationToHMS } from "../utils/formatDurationToHMS";
 import { useEffect } from "react";
+import socket from "../api/socket/socket";
+import { formatDurationToHMS } from "../utils/formatDurationToHMS";
 
 const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
   const dispatch = useDispatch();
@@ -53,10 +54,7 @@ const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
 
     setIsRequest(false);
 
-    console.log("newOtpExpriw: ", response);
-
     if (response) {
-      console.log("newOtpExpriw: ", response);
       setOtpExpireTime(response.otpExpireAt);
       toast.success(t(`responseSuccess.${response.message}`));
     }
@@ -86,22 +84,22 @@ const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
     onSubmit: async (values) => {
       setErrorMessage(undefined);
       setIsRequest(true);
-      console.log("value: ", values);
+
       const { response, error } = await authApi.verifyOtp(values);
-      console.log("response: ", response);
-      console.log("error: ", error);
+
       setIsRequest(false);
 
       if (response) {
         verifyOtpForm.resetForm();
         dispatch(setUser(response));
+        socket.auth = { token: response.access_token };
+        socket.connect();
         dispatch(setWishlist(response.wishlist));
         dispatch(setAuthModalOpen(false));
         toast.success(t("responseSuccess.Sign up successfully"));
       }
 
       if (error) {
-        console.log(error.message);
         if (error.message === "Session expired! Please sign up again") {
           setDeactivateAllButton(true);
         }

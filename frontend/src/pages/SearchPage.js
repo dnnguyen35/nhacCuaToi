@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Box, Stack, TextField, Typography } from "@mui/material";
-import SearchSongList from "../features/Song/components/SearchSongList";
-import SearchSongListSkeleton from "../features/Song/components/skeletons/SearchSongListSkeleton";
-import songApi from "../features/Song/api/song.api";
+import SearchSongList from "../components/SearchSongList";
+import SearchSongListSkeleton from "../components/skeletons/SearchSongListSkeleton";
+import songApi from "../api/modules/song.api";
 import { toast } from "react-toastify";
-import PlaylistPopup from "../features/Playlist/components/PlaylistPopup";
+import PlaylistPopup from "../components/PlaylistPopup";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
 

@@ -1,12 +1,12 @@
 import { Box, Typography } from "@mui/material";
-import ForYouSongList from "../features/Song/components/ForYouSongList";
-import GridSongList from "../features/Song/components/GridSongList";
+import ForYouSongList from "../components/ForYouSongList";
+import GridSongList from "../components/GridSongList";
 import { useState, useEffect } from "react";
-import songApi from "../features/Song/api/song.api";
+import songApi from "../api/modules/song.api";
 import { toast } from "react-toastify";
-import GridSongListSkeleton from "../features/Song/components/skeletons/GridSongListSkeleton";
+import GridSongListSkeleton from "../components/skeletons/GridSongListSkeleton";
 import PaginationBar from "../components/PaginationBar";
-import PlaylistPopup from "../features/Playlist/components/PlaylistPopup";
+import PlaylistPopup from "../components/PlaylistPopup";
 import { useTranslation } from "react-i18next";
 
 const HomePage = () => {

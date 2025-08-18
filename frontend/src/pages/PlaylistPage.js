@@ -32,7 +32,7 @@ import {
   deleteSongFromQueue,
   deleteMultipleSongsFromQueue,
 } from "../redux/slices/playerSlice";
-import playlistApi from "../features/Playlist/api/playlist.api";
+import playlistApi from "../api/modules/playlist.api";
 import { setPlaylist } from "../redux/slices/userSlice";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";

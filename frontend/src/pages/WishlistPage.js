@@ -31,7 +31,7 @@ import {
 } from "../redux/slices/playerSlice";
 import { setWishlist, setPlaylist } from "../redux/slices/userSlice";
 import { useState } from "react";
-import wishlistApi from "../features/Wishlist/api/wishlist.api";
+import wishlistApi from "../api/modules/wishlist.api";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { formatDurationToHMS } from "../utils/formatDurationToHMS";

@@ -27,7 +27,7 @@ import AddSongDialog from "./AddSongDialog";
 import Swal from "sweetalert2";
 import UpdateSongDialog from "./UpdateSongDialog";
 import { useSelector, useDispatch } from "react-redux";
-import { formatDuration } from "../../../utils/formatDurationToHMS";
+import { formatDurationToHMS } from "../../../utils/formatDurationToHMS";
 import {
   setListSongs,
   setTotalSongs,
@@ -163,7 +163,7 @@ const SongsTable = () => {
                   </TableCell>
                   <TableCell>{song.title}</TableCell>
                   <TableCell>{song.artist}</TableCell>
-                  <TableCell>{formatDuration(song.duration)}</TableCell>
+                  <TableCell>{formatDurationToHMS(song.duration)}</TableCell>
                   <TableCell>{song.createdAt.split("T")[0]}</TableCell>
                   <TableCell>{song.playlistCount}</TableCell>
                   <TableCell>{song.wishlistCount}</TableCell>

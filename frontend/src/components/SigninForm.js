@@ -18,6 +18,7 @@ import authApi from "../api/modules/auth.api";
 import { setAuthModalOpen } from "../redux/slices/authModalSlice";
 import { setUser, setWishlist } from "../redux/slices/userSlice";
 import { useTranslation } from "react-i18next";
+import socket from "../api/socket/socket";
 
 const SigninForm = ({ switchSignupState, switchForgotState }) => {
   const dispatch = useDispatch();
@@ -52,15 +53,16 @@ const SigninForm = ({ switchSignupState, switchForgotState }) => {
 
       if (response) {
         signinForm.resetForm();
-        console.log(response.wishlist);
+
         dispatch(setUser(response));
+        socket.auth = { token: response.access_token };
+        socket.connect();
         dispatch(setWishlist(response.wishlist));
         dispatch(setAuthModalOpen(false));
         toast.success(t("responseSuccess.Sign in successfully"));
       }
 
       if (error) {
-        console.log(error.message);
         setErrorMessage(t(`responseError.${error.message}`));
       }
     },

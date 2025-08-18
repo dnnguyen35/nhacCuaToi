@@ -31,12 +31,11 @@ const ForgotPasswordForm = ({ switchAuthState }) => {
 
       if (response) {
         forgotPassForm.resetForm();
-        console.log(response);
+
         toast.success(t("responseSuccess.Reset password successfully"));
       }
 
       if (error) {
-        console.log(error.message);
         setErrorMessage(t(`responseError.${error.message}`));
       }
     },
