@@ -13,7 +13,6 @@ import {
   QueueMusicSharp,
   Delete,
   LibraryMusic,
-  MusicNote,
 } from "@mui/icons-material";
 import AddPlaylistDialog from "./AddPlaylistDialog";
 import { useEffect, useState } from "react";
@@ -38,6 +37,8 @@ const PlaylistList = () => {
   const { t } = useTranslation();
   const currentPlayedPlaylist = playlist;
 
+  const { themeMode } = useSelector((state) => state.themeMode);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -45,25 +46,22 @@ const PlaylistList = () => {
       setIsLoading(true);
 
       const { response, error } = await playlistApi.getAllPlaylistsOfUser();
-      console.log(response);
 
       setIsLoading(false);
 
       if (response) {
-        console.log(response);
         dispatch(setAllPlaylist(response));
       }
 
       if (error) {
-        console.log(error);
         toast.error(error.message);
       }
     };
 
-    if (user) {
+    if (user && user?.id) {
       fetchPlaylists();
     }
-  }, [user]);
+  }, [user, user?.id]);
 
   const onDeletePlaylistClick = async (playlist) => {
     const confirm = await Swal.fire({
@@ -77,6 +75,7 @@ const PlaylistList = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: t("sweetalert.Yes, delete it!"),
       cancelButtonText: t("sweetalert.Cancel"),
+      theme: themeMode,
     });
 
     if (!confirm.isConfirmed) return;

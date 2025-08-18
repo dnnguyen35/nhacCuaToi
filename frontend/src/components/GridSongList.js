@@ -5,6 +5,7 @@ import {
   CardContent,
   Typography,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import {
   PlayArrow,
@@ -149,7 +150,6 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
-
                 flexDirection: "column",
               }}
             >
@@ -167,11 +167,17 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
                     </Marquee>
                   </>
                 ) : (
-                  <Typography variant="body1" fontWeight="bold">
-                    {song.title.length > 12
-                      ? `${song.title.slice(0, 12)}...`
-                      : song.title}
-                  </Typography>
+                  <Tooltip
+                    title={`${song.title} - ${song.artist}`}
+                    arrow
+                    placement="top"
+                  >
+                    <Typography variant="body1" fontWeight="bold">
+                      {song.title.length > 12
+                        ? `${song.title.slice(0, 12)}...`
+                        : song.title}
+                    </Typography>
+                  </Tooltip>
                 )}
                 <Typography variant="body2" color="text.secondary">
                   {song.artist.length > 12

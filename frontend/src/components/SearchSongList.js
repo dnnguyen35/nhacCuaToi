@@ -6,6 +6,7 @@ import {
   CardContent,
   CardMedia,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import {
   PlayArrow,
@@ -157,11 +158,17 @@ const SearchSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
                     </Marquee>
                   </>
                 ) : (
-                  <Typography variant="body1" fontWeight="bold">
-                    {song.title.length > 7
-                      ? `${song.title.slice(0, 7)}...`
-                      : song.title}
-                  </Typography>
+                  <Tooltip
+                    title={`${song.title} - ${song.artist}`}
+                    arrow
+                    placement="top"
+                  >
+                    <Typography variant="body1" fontWeight="bold">
+                      {song.title.length > 7
+                        ? `${song.title.slice(0, 7)}...`
+                        : song.title}
+                    </Typography>
+                  </Tooltip>
                 )}
                 <Typography variant="body2" color="text.secondary">
                   {song.artist.length > 12
@@ -229,11 +236,6 @@ const SearchSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
           </Card>
         ))}
       </Box>
-      {/* {songs.length > 0 && (
-        <Button variant="contained" sx={{ mt: 3 }}>
-          See More
-        </Button>
-      )} */}
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { Box, Typography, IconButton, Pagination } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import {
   PlayArrow,
   Pause,
@@ -7,7 +7,7 @@ import {
   PlaylistAdd,
 } from "@mui/icons-material";
 import Marquee from "react-fast-marquee";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   togglePlay,
@@ -19,30 +19,30 @@ import wishlistApi from "../api/modules/wishlist.api";
 import { toast } from "react-toastify";
 import { setQueue, deleteSongFromQueue } from "../redux/slices/playerSlice";
 import { useTranslation } from "react-i18next";
+import songApi from "../api/modules/song.api";
+import ForYouSongListSkeleton from "./skeletons/ForYouSongListSkeleton";
+import { AnimatePresence, motion } from "framer-motion";
 
-const songsPerPage = 6;
-
-const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
+const ForYouSongList = ({
+  currentPage,
+  setSelectedSong,
+  setIsPlaylistPopupOpen,
+}) => {
   const { user, wishlist } = useSelector((state) => state.user);
   const { isPlaying, currentSong, queueType, queue } = useSelector(
     (state) => state.player
   );
-  const [page, setPage] = useState(1);
+
+  const [isRerender, setIsRerender] = useState(0);
+
+  const [songs, setSongs] = useState([]);
+
   const [onAddSongToWishlistRequest, setOnAddSongToWishlistRequest] =
     useState(false);
 
   const dispatch = useDispatch();
 
   const { t } = useTranslation();
-
-  const handlePageChange = (event, value) => {
-    setPage(value);
-  };
-
-  const currentSongs = songs.slice(
-    (page - 1) * songsPerPage,
-    page * songsPerPage
-  );
 
   const onAddSongToWishlistClick = async (song) => {
     if (onAddSongToWishlistRequest) return;
@@ -105,203 +105,231 @@ const ForYouSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     }
   };
 
-  const totalPages = Math.ceil(songs.length / songsPerPage);
+  useEffect(() => {
+    const fetchAllSongs = async () => {
+      const { response, error } = await songApi.getAllSongs({
+        page: currentPage,
+        limit: 6,
+      });
 
-  return (
-    <Box>
-      <Box
-        sx={{
-          display: "grid",
-          gap: 3,
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-          },
-          padding: 2,
-        }}
+      if (response) {
+        setSongs(response.allSongs);
+        setIsRerender((prev) => prev + 1);
+      }
+
+      if (error) {
+        toast.error(t(`responseError.${error.message}`));
+        setIsRerender((prev) => prev + 1);
+      }
+    };
+
+    fetchAllSongs();
+  }, [currentPage]);
+
+  return isRerender === 0 ? (
+    <ForYouSongListSkeleton />
+  ) : (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={currentPage}
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ duration: 0.9, ease: "easeInOut" }}
       >
-        {currentSongs.map((song, index) => (
-          <Box
-            key={index}
-            sx={{
-              visibility: song ? "visible" : "hidden",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              bgcolor: "background.default",
-              borderRadius: 2,
-              overflow: "hidden",
-              cursor: song ? "pointer" : "default",
-              "&:hover": song ? { bgcolor: "grey.300" } : {},
-              boxShadow: song ? 1 : 0,
-              px: 1,
-              py: 1,
-              "@media (hover: hover) and (pointer: fine)": {
-                "&:hover": song ? { bgcolor: "grey.300" } : {},
-              },
-            }}
-          >
-            {song && (
-              <>
-                <Box
-                  component="img"
-                  src={song.imageUrl || song.cover}
-                  alt={song.title}
-                  sx={{
-                    width: { xs: 80, sm: 60, md: 60 },
-                    height: { xs: 80, sm: 60, md: 60 },
-                    objectFit: "cover",
-                    flexShrink: 0,
-                    borderRadius: 1,
-                  }}
-                />
-                <Box sx={{ flexGrow: 1, px: 2, overflow: "hidden" }}>
-                  <Marquee
-                    pauseOnHover={true}
-                    speed={50}
-                    play={isPlaying && currentSong.id === song.id}
-                  >
-                    <Typography variant="subtitle2" noWrap fontWeight="bold">
-                      {`${song.title}\u00A0\u00A0\u00A0`}
-                    </Typography>
-                  </Marquee>
-                  <Typography variant="body2" color="text.secondary" noWrap>
-                    {song.artist}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: {
-                        xs: "flex",
-                        sm: "flex",
-                        md: "flex",
-                        lg: "none",
-                      },
-                    }}
-                  >
-                    {user && (
-                      <>
+        <Box
+          sx={{
+            display: "grid",
+            gap: 3,
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+            },
+            padding: 2,
+          }}
+        >
+          {songs.length > 0 &&
+            songs.map((song, index) => (
+              <Box
+                key={index}
+                sx={{
+                  visibility: song ? "visible" : "hidden",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  bgcolor: "background.default",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  cursor: song ? "pointer" : "default",
+                  "&:hover": song ? { bgcolor: "grey.300" } : {},
+                  boxShadow: song ? 1 : 0,
+                  px: 1,
+                  py: 1,
+                  "@media (hover: hover) and (pointer: fine)": {
+                    "&:hover": song ? { bgcolor: "grey.300" } : {},
+                  },
+                }}
+              >
+                {song && (
+                  <>
+                    <Box
+                      component="img"
+                      src={song.imageUrl || song.cover}
+                      alt={song.title}
+                      sx={{
+                        width: { xs: 80, sm: 60, md: 60 },
+                        height: { xs: 80, sm: 60, md: 60 },
+                        objectFit: "cover",
+                        flexShrink: 0,
+                        borderRadius: 1,
+                      }}
+                    />
+                    <Box sx={{ flexGrow: 1, px: 2, overflow: "hidden" }}>
+                      <Marquee
+                        pauseOnHover={true}
+                        speed={50}
+                        play={isPlaying && currentSong.id === song.id}
+                      >
+                        <Typography
+                          variant="subtitle2"
+                          noWrap
+                          fontWeight="bold"
+                        >
+                          {`${song.title}\u00A0\u00A0\u00A0`}
+                        </Typography>
+                      </Marquee>
+                      <Typography variant="body2" color="text.secondary" noWrap>
+                        {song.artist}
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: {
+                            xs: "flex",
+                            sm: "flex",
+                            md: "flex",
+                            lg: "none",
+                          },
+                        }}
+                      >
+                        {user && (
+                          <>
+                            <IconButton
+                              color="primary"
+                              size="small"
+                              sx={{ pr: 1 }}
+                              onClick={() => onAddSongToWishlistClick(song)}
+                            >
+                              {wishlist.some((s) => s.id === song.id) ? (
+                                <Favorite />
+                              ) : (
+                                <FavoriteBorderOutlined />
+                              )}
+                            </IconButton>
+                            <IconButton
+                              color="primary"
+                              size="small"
+                              sx={{ pr: 1 }}
+                              onClick={() => {
+                                setSelectedSong(song);
+                                setIsPlaylistPopupOpen(true);
+                              }}
+                            >
+                              <PlaylistAdd />
+                            </IconButton>
+                          </>
+                        )}
+                        {currentSong.id === song.id ? (
+                          <IconButton
+                            color="primary"
+                            size="small"
+                            sx={{ pr: 1 }}
+                            onClick={() => dispatch(togglePlay())}
+                          >
+                            {isPlaying ? <Pause /> : <PlayArrow />}
+                          </IconButton>
+                        ) : (
+                          <IconButton
+                            color="primary"
+                            size="small"
+                            sx={{ pr: 1 }}
+                            onClick={() => {
+                              dispatch(initializeQueue([...songs]));
+                              dispatch(setCurrentSong(song));
+                            }}
+                          >
+                            <PlayArrow />
+                          </IconButton>
+                        )}
+                      </Box>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: {
+                          xs: "none",
+                          sm: "none",
+                          md: "none",
+                          lg: "flex",
+                        },
+                      }}
+                    >
+                      {user && (
+                        <>
+                          <IconButton
+                            color="primary"
+                            size="small"
+                            sx={{ pr: 1 }}
+                            onClick={() => onAddSongToWishlistClick(song)}
+                          >
+                            {wishlist.some((s) => s.id === song.id) ? (
+                              <Favorite />
+                            ) : (
+                              <FavoriteBorderOutlined />
+                            )}
+                          </IconButton>
+                          <IconButton
+                            color="primary"
+                            size="small"
+                            sx={{ pr: 1 }}
+                            onClick={() => {
+                              setSelectedSong(song);
+                              setIsPlaylistPopupOpen(true);
+                            }}
+                          >
+                            <PlaylistAdd />
+                          </IconButton>
+                        </>
+                      )}
+                      {currentSong.id === song.id ? (
                         <IconButton
                           color="primary"
                           size="small"
                           sx={{ pr: 1 }}
-                          onClick={() => onAddSongToWishlistClick(song)}
+                          onClick={() => dispatch(togglePlay())}
                         >
-                          {wishlist.some((s) => s.id === song.id) ? (
-                            <Favorite />
-                          ) : (
-                            <FavoriteBorderOutlined />
-                          )}
+                          {isPlaying ? <Pause /> : <PlayArrow />}
                         </IconButton>
+                      ) : (
                         <IconButton
                           color="primary"
                           size="small"
                           sx={{ pr: 1 }}
                           onClick={() => {
-                            setSelectedSong(song);
-                            setIsPlaylistPopupOpen(true);
+                            dispatch(initializeQueue([...songs]));
+                            dispatch(setCurrentSong(song));
                           }}
                         >
-                          <PlaylistAdd />
+                          <PlayArrow />
                         </IconButton>
-                      </>
-                    )}
-                    {currentSong.id === song.id ? (
-                      <IconButton
-                        color="primary"
-                        size="small"
-                        sx={{ pr: 1 }}
-                        onClick={() => dispatch(togglePlay())}
-                      >
-                        {isPlaying ? <Pause /> : <PlayArrow />}
-                      </IconButton>
-                    ) : (
-                      <IconButton
-                        color="primary"
-                        size="small"
-                        sx={{ pr: 1 }}
-                        onClick={() => {
-                          dispatch(initializeQueue([...songs]));
-                          dispatch(setCurrentSong(song));
-                        }}
-                      >
-                        <PlayArrow />
-                      </IconButton>
-                    )}
-                  </Box>
-                </Box>
-                <Box
-                  sx={{
-                    display: { xs: "none", sm: "none", md: "none", lg: "flex" },
-                  }}
-                >
-                  {user && (
-                    <>
-                      <IconButton
-                        color="primary"
-                        size="small"
-                        sx={{ pr: 1 }}
-                        onClick={() => onAddSongToWishlistClick(song)}
-                      >
-                        {wishlist.some((s) => s.id === song.id) ? (
-                          <Favorite />
-                        ) : (
-                          <FavoriteBorderOutlined />
-                        )}
-                      </IconButton>
-                      <IconButton
-                        color="primary"
-                        size="small"
-                        sx={{ pr: 1 }}
-                        onClick={() => {
-                          setSelectedSong(song);
-                          setIsPlaylistPopupOpen(true);
-                        }}
-                      >
-                        <PlaylistAdd />
-                      </IconButton>
-                    </>
-                  )}
-                  {currentSong.id === song.id ? (
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      sx={{ pr: 1 }}
-                      onClick={() => dispatch(togglePlay())}
-                    >
-                      {isPlaying ? <Pause /> : <PlayArrow />}
-                    </IconButton>
-                  ) : (
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      sx={{ pr: 1 }}
-                      onClick={() => {
-                        dispatch(initializeQueue([...songs]));
-                        dispatch(setCurrentSong(song));
-                      }}
-                    >
-                      <PlayArrow />
-                    </IconButton>
-                  )}
-                </Box>
-              </>
-            )}
-          </Box>
-        ))}
-      </Box>
-
-      {totalPages > 1 && (
-        <Box display="flex" justifyContent="center" mt={3}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={handlePageChange}
-            color="primary"
-          />
+                      )}
+                    </Box>
+                  </>
+                )}
+              </Box>
+            ))}
         </Box>
-      )}
-    </Box>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

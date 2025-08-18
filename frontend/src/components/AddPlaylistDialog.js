@@ -15,14 +15,19 @@ import { toast } from "react-toastify";
 import playlistApi from "../api/modules/playlist.api";
 import { useTranslation } from "react-i18next";
 import { setAllPlaylist } from "../redux/slices/userSlice";
+import paymentApi from "../api/modules/payment.api";
 
 const AddPlaylistDialog = ({
   isAddPlaylistDialogOpen,
   setIsAddPlaylistDialogOpen,
 }) => {
+  const user = useSelector((state) => state.user.user);
+
   const [isLoading, setIsLoading] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
   const { allPlaylist } = useSelector((state) => state.user);
+
+  const [displayPayButton, setDisplayPayButton] = useState(false);
 
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -30,12 +35,21 @@ const AddPlaylistDialog = ({
   useEffect(() => {
     if (!isAddPlaylistDialogOpen) {
       setPlaylistName("");
+      setDisplayPayButton(false);
     }
   }, [isAddPlaylistDialogOpen]);
+
+  useEffect(() => {
+    setDisplayPayButton(false);
+  }, [user]);
 
   const handleCreatePlaylistClick = async () => {
     if (!playlistName.trim()) {
       return toast.error(t("responseError.PlaylistName is required"));
+    }
+
+    if (playlistName.length > 15) {
+      return toast.error(t("responseError.Playlist name exceed 15 characters"));
     }
 
     setIsLoading(true);
@@ -48,6 +62,10 @@ const AddPlaylistDialog = ({
 
     if (error) {
       toast.error(t(`responseError.${error.message}`));
+
+      if (error.message === "You have exceed 5 playlist slot") {
+        setDisplayPayButton(true);
+      }
       return;
     }
 
@@ -59,12 +77,30 @@ const AddPlaylistDialog = ({
     }
   };
 
+  const handleCreatePaymentCLick = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+
+    const { response, error } = await paymentApi.createPayment({});
+
+    setIsLoading(false);
+
+    if (response) {
+      toast.success(response.message);
+      setDisplayPayButton(false);
+      window.location.href = response.payUrl;
+    }
+
+    if (error) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <Dialog
       open={isAddPlaylistDialogOpen}
-      onClose={() => {
-        setIsAddPlaylistDialogOpen(false);
-      }}
+      onClose={() => setIsAddPlaylistDialogOpen(false)}
       fullWidth
       maxWidth="xs"
     >
@@ -79,7 +115,7 @@ const AddPlaylistDialog = ({
             display: "inline-block",
           }}
         >
-          Create Playlist
+          {t("userMenu.createPlaylist")}
         </Typography>
       </DialogTitle>
 
@@ -97,6 +133,22 @@ const AddPlaylistDialog = ({
       </DialogContent>
 
       <DialogActions>
+        {displayPayButton && (
+          <Button
+            onClick={handleCreatePaymentCLick}
+            variant="contained"
+            disabled={isLoading || !displayPayButton}
+          >
+            {isLoading ? (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <CircularProgress size={20} color="inherit" />
+                {t("userMenu.payPremium")}
+              </Box>
+            ) : (
+              t("userMenu.payPremium")
+            )}
+          </Button>
+        )}
         <Button
           onClick={() => setIsAddPlaylistDialogOpen(false)}
           disabled={isLoading}
@@ -106,12 +158,12 @@ const AddPlaylistDialog = ({
         <Button
           onClick={handleCreatePlaylistClick}
           variant="contained"
-          disabled={isLoading}
+          disabled={isLoading || displayPayButton}
         >
           {isLoading ? (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <CircularProgress size={20} color="inherit" />
-              Creating...
+              {t("userMenu.createPlaylist")}
             </Box>
           ) : (
             t("userMenu.createPlaylist")

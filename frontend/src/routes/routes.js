@@ -4,11 +4,13 @@ import ProtectedPage from "../components/ProtectedPage";
 
 import WishlistPage from "../pages/WishlistPage";
 import SearchPage from "../pages/SearchPage";
+import PaymentHistoryPage from "../pages/PaymentHistoryPage";
 
 export const routesGen = {
   home: "/",
   playlist: (playlistId) => `/playlist/${playlistId}`,
   wishlist: "/wishlist",
+  payment: "/payment",
 };
 
 const routes = [
@@ -39,6 +41,15 @@ const routes = [
     path: "/search",
     element: <SearchPage />,
     state: "search",
+  },
+  {
+    path: "/payment",
+    element: (
+      <ProtectedPage>
+        <PaymentHistoryPage />
+      </ProtectedPage>
+    ),
+    state: "payment",
   },
 ];
 

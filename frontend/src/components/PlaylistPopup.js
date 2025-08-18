@@ -7,10 +7,8 @@ import {
   Typography,
   Box,
   CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  Autocomplete,
+  TextField,
   Alert,
 } from "@mui/material";
 import playlistApi from "../api/modules/playlist.api";
@@ -53,10 +51,10 @@ const PlaylistPopup = ({
     setOnRequest(false);
 
     if (response) {
-      console.log("response from playlistpopup: ", response);
       toast.success(t("responseSuccess.Added song to playlist successfully"));
       setErrorMessage("");
       setSelectedPlaylistId("");
+      setIsPlaylistPopupOpen(false);
       if (playlist?.id === playlistId && playlist?.Songs.length > 0) {
         dispatch(setPlaylist([...playlist.Songs, response]));
       }
@@ -93,26 +91,29 @@ const PlaylistPopup = ({
               display: "inline-block",
             }}
           >
-            Add Song To Playlist
+            {t("userMenu.addSongIntoPlaylist")}
           </Typography>
         </DialogTitle>
         <DialogContent
           sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
         >
-          <FormControl fullWidth sx={{ marginTop: 1 }}>
-            <InputLabel>{t("formField.choosePlaylist")}</InputLabel>
-            <Select
-              value={selectedPlaylistId}
-              label={t("formField.choosePlaylist")}
-              onChange={(e) => setSelectedPlaylistId(e.target.value)}
-            >
-              {allPlaylist.map((pl) => (
-                <MenuItem key={pl.id} value={pl.id}>
-                  {pl.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            sx={{ width: "100%", marginTop: 1 }}
+            options={[...allPlaylist]}
+            getOptionLabel={(option) => option.name}
+            value={allPlaylist.find((p) => p.id === selectedPlaylistId) || null}
+            onChange={(e, newValue) =>
+              setSelectedPlaylistId(newValue?.id || "")
+            }
+            renderInput={(params) => (
+              <TextField
+                fullWidth
+                {...params}
+                label={t("formField.choosePlaylist")}
+              />
+            )}
+          />
+
           {errorMessage && (
             <Box sx={{ marginTop: 2 }}>
               <Alert severity="warning" variant="outlined">
@@ -143,7 +144,6 @@ const PlaylistPopup = ({
             {onRequest ? (
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <CircularProgress size={20} color="inherit" />
-                Uploading...
               </Box>
             ) : (
               t("userMenu.add")
