@@ -1,5 +1,5 @@
 import { ThemeProvider } from "@mui/material/styles";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import themeConfigs from "./configs/theme.configs";
 import { ToastContainer } from "react-toastify";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -9,12 +9,46 @@ import routes from "./routes/routes";
 import PageWrapper from "./components/PageWrapper";
 import AdminPage from "./pages/Admin/AdminPage";
 import AudioPlayer from "./components/AudioPlayer";
+import { useEffect } from "react";
+import {
+  setUserOnline,
+  setNewUser,
+  setNewPayment,
+  setUpdatePayment,
+} from "./redux/slices/statsDataSlice";
 
 import "react-toastify/dist/ReactToastify.css";
 import PageNotFound from "./components/PageNotFound";
+import socket from "./api/socket/socket";
 
 const App = () => {
   const { themeMode } = useSelector((state) => state.themeMode);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    socket.on("user_online", ({ userOnline }) => {
+      console.log("userOnline event: ", userOnline);
+      dispatch(setUserOnline(userOnline));
+    });
+
+    socket.on("newPayment", ({ newPayment }) => {
+      dispatch(setNewPayment(newPayment));
+    });
+
+    socket.on("updatePayment", ({ payment }) => {
+      dispatch(setUpdatePayment(payment));
+    });
+
+    socket.on("newUser", ({ newUser }) => {
+      dispatch(setNewUser(newUser));
+    });
+
+    return () => {
+      socket.off("user_online");
+      socket.off("newPayment");
+      socket.off("updatePayment");
+    };
+  });
 
   return (
     <ThemeProvider theme={themeConfigs.custom({ mode: themeMode })}>

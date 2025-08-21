@@ -19,7 +19,7 @@
     "signUp": "đăng ký",
     "forgotPassword": "quên mật khẩu",
     "resetPassword": "đặt lại mật khẩu",
-    "createPlaylist": "tạo playlist",
+    "createPlaylist": "Tạo playlist",
     "add": "thêm",
     "cancel": "hủy",
     "verifyOtp": "Xác thực",
@@ -28,7 +28,9 @@
     "en": "tiếng anh",
     "darkMode": "nền tối",
     "lightMode": "nền sáng",
-    "adminDashboard": "admin"
+    "adminDashboard": "admin",
+    "payPremium": "nâng cấp",
+    "addSongIntoPlaylist": "Thêm Vào Playlist"
   },
   "songTable": {
     "image": "ảnh bìa",
@@ -39,6 +41,14 @@
     "releasedDate": "phát hànhh",
     "actions": "chỉnh",
     "thereNoSong": "Chưa thêm bài hát nào"
+  },
+  "paymentTable": {
+    "content": "nội dung",
+    "createdDate": "ngày tạo",
+    "status": "trạng thái",
+    "payment": "thanh toán",
+    "total": "tổng(vnd)",
+    "thereNoPayment": "Chưa có thanh toán nào"
   },
   "formField": {
     "email": "Email",
@@ -93,7 +103,7 @@
     "Opp sorry! some thing went wrong": "Có lỗi xảy ra",
     "User not founded": "Không tìm thấy người dùng",
 
-    "Hey what you want huh ?": "Cảm ơn vì đã đến",
+    "Hey what you want huh ?": "Nhạc hay là lỗi của toi",
     "Please sign in to see this page": "Vui lòng đăng nhập để xem",
 
     "There is no song now": "Hiện không có bài hát nào",
@@ -131,13 +141,21 @@
     "OTP is required": "Cần nhập OTP",
     "OTP must be exactly 6 digits": "OTP phải đúng 6 chữ số",
     "OTP must contain only numbers": "OTP chỉ được chứa số",
-    "Session expired! Please sign up again": "Phiên hết hạn! Vui lòng đăng kí lại"
+    "Session expired! Please sign up again": "Phiên hết hạn! Vui lòng đăng kí lại",
+    "You only can reset 2 times! Come back tomorrow": "Bạn đã reset 2 lần! Mai tiếp nha",
+    "Playlist name exceed 15 characters": "Tên playlist vượt quá 15 kí tự",
+    "You have exceed 5 playlist slot": "Bạn đã tạo nhiều playlist. Hãy nâng cấp để tạo thêm",
+    "You are blocked": "Tài khoản đang bị khóa"
   },
   "sweetalert": {
     "Are you sure?": "Bạn chắc chưa?",
     "Do you really want to delete": "Bạn thật sự muốn xóa",
     "? This action cannot be undone.": "? Hành động này không thể hoàn tác.",
     "Yes, delete it!": "Vâng, hãy xóa!",
-    "Cancel": "Hủy"
+    "Cancel": "Hủy",
+    "Payment successfully": "Thanh toán thành công",
+    "Upgrade service": "Bây giờ bạn có thể tạo thêm 5 playlist",
+    "Payment failed": "Thanh toán thất bại",
+    "Upgrade service failed": "Dịch vụ đang gián đoạn, thử lại sau"
   }
 }

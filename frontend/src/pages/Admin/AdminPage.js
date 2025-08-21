@@ -6,15 +6,19 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import adminApi from "../../api/modules/admin.api";
 import { toast } from "react-toastify";
+import socket from "../../api/socket/socket";
 import {
   setListUsers,
   setListSongs,
   setListPlaylists,
   setListArtists,
+  setListPayments,
   setTotalUsers,
   setTotalSongs,
   setTotalPlaylists,
   setTotalArtists,
+  setTotalPayments,
+  setTotalProfit,
   setIsLoading,
 } from "../../redux/slices/statsDataSlice";
 
@@ -26,12 +30,14 @@ const AdminPage = () => {
     const fetchData = async () => {
       dispatch(setIsLoading(true));
 
-      const [usersRes, songsRes, playlistsRes, artistsRes] = await Promise.all([
-        adminApi.getUserStats(),
-        adminApi.getSongStats(),
-        adminApi.getPlaylistStats(),
-        adminApi.getArtistStats(),
-      ]);
+      const [usersRes, songsRes, playlistsRes, artistsRes, paymentsRes] =
+        await Promise.all([
+          adminApi.getUserStats(),
+          adminApi.getSongStats(),
+          adminApi.getPlaylistStats(),
+          adminApi.getArtistStats(),
+          adminApi.getPaymentStats(),
+        ]);
 
       dispatch(setIsLoading(false));
 
@@ -51,17 +57,30 @@ const AdminPage = () => {
         dispatch(setTotalArtists(artistsRes.response.length));
         dispatch(setListArtists(artistsRes.response));
       }
+      if (paymentsRes.response) {
+        dispatch(setTotalPayments(paymentsRes.response.paymentStats.length));
+        dispatch(setListPayments(paymentsRes.response.paymentStats));
+        dispatch(setTotalProfit(paymentsRes.response.totalProfit));
+      }
 
       if (usersRes.error) toast.error(usersRes.error.message);
       if (songsRes.error) toast.error(songsRes.error.message);
       if (playlistsRes.error) toast.error(playlistsRes.error.message);
       if (artistsRes.error) toast.error(artistsRes.error.message);
+      if (paymentsRes.error) toast.error(paymentsRes.error.message);
     };
 
     if (user && user?.isAdmin) {
       fetchData();
     }
   }, []);
+
+  useEffect(() => {
+    if (user?.id && socket.disconnected && sessionStorage.getItem("actkn")) {
+      socket.auth = { token: sessionStorage.getItem("actkn") };
+      socket.connect();
+    }
+  }, [user?.id]);
 
   if (!user || !user?.isAdmin) return <DontHavePermission />;
 

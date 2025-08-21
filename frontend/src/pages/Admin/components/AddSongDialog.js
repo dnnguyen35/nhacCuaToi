@@ -12,6 +12,7 @@ import {
   CircularProgress,
   Box,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -24,8 +25,8 @@ import {
   setListArtists,
   setTotalArtists,
 } from "../../../redux/slices/statsDataSlice";
-import { formatDurationToHMS } from "../../../utils/formatDurationToHMS";
 import { formatMinuteToSecond } from "../../../utils/formatMinuteToSecond";
+import { formatDurationToHMS } from "../../../utils/formatDurationToHMS";
 
 const AddSongDialog = () => {
   const { listSongs, listArtists } = useSelector((state) => state.statsData);
@@ -70,20 +71,24 @@ const AddSongDialog = () => {
       return toast.error("Please fill out songs title");
     }
 
+    if (newSong.title.length > 25) {
+      return toast.error("Song's title can't exceed 25 characters");
+    }
+
     if (newSong.artist === "") {
       return toast.error("Please choose artist");
     }
 
-    if ((newSong.artist === "otherArtist") & (newSong.newArtist === "")) {
+    if ((newSong.artist === "Other artist") & (newSong.newArtist === "")) {
       return toast.error("Please choose artist");
     }
 
-    console.log("newsong: ", newSong);
-
-    console.log("newFiles: ", files);
+    if (newSong.artist.length > 17 || newSong.newArtist.length > 17) {
+      return toast.error("Artist's name can't exceed 17 characters ");
+    }
 
     const artistName =
-      newSong.artist !== "" && newSong.artist !== "otherArtist"
+      newSong.artist !== "" && newSong.artist !== "Other artist"
         ? newSong.artist
         : newSong.newArtist;
 
@@ -93,10 +98,6 @@ const AddSongDialog = () => {
     formData.append("duration", formatMinuteToSecond(newSong.duration));
     formData.append("audioFile", files.audio);
     formData.append("imageFile", files.image);
-
-    for (let [key, val] of formData.entries()) {
-      console.log(`${key}:`, typeof val);
-    }
 
     setIsLoading(true);
 
@@ -135,7 +136,7 @@ const AddSongDialog = () => {
 
       setOpen(false);
       toast.success("Song created succeefully");
-      console.log("affter add song: ", response);
+
       const newListSongs = [
         ...listSongs,
         { ...response, playlistCount: 0, wishlistCount: 0 },
@@ -244,25 +245,19 @@ const AddSongDialog = () => {
             fullWidth
           />
 
-          <FormControl fullWidth>
-            <InputLabel>Artist</InputLabel>
-            <Select
-              value={newSong.artist}
-              label="Artist"
-              onChange={(e) =>
-                setNewSong({ ...newSong, artist: e.target.value })
-              }
-            >
-              <MenuItem value="otherArtist">Other artist</MenuItem>
-              {listArtists.map((artist, index) => (
-                <MenuItem key={index} value={artist.artist}>
-                  {artist.artist}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            sx={{ width: "100%" }}
+            options={["Other artist", ...listArtists.map((a) => a.artist)]}
+            value={newSong.artist}
+            onChange={(e, newValue) =>
+              setNewSong({ ...newSong, artist: newValue || "" })
+            }
+            renderInput={(params) => (
+              <TextField fullWidth {...params} label="Artist" />
+            )}
+          />
 
-          {newSong.artist === "otherArtist" && (
+          {newSong.artist === "Other artist" && (
             <TextField
               fullWidth
               label="New artist"

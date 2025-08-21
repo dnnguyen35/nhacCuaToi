@@ -12,6 +12,7 @@ import {
   CardContent,
   Box,
   Typography,
+  Pagination,
 } from "@mui/material";
 import {
   Lock,
@@ -24,11 +25,33 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { setListUsers } from "../../../redux/slices/statsDataSlice";
+import { useEffect } from "react";
+import { rowOnEachPage } from "../../../configs/pagination.configs";
+import Odometer from "react-odometerjs";
+import "odometer/themes/odometer-theme-default.css";
 
 const UsersTable = () => {
-  const { listUsers, isLoading } = useSelector((state) => state.statsData);
+  const { listUsers, userOnline, isLoading } = useSelector(
+    (state) => state.statsData
+  );
   const [onRequest, setOnRequest] = useState(false);
   const dispatch = useDispatch();
+
+  const rowPerPage = rowOnEachPage.wishlistTable;
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [displayListUsers, setDisplayListUsers] = useState([]);
+
+  useEffect(() => {
+    const newTotalPages = Math.ceil(listUsers.length / rowPerPage) || 0;
+    setTotalPages(newTotalPages);
+
+    const startIndex = (currentPage - 1) * rowPerPage;
+
+    const displayList =
+      listUsers.slice(startIndex, startIndex + rowPerPage) || [];
+    setDisplayListUsers(displayList);
+  }, [currentPage, listUsers]);
 
   const onBlockUserClick = async (user) => {
     if (onRequest) return;
@@ -80,7 +103,16 @@ const UsersTable = () => {
             <Typography variant="h6">Users List</Typography>
           </Box>
         }
-        subheader="Manage your users"
+        subheader={
+          <Typography sx={{ color: "primary.main", fontWeight: "bold" }}>
+            Online users:{" "}
+            <Odometer
+              value={userOnline?.length || 0}
+              format="(,ddd).dd"
+              duration={1000}
+            />
+          </Typography>
+        }
       />
       <CardContent>
         <TableContainer
@@ -114,6 +146,9 @@ const UsersTable = () => {
                   Email
                 </TableCell>
                 <TableCell sx={{ color: "primary.main", fontWeight: "bold" }}>
+                  Status
+                </TableCell>
+                <TableCell sx={{ color: "primary.main", fontWeight: "bold" }}>
                   Playlists
                 </TableCell>
                 <TableCell sx={{ color: "primary.main", fontWeight: "bold" }}>
@@ -132,11 +167,18 @@ const UsersTable = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                listUsers.map((user) => (
+                displayListUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell>{user.id}</TableCell>
                     <TableCell>{user.username}</TableCell>
                     <TableCell>{user.email}</TableCell>
+                    <TableCell
+                      sx={{
+                        color: userOnline.includes(user.id) ? "#4caf50" : "",
+                      }}
+                    >
+                      {userOnline.includes(user.id) ? "Online" : "Offline"}
+                    </TableCell>
                     <TableCell>{user.playlistCount}</TableCell>
                     <TableCell>{user.wishlistCount}</TableCell>
                     <TableCell>
@@ -162,6 +204,17 @@ const UsersTable = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {listUsers.length > 0 && !isLoading && (
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(event, value) => setCurrentPage(value)}
+              color="primary"
+            />
+          </Box>
+        )}
       </CardContent>
     </Card>
   );

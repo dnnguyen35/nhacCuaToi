@@ -4,11 +4,13 @@ import PeopleIcon from "@mui/icons-material/People";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import MicIcon from "@mui/icons-material/Mic";
+import { PaidOutlined } from "@mui/icons-material";
 
 import UsersTable from "./UsersTable";
 import SongsTable from "./SongsTable";
 import PlaylistsTable from "./PlaylistsTable";
 import ArtistsTable from "./ArtistsTable";
+import PaymentsTable from "./PaymentsTable";
 
 const TabsMenu = () => {
   const [value, setValue] = useState(0);
@@ -18,6 +20,7 @@ const TabsMenu = () => {
     { icon: <LibraryMusicIcon />, label: "Songs" },
     { icon: <QueueMusicIcon />, label: "Playlists" },
     { icon: <MicIcon />, label: "Artists" },
+    { icon: <PaidOutlined />, label: "Payments" },
   ];
 
   const handleChange = (_event, newValue) => {
@@ -64,6 +67,7 @@ const TabsMenu = () => {
         {value === 1 && <SongsTable />}
         {value === 2 && <PlaylistsTable />}
         {value === 3 && <ArtistsTable />}
+        {value === 4 && <PaymentsTable />}
       </Box>
     </Box>
   );

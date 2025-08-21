@@ -13,6 +13,7 @@ import {
   CardContent,
   Box,
   Typography,
+  Pagination,
 } from "@mui/material";
 import {
   DeleteForever,
@@ -27,13 +28,15 @@ import AddSongDialog from "./AddSongDialog";
 import Swal from "sweetalert2";
 import UpdateSongDialog from "./UpdateSongDialog";
 import { useSelector, useDispatch } from "react-redux";
-import { formatDurationToHMS } from "../../../utils/formatDurationToHMS";
 import {
   setListSongs,
   setTotalSongs,
   setListArtists,
   setTotalArtists,
 } from "../../../redux/slices/statsDataSlice";
+import { formatDurationToHMS } from "../../../utils/formatDurationToHMS";
+import { useEffect } from "react";
+import { rowOnEachPage } from "../../../configs/pagination.configs";
 
 const SongsTable = () => {
   const { listSongs, listArtists } = useSelector((state) => state.statsData);
@@ -41,6 +44,11 @@ const SongsTable = () => {
   const [isUpdateSongDialogOpen, setIsUpdateSongDialogOpen] = useState(false);
 
   const dispatch = useDispatch();
+
+  const rowPerPage = rowOnEachPage.wishlistTable;
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [displayListSongs, setDisplayListSongs] = useState([]);
 
   const { themeMode } = useSelector((state) => state.themeMode);
 
@@ -92,6 +100,20 @@ const SongsTable = () => {
       dispatch(setTotalArtists(newListArtists.length));
     }
   };
+
+  useEffect(() => {
+    const newTotalPages = Math.ceil(listSongs.length / rowPerPage) || 0;
+    setTotalPages(newTotalPages);
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(newTotalPages);
+    }
+
+    const startIndex = (currentPage - 1) * rowPerPage;
+
+    const displayList =
+      listSongs.slice(startIndex, startIndex + rowPerPage) || [];
+    setDisplayListSongs(displayList);
+  }, [currentPage, listSongs]);
 
   return (
     <Card>
@@ -151,7 +173,7 @@ const SongsTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {listSongs.map((song) => (
+              {displayListSongs.map((song) => (
                 <TableRow key={song.id}>
                   <TableCell>{song.id}</TableCell>
                   <TableCell>
@@ -194,6 +216,17 @@ const SongsTable = () => {
             isUpdateSongDialogOpen={isUpdateSongDialogOpen}
             setIsUpdateSongDialogOpen={setIsUpdateSongDialogOpen}
           />
+        )}
+
+        {listSongs.length > 0 && (
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(event, value) => setCurrentPage(value)}
+              color="primary"
+            />
+          </Box>
         )}
       </CardContent>
     </Card>

@@ -13,41 +13,48 @@ import {
   Typography,
   Pagination,
 } from "@mui/material";
-import { QueueMusic } from "@mui/icons-material";
+import { PaidOutlined } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { useEffect } from "react";
 import { rowOnEachPage } from "../../../configs/pagination.configs";
+import Odometer from "react-odometerjs";
+import "odometer/themes/odometer-theme-default.css";
 
-const PlaylistsTable = () => {
-  const { listPlaylists } = useSelector((state) => state.statsData);
+const PaymentsTable = () => {
+  const { listPayments, totalProfit } = useSelector((state) => state.statsData);
 
   const rowPerPage = rowOnEachPage.artistTable;
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [displayListPlaylists, setDisplayListPlaylists] = useState([]);
+  const [displayListPayments, setDisplayListPayments] = useState([]);
 
   useEffect(() => {
-    const newTotalPages = Math.ceil(listPlaylists.length / rowPerPage) || 0;
+    const newTotalPages = Math.ceil(listPayments.length / rowPerPage) || 0;
     setTotalPages(newTotalPages);
 
     const startIndex = (currentPage - 1) * rowPerPage;
 
     const displayList =
-      listPlaylists.slice(startIndex, startIndex + rowPerPage) || [];
-    setDisplayListPlaylists(displayList);
-  }, [currentPage, listPlaylists]);
+      listPayments.slice(startIndex, startIndex + rowPerPage) || [];
+    setDisplayListPayments(displayList);
+  }, [currentPage, listPayments]);
 
   return (
     <Card>
       <CardHeader
         title={
           <Box display="flex" alignItems="center" gap={1}>
-            <QueueMusic sx={{ color: "green" }} fontSize="small" />
-            <Typography variant="h6">Playlists</Typography>
+            <PaidOutlined sx={{ color: "green" }} fontSize="small" />
+            <Typography variant="h6">Payments</Typography>
           </Box>
         }
-        subheader="Manage your playlists"
+        subheader={
+          <Typography sx={{ color: "primary.main", fontWeight: "bold" }}>
+            Total profit (VND):{" "}
+            <Odometer value={totalProfit} format="(,ddd).dd" duration={1000} />
+          </Typography>
+        }
       />
       <CardContent>
         <TableContainer
@@ -72,29 +79,35 @@ const PlaylistsTable = () => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ color: "primary.main" }}>#</TableCell>
-                <TableCell sx={{ color: "primary.main" }}>Playlist</TableCell>
-                <TableCell sx={{ color: "primary.main" }}>Username</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>OrderId</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>RequestId</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Created At</TableCell>
-                <TableCell sx={{ color: "primary.main" }}>
-                  Total songs
-                </TableCell>
+                <TableCell sx={{ color: "primary.main" }}>Total</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>Content</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>Status</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>UserId</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayListPlaylists.map((playlist) => (
-                <TableRow key={playlist.id}>
-                  <TableCell>{playlist.id}</TableCell>
-                  <TableCell>{playlist.name}</TableCell>
-                  <TableCell>{playlist.username}</TableCell>
-                  <TableCell>{playlist.createdAt.split("T")[0]}</TableCell>
-                  <TableCell>{playlist.songCount}</TableCell>
+              {displayListPayments.map((payment) => (
+                <TableRow key={payment.id}>
+                  <TableCell>{payment.id}</TableCell>
+                  <TableCell>{payment.orderId}</TableCell>
+                  <TableCell>{payment.requestId}</TableCell>
+                  <TableCell>{payment.createdAt.split("T")[0]}</TableCell>
+                  <TableCell>
+                    {new Intl.NumberFormat("vi-VN").format(payment.amount)}
+                  </TableCell>
+                  <TableCell>{payment.orderInfo}</TableCell>
+                  <TableCell>{payment.status}</TableCell>
+                  <TableCell>{payment.userId}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
 
-        {listPlaylists.length > 0 && (
+        {listPayments.length > 0 && (
           <Box display="flex" justifyContent="center" mt={3}>
             <Pagination
               count={totalPages}
@@ -109,4 +122,4 @@ const PlaylistsTable = () => {
   );
 };
 
-export default PlaylistsTable;
+export default PaymentsTable;

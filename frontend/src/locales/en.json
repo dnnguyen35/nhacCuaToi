@@ -19,7 +19,7 @@
     "signUp": "sign up",
     "forgotPassword": "forgot password",
     "resetPassword": "reset password",
-    "createPlaylist": "create playlist",
+    "createPlaylist": "Create Playlist",
     "add": "add",
     "cancel": "cancel",
     "verifyOtp": "Verify",
@@ -28,7 +28,9 @@
     "en": "english",
     "darkMode": "dark mode",
     "lightMode": "light mode",
-    "adminDashboard": "admin"
+    "adminDashboard": "admin",
+    "payPremium": "Upgrade",
+    "addSongIntoPlaylist": "Add To Playlist"
   },
   "songTable": {
     "image": "image",
@@ -39,6 +41,14 @@
     "releasedDate": "released date",
     "actions": "actions",
     "thereNoSong": "There is no song now"
+  },
+  "paymentTable": {
+    "content": "content",
+    "createdDate": "created date",
+    "status": "status",
+    "payment": "payment",
+    "total": "total(vnd)",
+    "thereNoPayment": "There is no payment now"
   },
   "formField": {
     "email": "Email",
@@ -131,13 +141,22 @@
     "OTP is required": "OTP is required",
     "OTP must be exactly 6 digits": "OTP must be exactly 6 digits",
     "OTP must contain only numbers": "OTP must contain only numbers",
-    "Session expired! Please sign up again": "Session expired! Please sign up again"
+    "Session expired! Please sign up again": "Session expired! Please sign up again",
+    "You only can reset 2 times! Come back tomorrow": "You only can reset 2 times! Come back tomorrow",
+    "Playlist name exceed 15 characters": "Playlist name exceed 15 characters",
+
+    "You have exceed 5 playlist slot": "You have exceed playlist slot, Please pay for more slot",
+    "You are blocked": "Your account is currently blocked"
   },
   "sweetalert": {
     "Are you sure?": "Are you sure?",
     "Do you really want to delete": "Do you really want to delete",
     "? This action cannot be undone.": "? This action cannot be undone.",
     "Yes, delete it!": "Yes, delete it!",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "Payment successfully": "Payment successfully",
+    "Upgrade service": "Now you can create 5 more playlist",
+    "Payment failed": "Payment failed",
+    "Upgrade service failed": "Service is temporary interrupt now, Please try later"
   }
 }

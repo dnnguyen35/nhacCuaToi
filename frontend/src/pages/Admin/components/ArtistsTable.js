@@ -12,11 +12,31 @@ import {
   CardContent,
   Box,
   Typography,
+  Pagination,
 } from "@mui/material";
+import { useEffect } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
+import { rowOnEachPage } from "../../../configs/pagination.configs";
 
-const ArtistsTable = ({ listArtistsData }) => {
+const ArtistsTable = () => {
   const { listArtists } = useSelector((state) => state.statsData);
+
+  const rowPerPage = rowOnEachPage.artistTable;
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [displayListArtists, setDisplayListArtists] = useState([]);
+
+  useEffect(() => {
+    const newTotalPages = Math.ceil(listArtists.length / rowPerPage) || 0;
+    setTotalPages(newTotalPages);
+
+    const startIndex = (currentPage - 1) * rowPerPage;
+
+    const displayList =
+      listArtists.slice(startIndex, startIndex + rowPerPage) || [];
+    setDisplayListArtists(displayList);
+  }, [currentPage, listArtists]);
 
   return (
     <Card>
@@ -65,9 +85,11 @@ const ArtistsTable = ({ listArtistsData }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {listArtists.map((artist, index) => (
+              {displayListArtists.map((artist, index) => (
                 <TableRow key={index}>
-                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>
+                    {(currentPage - 1) * rowPerPage + index + 1}
+                  </TableCell>
                   <TableCell>{artist.artist}</TableCell>
                   <TableCell>{artist.songCount}</TableCell>
                   <TableCell>{artist.playlistCount}</TableCell>
@@ -77,6 +99,17 @@ const ArtistsTable = ({ listArtistsData }) => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {listArtists.length > 0 && (
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(event, value) => setCurrentPage(value)}
+              color="primary"
+            />
+          </Box>
+        )}
       </CardContent>
     </Card>
   );

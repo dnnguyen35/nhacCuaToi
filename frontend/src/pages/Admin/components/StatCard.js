@@ -1,4 +1,6 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
+import Odometer from "react-odometerjs";
+import "odometer/themes/odometer-theme-default.css";
 
 const StatCard = ({ icon, label, value }) => {
   return (
@@ -19,7 +21,7 @@ const StatCard = ({ icon, label, value }) => {
               {label}
             </Typography>
             <Typography variant="h5" fontWeight="bold">
-              {value}
+              <Odometer format="d" duration={1000} value={value} />
             </Typography>
           </Box>
         </Box>

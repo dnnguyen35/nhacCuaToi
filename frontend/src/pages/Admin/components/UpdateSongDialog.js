@@ -32,8 +32,6 @@ const UpdateSongDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  console.log("updateSong: ", song);
-
   const [updateSong, setUpdateSong] = useState({
     title: song.title,
     artist: song.artist,
@@ -103,7 +101,7 @@ const UpdateSongDialog = ({
 
       setIsUpdateSongDialogOpen(false);
       toast.success("Song updated succeefully");
-      console.log("affter update song: ", response);
+
       const newListSongs = listSongs.map((prevSong) =>
         prevSong.id === response.song.id
           ? {
@@ -113,7 +111,7 @@ const UpdateSongDialog = ({
             }
           : prevSong
       );
-      console.log("list song after edit song: ", newListSongs);
+
       dispatch(setListSongs(newListSongs));
     }
   };
