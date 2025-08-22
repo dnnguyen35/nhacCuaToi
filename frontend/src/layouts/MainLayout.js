@@ -38,13 +38,13 @@ const MainLayout = () => {
     socket.on("payment_success", ({ orderId, amount, resultCode }) => {
       Swal.fire({
         title: t(
-          resultCode === 0
+          resultCode === "00"
             ? "sweetalert.Payment successfully"
             : "sweetalert.Payment failed"
         ),
         html: `
           <p>${t(
-            resultCode === 0
+            resultCode === "00"
               ? "sweetalert.Upgrade service"
               : "sweetalert.Upgrade service failed"
           )}</p>
@@ -53,7 +53,7 @@ const MainLayout = () => {
           )} VND</strong></p>
           <p>OrderId: <code>${orderId}</code></p>
         `,
-        icon: resultCode === 0 ? "success" : "warning",
+        icon: resultCode === "00" ? "success" : "warning",
         theme: themeMode,
       });
     });

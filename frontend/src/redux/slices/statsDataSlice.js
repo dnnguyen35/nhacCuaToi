@@ -72,7 +72,10 @@ const statsDataSlice = createSlice({
       );
 
       state.listPayments = newListPayments;
-      state.totalProfit = state.totalProfit + updatePayment.amount;
+
+      if (updatePayment.status === "completed") {
+        state.totalProfit = state.totalProfit + updatePayment.amount;
+      }
     },
     setNewUser: (state, action) => {
       const newUser = action.payload;

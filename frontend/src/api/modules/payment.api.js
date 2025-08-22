@@ -18,7 +18,7 @@ const paymentApi = {
     }
   },
 
-  createPayment: async ({ amount = 10000, orderInfo = "Up premium" }) => {
+  createPayment: async ({ amount = 10000, orderInfo = "Up" }) => {
     try {
       const response = await privateClient.post(
         paymentEndpoints.createPayment,

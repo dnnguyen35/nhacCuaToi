@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { sendEmail } from "../utils/sendEmail.js";
 import { getIO, getUserSocketId } from "../configs/socket.js";
 import redis from "../configs/redis.js";
+import payos from "../configs/payos.js";
 
 const getAllPaymentsOfUser = async (req, res) => {
   try {
@@ -45,67 +46,33 @@ const createPayment = async (req, res) => {
     const { amount, orderInfo } = req.body;
     const userId = req.user.id;
 
-    const orderId = uuidv4();
+    const orderCode = parseInt(
+      `${userId}${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`
+    );
     const requestId = uuidv4();
 
-    const rawSignature =
-      `accessKey=${process.env.MOMO_ACCESS_KEY}` +
-      `&amount=${amount}` +
-      `&extraData=${userId}` +
-      `&ipnUrl=${process.env.IPN_URL}` +
-      `&orderId=${orderId}` +
-      `&orderInfo=${orderInfo}` +
-      `&partnerCode=${process.env.MOMO_PARTNER_CODE}` +
-      `&redirectUrl=${process.env.REDIRECT_URL}` +
-      `&requestId=${requestId}` +
-      `&requestType=payWithATM`;
-
-    const signature = crypto
-      .createHmac("sha256", process.env.MOMO_SECRET_KEY)
-      .update(rawSignature)
-      .digest("hex");
-
     const paymentBody = {
-      partnerCode: process.env.MOMO_PARTNER_CODE,
-      accessKey: process.env.MOMO_ACCESS_KEY,
-      requestId,
+      orderCode,
       amount,
-      orderId,
-      orderInfo,
-      redirectUrl: process.env.REDIRECT_URL,
-      ipnUrl: process.env.IPN_URL,
-      extraData: `${userId}`,
-      requestType: "payWithATM",
-      signature,
-      lang: "vi",
+      description: `${orderInfo} ${userId}`,
+      returnUrl: process.env.REDIRECT_URL,
+      cancelUrl: process.env.REDIRECT_URL,
     };
 
-    const response = await axios.post(
-      process.env.MOMO_CREATE_PAYMENT_URL,
-      paymentBody,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await payos.createPaymentLink(paymentBody);
 
-    if (
-      !response.data ||
-      response.data.resultCode !== 0 ||
-      !response.data.payUrl
-    ) {
+    if (!response || !response.checkoutUrl) {
       return res.status(400).json({ message: "Service is not available now" });
     }
 
-    const payUrl = response.data.payUrl;
+    const payUrl = response.checkoutUrl;
 
     const [newPayment] = await Promise.all([
       paymentModel.create({
-        orderId,
+        orderId: String(orderCode),
         requestId,
         amount,
-        orderInfo,
+        orderInfo: `${orderInfo} ${userId}`,
         payUrl,
         userId,
         status: "pending",
@@ -120,6 +87,7 @@ const createPayment = async (req, res) => {
 
     res.status(201).json({ message: "Create payment successfully", payUrl });
   } catch (error) {
+    console.error("Error creating payment:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -127,51 +95,40 @@ const createPayment = async (req, res) => {
 const handleIPN = async (req, res) => {
   try {
     console.log("handling ipn");
-    const {
-      partnerCode,
-      accessKey,
-      orderId,
-      requestId,
-      amount,
-      orderInfo,
-      orderType,
-      transId,
-      resultCode,
-      message,
-      payType,
-      responseTime,
-      extraData,
-      signature,
-    } = req.body;
 
-    const rawSignature =
-      `accessKey=${process.env.MOMO_ACCESS_KEY}` +
-      `&amount=${amount}` +
-      `&extraData=${extraData}` +
-      `&message=${message}` +
-      `&orderId=${orderId}` +
-      `&orderInfo=${orderInfo}` +
-      `&orderType=${orderType}` +
-      `&partnerCode=${partnerCode}` +
-      `&payType=${payType}` +
-      `&requestId=${requestId}` +
-      `&responseTime=${responseTime}` +
-      `&resultCode=${resultCode}` +
-      `&transId=${transId}`;
+    const { code, desc, data, signature } = req.body;
+
+    console.log("IPN data:", data);
+
+    const sortedKeys = Object.keys(data).sort();
+    console.log("Sorted keys:", sortedKeys);
+
+    const alphabeticalData = sortedKeys
+      .map((key) => `${key}=${data[key] ?? ""}`)
+      .join("&");
+
+    console.log("Alphabetical data:", alphabeticalData);
 
     const realSignature = crypto
-      .createHmac("sha256", process.env.MOMO_SECRET_KEY)
-      .update(rawSignature)
+      .createHmac("sha256", process.env.PAYOS_CHECKSUM_KEY)
+      .update(alphabeticalData)
       .digest("hex");
 
+    console.log("checksumKey:", process.env.PAYOS_CHECKSUM_KEY);
+
     if (realSignature !== signature) {
-      return res.status(400).json({ message: "Invalid MoMo signature" });
+      console.error("Invalid signature:", realSignature, signature);
+      return res.status(400).json({ message: "Invalid PAYOS signature" });
     }
 
-    const userId = Number(extraData);
+    const userId = parseInt(data.description.split(" ")[2]);
+    const orderId = String(data.orderCode);
+
+    console.log("User ID:", userId);
+    console.log("Order ID:", orderId);
 
     const payment = await paymentModel.findOne({
-      where: { orderId, requestId, userId },
+      where: { orderId, userId },
     });
 
     const user = await userModel.findByPk(userId);
@@ -184,7 +141,7 @@ const handleIPN = async (req, res) => {
       return res.status(200).json({ message: "Payment already handled" });
     }
 
-    if (resultCode === 0 && message === "Successful.") {
+    if (code === "00" && desc === "success") {
       user.playlistLimit += 5;
       user.songLimit += 25;
     }
@@ -195,14 +152,19 @@ const handleIPN = async (req, res) => {
       if (userSocketId) {
         getIO()
           .to(userSocketId)
-          .emit("payment_success", { orderId, amount, resultCode });
+          .emit("payment_success", {
+            orderId,
+            amount: data.amount,
+            resultCode: code,
+          });
         console.log("payment notify sended");
       }
     }, 10000);
 
-    payment.resultCode = resultCode;
-    payment.message = message;
-    payment.status = resultCode === 0 ? "completed" : "uncompleted";
+    payment.resultCode = parseInt(code);
+    payment.message = desc;
+    payment.status = code === "00" ? "completed" : "uncompleted";
+    payment.orderInfo = data.description;
 
     await Promise.all([
       user.save(),
