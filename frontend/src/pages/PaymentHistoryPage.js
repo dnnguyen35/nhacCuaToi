@@ -115,8 +115,8 @@ const PaymentHistoryPage = () => {
               src={"/paymentIcon.webp"}
               alt={"nhaccuatoi"}
               sx={{
-                width: 240,
-                height: 240,
+                width: 200,
+                height: 200,
                 borderRadius: 1,
                 boxShadow: 6,
                 objectFit: "cover",
@@ -247,9 +247,7 @@ const PaymentHistoryPage = () => {
                         sx={{ cursor: "pointer" }}
                       >
                         <TableCell align="center">
-                          <Typography>
-                            {(currentPage - 1) * 5 + index + 1}
-                          </Typography>
+                          <Typography>{payment.id}</Typography>
                         </TableCell>
                         <TableCell>
                           <Typography>{payment.orderInfo}</Typography>
@@ -258,7 +256,9 @@ const PaymentHistoryPage = () => {
                           align="center"
                           sx={{ display: { xs: "none", sm: "table-cell" } }}
                         >
-                          {payment.createdAt.split("T")[0]}
+                          {new Date(payment.createdAt).toLocaleString("vi-VN", {
+                            timeZone: "Asia/Ho_Chi_Minh",
+                          })}
                         </TableCell>
                         <TableCell align="center">
                           <Typography>

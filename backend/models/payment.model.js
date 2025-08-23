@@ -15,7 +15,7 @@ const paymentModel = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    requestId: {
+    accountNumber: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -27,7 +27,7 @@ const paymentModel = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    payUrl: {
+    accountBankId: {
       type: DataTypes.STRING,
     },
     resultCode: {

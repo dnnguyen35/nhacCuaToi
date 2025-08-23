@@ -70,10 +70,10 @@ const createPayment = async (req, res) => {
     const [newPayment] = await Promise.all([
       paymentModel.create({
         orderId: String(orderCode),
-        requestId,
+        accountNumber: "N/A",
         amount,
         orderInfo: `${orderInfo} ${userId}`,
-        payUrl,
+        accountBankId: "N/A",
         userId,
         status: "pending",
       }),
@@ -150,13 +150,11 @@ const handleIPN = async (req, res) => {
       const userSocketId = getUserSocketId(userId);
 
       if (userSocketId) {
-        getIO()
-          .to(userSocketId)
-          .emit("payment_success", {
-            orderId,
-            amount: data.amount,
-            resultCode: code,
-          });
+        getIO().to(userSocketId).emit("payment_success", {
+          orderId,
+          amount: data.amount,
+          resultCode: code,
+        });
         console.log("payment notify sended");
       }
     }, 10000);
@@ -165,6 +163,8 @@ const handleIPN = async (req, res) => {
     payment.message = desc;
     payment.status = code === "00" ? "completed" : "uncompleted";
     payment.orderInfo = data.description;
+    payment.accountNumber = data.counterAccountNumber || "N/A";
+    payment.accountBankId = data.counterAccountBankId || "N/A";
 
     await Promise.all([
       user.save(),

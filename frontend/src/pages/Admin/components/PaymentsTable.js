@@ -78,23 +78,29 @@ const PaymentsTable = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: "primary.main" }}>#</TableCell>
-                <TableCell sx={{ color: "primary.main" }}>OrderId</TableCell>
-                <TableCell sx={{ color: "primary.main" }}>RequestId</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>ID</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>Bank ID</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>
+                  Account Number
+                </TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Created At</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Total</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Content</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Status</TableCell>
-                <TableCell sx={{ color: "primary.main" }}>UserId</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>User ID</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {displayListPayments.map((payment) => (
                 <TableRow key={payment.id}>
                   <TableCell>{payment.id}</TableCell>
-                  <TableCell>{payment.orderId}</TableCell>
-                  <TableCell>{payment.requestId}</TableCell>
-                  <TableCell>{payment.createdAt.split("T")[0]}</TableCell>
+                  <TableCell>{payment.accountBankId}</TableCell>
+                  <TableCell>{payment.accountNumber}</TableCell>
+                  <TableCell>
+                    {new Date(payment.createdAt).toLocaleString("vi-VN", {
+                      timeZone: "Asia/Ho_Chi_Minh",
+                    })}
+                  </TableCell>
                   <TableCell>
                     {new Intl.NumberFormat("vi-VN").format(payment.amount)}
                   </TableCell>
