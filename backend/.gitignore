@@ -5,7 +5,6 @@
 
 # misc
 .env
-Dockerfile
 test.http
 music_manager.sql
 /temp

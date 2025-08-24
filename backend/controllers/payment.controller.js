@@ -96,9 +96,13 @@ const handleIPN = async (req, res) => {
   try {
     console.log("handling ipn");
 
-    const { code, desc, data, signature } = req.body;
+    const { code, desc, data, signature, success } = req.body;
 
     console.log("IPN data:", data);
+
+    if (!success) {
+      return res.status(200).json({ message: "Test ok" });
+    }
 
     const sortedKeys = Object.keys(data).sort();
     console.log("Sorted keys:", sortedKeys);

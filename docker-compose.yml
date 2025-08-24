@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - nhaccuanguyen-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      BACKEND_SWAGGER_URL: https://nhaccuanguyen.luontuoivui.xyz/api/v1
+      FRONTEND_URL: https://nhaccuanguyen.luontuoivui.xyz
+      REDIRECT_URL: https://nhaccuanguyen.luontuoivui.xyz
+      IPN_URL: https://nhaccuanguyen.luontuoivui.xyz/api/v1/payments/ipn
+    networks:
+      - nhaccuanguyen-network
+
+networks:
+  nhaccuanguyen-network:
+    driver: bridge
