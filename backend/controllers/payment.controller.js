@@ -101,7 +101,7 @@ const handleIPN = async (req, res) => {
     console.log("IPN data:", data);
 
     if (!success) {
-      return res.status(200).json({ message: "Test ok" });
+      return res.status(200).json({ message: "Test request ok" });
     }
 
     const sortedKeys = Object.keys(data).sort();
