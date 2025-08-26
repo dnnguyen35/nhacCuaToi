@@ -30,8 +30,7 @@ jobs:
               sudo docker compose -f docker-compose.yml down --volumes --rmi all
               sudo docker system prune -a -f
               sudo docker compose -f docker-compose.yml up -d --build
-            } &> deploy.log
-            sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' deploy.log > deploy_escaped.log
+            } 2>&1 | tee deploy_escaped.log
 
       - name: Send email notification
         if: always()
