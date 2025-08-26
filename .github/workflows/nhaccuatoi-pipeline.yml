@@ -34,10 +34,13 @@ jobs:
 
       - name: Copy log file deploy_escaped.log from ec2 to run_number
         run: |
-          scp -i ${{ secrets.EC2_KEY_NHACCUATOI }} \
+          echo "${{ secrets.EC2_KEY_NHACCUATOI }}" > ec2_nhaccuatoi_key.pem
+          chmod 600 ec2_nhaccuatoi_key.pem
+          scp -i ec2_nhaccuatoi_key.pem \
             -o StrictHostKeyChecking=no \
             ${{ secrets.EC2_USER_NHACCUATOI }}@${{ secrets.EC2_HOST_NHACCUATOI }}:/home/${{ secrets.EC2_USER_NHACCUATOI }}/nhacCuaToi/deploy_escaped.log \
             ./deploy_escaped.log
+          rm -f ec2_nhaccuatoi_key.pem
 
       - name: Send email notification
         if: always()
