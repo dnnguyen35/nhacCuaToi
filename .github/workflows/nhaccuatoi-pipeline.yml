@@ -1,0 +1,70 @@
+name: CI/CD Pipeline nhacCuaToi
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH into EC2 and deploy
+        id: deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_NHACCUATOI}}
+          username: ${{ secrets.EC2_USER_NHACCUATOI }}
+          key: ${{ secrets.EC2_KEY_NHACCUATOI }}
+          port: 22
+          script_stop: true
+          export_outputs: true
+          script: |
+            set -e
+            cd /home/${{ secrets.EC2_USER_NHACCUATOI }}/nhacCuaToi
+            git pull origin main
+            sudo docker compose -f docker-compose.yml down --volumes --rmi all
+            sudo docker system prune -a -f
+            sudo docker compose -f docker-compose.yml up -d --build
+
+      - name: Send email notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          port: 465
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_APP_PASS }}
+          subject: ${{ steps.deploy.outcome }} - Deployment nhacCuaToi
+          to: "dnnguyeen2003@gmail.com"
+          from: "nhacCuaToi <${{ secrets.GMAIL_USER }}>"
+          content_type: "text/html"
+          body: |
+            <html>
+              <body>
+                <h2>Deployment nhacCuaToi</h2>
+                <p>Job name: <b>${{ github.job }}</b></p>
+                <p>Repository: <b>${{ github.repository }}</b></p>
+                <p>Branch: <b>${{ github.ref }}</b></p>
+                <p>Commit: <b>${{ github.sha }}</b></p>
+                <p>Author: <b>${{ github.actor }}</b></p>
+                <p>Workflow: <b>${{ github.workflow }}</b></p>
+                <p>Run number: <b>${{ github.run_number }}</b></p>
+                <p>Run ID: <b>${{ github.run_id }}</b></p>
+
+                <p>Status: 
+                  <b style="color: ${{ job.status == 'success' && 'green' || 'red' }}">
+                    ${{ job.status }}
+                  </b>
+                </p>
+
+                <hr>
+                <h3>Logs from deploy step of job:</h3>
+                <pre style="background:#f4f4f4; padding:10px; border:1px solid #ccc; overflow:auto;">
+                  ${{ steps.deploy.outputs.output }}
+                </pre>
+              </body>
+            </html>
