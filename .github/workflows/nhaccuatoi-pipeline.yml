@@ -25,24 +25,27 @@ jobs:
           script: |
             set -e
             cd /home/${{ secrets.EC2_USER_NHACCUATOI }}/nhacCuaToi
-            git pull origin main
-            sudo docker compose -f docker-compose.yml down --volumes --rmi all
-            sudo docker system prune -a -f
-            sudo docker compose -f docker-compose.yml up -d --build
+            {
+              git pull origin main
+              sudo docker compose -f docker-compose.yml down --volumes --rmi all
+              sudo docker system prune -a -f
+              sudo docker compose -f docker-compose.yml up -d --build
+            } &> deploy.log
+            sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' deploy.log > deploy_escaped.log
 
       - name: Send email notification
         if: always()
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
-          port: 465
+          server_port: 465
+          secure: true
           username: ${{ secrets.GMAIL_USER }}
           password: ${{ secrets.GMAIL_APP_PASS }}
           subject: ${{ steps.deploy.outcome }} - Deployment nhacCuaToi
-          to: "dnnguyeen2003@gmail.com"
+          to: "${{ secrets.GMAIL_USER }}"
           from: "nhacCuaToi <${{ secrets.GMAIL_USER }}>"
-          content_type: "text/html"
-          body: |
+          html_body: |
             <html>
               <body>
                 <h2>Deployment nhacCuaToi</h2>
@@ -62,9 +65,7 @@ jobs:
                 </p>
 
                 <hr>
-                <h3>Logs from deploy step of job:</h3>
-                <pre style="background:#f4f4f4; padding:10px; border:1px solid #ccc; overflow:auto;">
-                  ${{ steps.deploy.outputs.output }}
-                </pre>
+                <h3>The detailed log is attached</h3>
               </body>
             </html>
+          attachments: deploy_escaped.log
