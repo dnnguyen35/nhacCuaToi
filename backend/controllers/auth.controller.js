@@ -258,13 +258,13 @@ const resetPassword = async (req, res) => {
     if (!resetPasswordTime) {
       await Promise.all([
         redis.setex(`reset-password-time:${email}`, 86400, 1),
-        pushEmailJob(email, "otp", otp),
+        pushEmailJob(email, "resetPassword", newPassword),
         // sendEmail(email, "resetPassword", newPassword),
       ]);
     } else {
       await Promise.all([
         redis.incr(`reset-password-time:${email}`),
-        pushEmailJob(email, "otp", otp),
+        pushEmailJob(email, "resetPassword", newPassword),
         // sendEmail(email, "resetPassword", newPassword),
       ]);
     }
