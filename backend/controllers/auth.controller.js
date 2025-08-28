@@ -6,6 +6,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 import redis from "../configs/redis.js";
 import { verifyEmailExists } from "../utils/verifyEmailExists.js";
 import { getIO } from "../configs/socket.js";
+import { pushEmailJob } from "../utils/pushJob.js";
 
 const signup = async (req, res) => {
   try {
@@ -46,7 +47,8 @@ const signup = async (req, res) => {
     await Promise.all([
       redis.setex(`signup-otp:${email}`, 120, otp.toString()),
       redis.setex(`signup-info:${email}`, 900, signupInfo),
-      sendEmail(email, "otp", otp),
+      pushEmailJob(email, "otp", otp),
+      // sendEmail(email, "otp", otp),
     ]);
 
     res
@@ -149,7 +151,8 @@ const resendOtp = async (req, res) => {
 
     await Promise.all([
       redis.setex(`signup-otp:${email}`, 120, otp.toString()),
-      sendEmail(email, "otp", otp),
+      pushEmailJob(email, "otp", otp),
+      // sendEmail(email, "otp", otp),
     ]);
 
     res
@@ -255,12 +258,14 @@ const resetPassword = async (req, res) => {
     if (!resetPasswordTime) {
       await Promise.all([
         redis.setex(`reset-password-time:${email}`, 86400, 1),
-        sendEmail(email, "resetPassword", newPassword),
+        pushEmailJob(email, "otp", otp),
+        // sendEmail(email, "resetPassword", newPassword),
       ]);
     } else {
       await Promise.all([
         redis.incr(`reset-password-time:${email}`),
-        sendEmail(email, "resetPassword", newPassword),
+        pushEmailJob(email, "otp", otp),
+        // sendEmail(email, "resetPassword", newPassword),
       ]);
     }
 

@@ -7,6 +7,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 import { getIO, getUserSocketId } from "../configs/socket.js";
 import redis from "../configs/redis.js";
 import payos from "../configs/payos.js";
+import { pushEmailJob } from "../utils/pushJob.js";
 
 const getAllPaymentsOfUser = async (req, res) => {
   try {
@@ -173,7 +174,8 @@ const handleIPN = async (req, res) => {
     await Promise.all([
       user.save(),
       payment.save(),
-      sendEmail(user.email, "payment", orderId),
+      pushEmailJob(user.email, "payment", orderId),
+      // sendEmail(user.email, "payment", orderId),
       redis.del("admin:payment-stats"),
     ]);
 

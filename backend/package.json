@@ -15,6 +15,7 @@
   "dependencies": {
     "@payos/node": "^1.0.10",
     "@upstash/redis": "^1.35.0",
+    "amqplib": "^0.10.9",
     "axios": "^1.9.0",
     "cloudinary": "^2.6.1",
     "cookie-parser": "^1.4.7",

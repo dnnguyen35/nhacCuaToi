@@ -19,6 +19,7 @@ import {
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger.js";
 import { initializeSocket } from "./configs/socket.js";
+import { initRabbitMQ } from "./configs/rabbitmq.js";
 
 const app = express();
 const __dirname = path.resolve();
@@ -43,7 +44,7 @@ app.use(
   })
 );
 
-app.get("/ok", (req, res) => {
+app.get("/api/v1/check", (req, res) => {
   res.json({
     message: "Everything still ok",
     timestamp: new Date().toLocaleString("en-US", {
@@ -64,12 +65,14 @@ sequelize
     console.log("DB connected");
     return sequelize.sync({ force: false });
   })
-  .then(() => {
+  .then(async () => {
+    await initRabbitMQ();
+
     server.listen(process.env.PORT, () => {
       console.log("Server listening on port 5000");
     });
   })
-  .catch((err) => {
-    console.log({ err });
+  .catch((error) => {
+    console.log({ error });
     process.exit(1);
   });

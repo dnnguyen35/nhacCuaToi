@@ -26,6 +26,16 @@ services:
     networks:
       - nhaccuanguyen-network
 
+  email-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["node", "workers/email.worker.js"]
+    depends_on:
+      - backend
+    networks:
+      - nhaccuanguyen-network
+
 networks:
   nhaccuanguyen-network:
     driver: bridge
