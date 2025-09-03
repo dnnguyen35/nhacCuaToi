@@ -6,6 +6,8 @@ import playlistModel from "../models/playlist.model.js";
 import sequelize from "../configs/db.js";
 import redis from "../configs/redis.js";
 import { getIO, getUserSocketId } from "../configs/socket.js";
+import artistModel from "../models/artist.model.js";
+import albumModel from "../models/album.model.js";
 
 const getUserStats = async (req, res) => {
   try {
@@ -311,17 +313,26 @@ const getArtistStats = async (req, res) => {
       return res.status(200).json(cachedArtistStats);
     }
 
-    const artistStats = await songModel.findAll({
+    const artistStats = await artistModel.findAll({
       attributes: [
+        "id",
         "artist",
-        [sequelize.fn("COUNT", sequelize.col("Song.id")), "songCount"],
+        "imageUrl",
+        [
+          sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM songs AS s
+            WHERE s.artistId = Artist.id
+          )`),
+          "songCount",
+        ],
         [
           sequelize.literal(`(
             SELECT COUNT(DISTINCT ps.playlistId)
             FROM playlist_songs AS ps
             INNER JOIN songs AS s 
             ON s.id = ps.songId
-            WHERE s.artist = Song.artist
+            WHERE s.artistId = Artist.id
           )`),
           "playlistCount",
         ],
@@ -331,12 +342,11 @@ const getArtistStats = async (req, res) => {
             FROM wishlists AS w
             INNER JOIN songs AS s 
             ON s.id = w.songId
-            WHERE s.artist = Song.artist
+            WHERE s.artistId = Artist.id
           )`),
           "wishlistCount",
         ],
       ],
-      group: ["artist"],
     });
 
     if (!artistStats) {

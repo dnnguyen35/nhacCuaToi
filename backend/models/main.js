@@ -5,6 +5,8 @@ import playlistModel from "./playlist.model.js";
 import playlistSongModel from "./playlistSong.model.js";
 import wishlistModel from "./wishlist.model.js";
 import paymentModel from "./payment.model.js";
+import albumModel from "./album.model.js";
+import artistModel from "./artist.model.js";
 
 userModel.hasMany(playlistModel, {
   foreignKey: "userId",
@@ -53,6 +55,33 @@ paymentModel.belongsTo(userModel, {
   foreignKey: "userId",
 });
 
+artistModel.hasMany(albumModel, {
+  foreignKey: "artistId",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+albumModel.belongsTo(artistModel, {
+  foreignKey: "artistId",
+});
+
+artistModel.hasMany(songModel, {
+  foreignKey: "artistId",
+  onDelete: "SET NULL",
+  onUpdate: "CASCADE",
+});
+songModel.belongsTo(artistModel, {
+  foreignKey: "artistId",
+});
+
+albumModel.hasMany(songModel, {
+  foreignKey: "albumId",
+  onDelete: "SET NULL",
+  onUpdate: "CASCADE",
+});
+songModel.belongsTo(albumModel, {
+  foreignKey: "albumId",
+});
+
 export {
   sequelize,
   userModel,
@@ -61,4 +90,6 @@ export {
   playlistSongModel,
   wishlistModel,
   paymentModel,
+  artistModel,
+  albumModel,
 };

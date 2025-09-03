@@ -15,6 +15,8 @@ import {
   playlistModel,
   playlistSongModel,
   wishlistModel,
+  artistModel,
+  albumModel,
 } from "./models/main.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger.js";
