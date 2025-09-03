@@ -89,7 +89,7 @@ const AddSongDialog = () => {
 
     const artistName =
       newSong.artist !== "" && newSong.artist !== "Other artist"
-        ? newSong.artist
+        ? listArtists.find((a) => a.artist === newSong.artist).id
         : newSong.newArtist;
 
     const formData = new FormData();
@@ -114,7 +114,7 @@ const AddSongDialog = () => {
         const newListArtists = [
           ...listArtists,
           {
-            artist: newSong.newArtist,
+            ...response.newArtist,
             songCount: 1,
             playlistCount: 0,
             wishlistCount: 0,
@@ -125,7 +125,7 @@ const AddSongDialog = () => {
         dispatch(setTotalArtists(newListArtists.length));
       } else {
         const newListArtists = listArtists.map((artist) =>
-          artist.artist === newSong.artist
+          artist.id === response.newArtist.id
             ? { ...artist, songCount: artist.songCount + 1 }
             : artist
         );
@@ -139,7 +139,7 @@ const AddSongDialog = () => {
 
       const newListSongs = [
         ...listSongs,
-        { ...response, playlistCount: 0, wishlistCount: 0 },
+        { ...response?.newSong, playlistCount: 0, wishlistCount: 0 },
       ];
       dispatch(setListSongs(newListSongs));
       dispatch(setTotalSongs(newListSongs.length));

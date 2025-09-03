@@ -177,6 +177,7 @@ const createSong = async (req, res) => {
     }
 
     const { title, artist } = req.body;
+    let tempArtist = null;
     const duration = Number(req.body.duration);
 
     const audioFile = req.files.audioFile;
@@ -185,12 +186,27 @@ const createSong = async (req, res) => {
     const audioUrl = await uploadToCloudinary(audioFile);
     const imageUrl = await uploadToCloudinary(imageFile);
 
+    if (isNaN(artist)) {
+      const newArtist = await artistModel.create({
+        artist,
+      });
+
+      tempArtist = newArtist;
+    } else {
+      tempArtist = await artistModel.findOne({ where: { id: artist } });
+
+      if (!tempArtist) {
+        return res.status(400).json({ message: "Artist not exists" });
+      }
+    }
+
     const newSong = songModel.build({
       title,
-      artist,
+      artist: tempArtist.artist,
       duration,
       audioUrl,
       imageUrl,
+      artistId: tempArtist.id,
     });
     await newSong.save();
 
@@ -200,7 +216,7 @@ const createSong = async (req, res) => {
       redis.del("artist-stats"),
     ]);
 
-    res.status(201).json(newSong);
+    res.status(201).json({ newSong, newArtist: tempArtist });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
