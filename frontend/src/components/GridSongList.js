@@ -122,7 +122,7 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
       <Box
         sx={{
           display: "flex",
-          gap: 3,
+          gap: 5,
           marginBottom: 2,
         }}
       >

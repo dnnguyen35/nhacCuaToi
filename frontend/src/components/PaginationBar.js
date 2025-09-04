@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import songApi from "../api/modules/song.api";
 import { toast } from "react-toastify";
-import { Box, Pagination } from "@mui/material";
+import { Box, Pagination, useTheme, useMediaQuery } from "@mui/material";
 
 const PaginationBar = ({ setCurrentPage }) => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMd = useMediaQuery(theme.breakpoints.up("md"));
+
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -45,6 +49,8 @@ const PaginationBar = ({ setCurrentPage }) => {
         page={page}
         onChange={handlePageChange}
         color="primary"
+        siblingCount={isXs ? 0 : isMd ? 2 : 1}
+        boundaryCount={isXs ? 0 : isMd ? 1 : 0}
       />
     </Box>
   ) : null;

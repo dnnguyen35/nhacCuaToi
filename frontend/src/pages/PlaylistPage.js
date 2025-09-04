@@ -21,6 +21,7 @@ import {
   Pause,
   AccessTime,
   DeleteForever,
+  Favorite,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -342,8 +343,8 @@ const PlaylistPage = () => {
                   : "nhaccuatoi"
               }
               sx={{
-                width: 240,
-                height: 240,
+                width: { xs: 100, sm: 200 },
+                height: { xs: 100, sm: 200 },
                 borderRadius: 1,
                 boxShadow: 6,
                 objectFit: "cover",
@@ -467,11 +468,15 @@ const PlaylistPage = () => {
             flexGrow={1}
             sx={{ overflowY: "auto" }}
             paddingY={2}
+            display="flex"
+            flexDirection="column"
+            alignItems={"center"}
           >
             <TableContainer
               component={Paper}
               sx={{
                 maxHeight: { xs: 300, md: 500 },
+                maxWidth: { xs: "100%", md: "80%" },
                 overflow: "auto",
                 "&::-webkit-scrollbar": {
                   width: "6px",
@@ -487,70 +492,6 @@ const PlaylistPage = () => {
               }}
             >
               <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    {multipleSelectMode && (
-                      <TableCell
-                        align="center"
-                        sx={{
-                          color: "primary.main",
-                          fontWeight: "bold",
-                          textTransform: "uppercase",
-                          width: 43,
-                        }}
-                      >
-                        ...
-                      </TableCell>
-                    )}
-                    <TableCell
-                      align="center"
-                      sx={{
-                        color: "primary.main",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      #
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "primary.main",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {t("songTable.title")}
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        display: { xs: "none", sm: "table-cell" },
-                        color: "primary.main",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {t("songTable.releasedDate")}
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "primary.main",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      <AccessTime fontSize="small" />
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        color: "primary.main",
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {t("songTable.actions")}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
                 <TableBody>
                   {displayPlaylist.length <= 0 ? (
                     <TableRow>
@@ -579,8 +520,9 @@ const PlaylistPage = () => {
                           onClick={() => handlePlaySong(song)}
                         >
                           {multipleSelectMode && (
-                            <TableCell>
+                            <TableCell padding="checkbox">
                               <Checkbox
+                                size="small"
                                 checked={
                                   deletedSongListId.some(
                                     (sId) => sId === song.id
@@ -595,7 +537,11 @@ const PlaylistPage = () => {
                               />
                             </TableCell>
                           )}
-                          <TableCell align="center" width={40}>
+                          <TableCell
+                            align="center"
+                            width={40}
+                            sx={{ display: { xs: "none", md: "table-cell" } }}
+                          >
                             {isCurrentSong &&
                             currentPlaylist?.id === playlist?.id &&
                             isPlaying &&
@@ -634,21 +580,19 @@ const PlaylistPage = () => {
                           <TableCell
                             sx={{ display: { xs: "none", sm: "table-cell" } }}
                           >
-                            {song.createdAt.split("T")[0]}
-                          </TableCell>
-                          <TableCell>
                             {formatDurationToHMS(song.duration)}
                           </TableCell>
-                          <TableCell>
+                          <TableCell padding="none">
                             <IconButton
+                              size="small"
                               disabled={multipleSelectMode ? true : false}
                               onClick={(event) => {
                                 event.stopPropagation();
                                 onDeleteSongFromPlaylistClick(song);
                               }}
-                              color={"error"}
+                              sx={{ color: "primary.main" }}
                             >
-                              <DeleteForever />
+                              <Favorite />
                             </IconButton>
                           </TableCell>
                         </TableRow>
