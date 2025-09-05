@@ -384,8 +384,8 @@ const WishlistPage = () => {
                 maxWidth: { xs: "100%", md: "80%" },
                 overflow: "auto",
                 "&::-webkit-scrollbar": {
-                  width: "6px",
-                  height: "6px",
+                  width: "2px",
+                  height: "2px",
                 },
                 "&::-webkit-scrollbar-thumb": {
                   backgroundColor: "primary.main",

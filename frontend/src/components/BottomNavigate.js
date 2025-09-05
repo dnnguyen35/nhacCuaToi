@@ -10,6 +10,14 @@ import {
   ClickAwayListener,
   Divider,
   Button,
+  SwipeableDrawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
+  ListItemAvatar,
+  Avatar,
 } from "@mui/material";
 import {
   LibraryMusic,
@@ -29,14 +37,27 @@ import playlistApi from "../api/modules/playlist.api";
 import { toast } from "react-toastify";
 import { setQueue, setCurrentSong } from "../redux/slices/playerSlice";
 import { setAllPlaylist } from "../redux/slices/userSlice";
+import { styled } from "@mui/material/styles";
+
+const Puller = styled(Box)(({ theme }) => ({
+  width: 30,
+  height: 6,
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: 3,
+  position: "absolute",
+  top: 8,
+  left: "calc(50% - 15px)",
+}));
 
 const BottomNavigate = () => {
   const { appState } = useSelector((state) => state.appState);
   const { allPlaylist, user, playlist } = useSelector((state) => state.user);
   const currentPlayedPlaylist = playlist;
 
+  const { isPlaying, queueType } = useSelector((state) => state.player);
+
   const [value, setValue] = useState(appState);
-  const [openPopper, setOpenPopper] = useState(false);
+  const [openSwipeableDrawer, setOpenSwipeableDrawer] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isAddPlaylistDialogOpen, setIsAddPlaylistDialogOpen] = useState(false);
   const [isDeletePlaylistRequest, setIsDeletePlaylistRequest] = useState(false);
@@ -107,7 +128,7 @@ const BottomNavigate = () => {
           right: 0,
           bottom: 125,
           bgcolor: "background.paper",
-          mx: 2,
+          mx: 1,
           p: 1,
           px: { xs: 1, sm: 5 },
           borderRadius: 5,
@@ -140,19 +161,152 @@ const BottomNavigate = () => {
                 : "primary.contrastText",
               textTransform: "capitalize",
             }}
-            label="Playlists"
             value="playlist"
             icon={<LibraryMusic />}
             onClick={(e) => {
               dispatch(setAppState("playlist"));
               setAnchorEl(e.currentTarget);
-              setOpenPopper(true);
+              setOpenSwipeableDrawer(true);
             }}
           />
         )}
       </BottomNavigation>
 
       {user && (
+        <SwipeableDrawer
+          anchor="bottom"
+          open={openSwipeableDrawer}
+          onClose={() => setOpenSwipeableDrawer(false)}
+          onOpen={() => setOpenSwipeableDrawer(true)}
+          disableSwipeToOpen={true}
+          PaperProps={{
+            sx: {
+              width: "95%",
+              margin: "0 auto",
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              height: "50vh",
+              overflow: "hidden",
+            },
+          }}
+        >
+          <Puller />
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              marginTop: 1,
+            }}
+          >
+            <ListItem
+              secondaryAction={
+                <IconButton
+                  edge="end"
+                  sx={{ color: "primary.main" }}
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenSwipeableDrawer(false);
+                    setIsAddPlaylistDialogOpen(true);
+                  }}
+                >
+                  <AddCircleOutline />
+                </IconButton>
+              }
+            >
+              <ListItemText
+                primary={t("userMenu.createPlaylist")}
+                primaryTypographyProps={{ noWrap: true }}
+              />
+            </ListItem>
+
+            <Box
+              sx={{
+                overflow: "auto",
+                scrollBehavior: "smooth",
+                pr: 1,
+                "&::-webkit-scrollbar": { width: 5 },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "primary.main",
+                  borderRadius: 5,
+                },
+              }}
+            >
+              <List>
+                {allPlaylist.map((playlist) => (
+                  <ListItem
+                    key={playlist.id}
+                    divider
+                    secondaryAction={
+                      playlist.id === displayPlaylistId &&
+                      appState === "playlist" ? (
+                        <IconButton
+                          edge="end"
+                          sx={{ color: "primary.main" }}
+                          size="small"
+                        >
+                          <Visibility />
+                        </IconButton>
+                      ) : (
+                        <IconButton
+                          edge="end"
+                          sx={{ color: "error.main" }}
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenSwipeableDrawer(false);
+                            onDeletePlaylistClick(playlist);
+                          }}
+                        >
+                          <DeleteForever />
+                        </IconButton>
+                      )
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: "background.paper" }}>
+                        <LibraryMusic
+                          fontSize="medium"
+                          sx={{
+                            animation:
+                              isPlaying &&
+                              currentPlayedPlaylist.id === playlist.id &&
+                              queueType === "playlist"
+                                ? "spin 7s linear infinite"
+                                : "none",
+                            "@keyframes spin": {
+                              from: { transform: "rotate(0deg)" },
+                              to: { transform: "rotate(360deg)" },
+                            },
+                            color: "primary.main",
+                          }}
+                        />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemButton
+                      component={Link}
+                      to={routesGen.playlist(playlist.id)}
+                      onClick={() => {
+                        setDisplayPlaylistId(playlist.id);
+                        setOpenSwipeableDrawer(false);
+                      }}
+                    >
+                      <ListItemText
+                        primary={playlist.name}
+                        primaryTypographyProps={{ noWrap: true }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </Box>
+        </SwipeableDrawer>
+      )}
+
+      {/* {user && (
         <Popper
           open={openPopper}
           anchorEl={anchorEl}
@@ -234,7 +388,7 @@ const BottomNavigate = () => {
             </Paper>
           </ClickAwayListener>
         </Popper>
-      )}
+      )} */}
       <AddPlaylistDialog
         isAddPlaylistDialogOpen={isAddPlaylistDialogOpen}
         setIsAddPlaylistDialogOpen={setIsAddPlaylistDialogOpen}

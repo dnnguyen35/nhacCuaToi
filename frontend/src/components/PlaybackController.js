@@ -118,7 +118,7 @@ const PlaybackController = () => {
         left: 0,
         right: 0,
         bgcolor: "background.paper",
-        mx: 2,
+        mx: { xs: 1, md: 2 },
         mb: 2,
         p: 1,
         px: { xs: 1, sm: 5 },

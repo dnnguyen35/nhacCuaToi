@@ -20,10 +20,13 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import PageNotFound from "./components/PageNotFound";
 import socket from "./api/socket/socket";
+import { Box, useTheme } from "@mui/material";
 
 const App = () => {
   const { themeMode } = useSelector((state) => state.themeMode);
   const dispatch = useDispatch();
+
+  const theme = useTheme();
 
   useEffect(() => {
     socket.on("user_online", ({ userOnline }) => {
@@ -55,17 +58,34 @@ const App = () => {
       <AudioPlayer />
 
       {/* config toastify */}
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnFocusLoss
-        pauseOnHover
-        theme={themeMode}
-        style={{ top: "7rem" }}
-      />
+      <Box
+        sx={{
+          "& .Toastify__toast-container": {
+            [theme.breakpoints.down("sm")]: {
+              width: "80% !important",
+              left: "50% !important",
+              transform: "translateX(-50%)",
+            },
+            [theme.breakpoints.up("sm")]: {
+              width: "auto !important",
+              left: "unset !important",
+              transform: "none !important",
+            },
+          },
+        }}
+      >
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnFocusLoss
+          pauseOnHover
+          theme={themeMode}
+          style={{ top: "7rem" }}
+        />
+      </Box>
       {/* mui reset css */}
       <CssBaseline />
       {/* mui reset css */}
