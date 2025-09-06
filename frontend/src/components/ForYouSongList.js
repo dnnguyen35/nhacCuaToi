@@ -178,8 +178,8 @@ const ForYouSongList = ({
                 sm: "repeat(2, 1fr)",
                 md: "repeat(3, 1fr)",
               },
-              pX: { xs: 0, sm: 2 },
-              pY: 2,
+              px: { xs: 0, sm: 2 },
+              py: 2,
             }}
           >
             {songs.length > 0 &&
