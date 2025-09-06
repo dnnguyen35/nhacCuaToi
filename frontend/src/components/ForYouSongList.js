@@ -1,10 +1,23 @@
-import { Box, Typography, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  IconButton,
+  useTheme,
+  useMediaQuery,
+  SwipeableDrawer,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  List,
+} from "@mui/material";
 import {
   PlayArrow,
   Pause,
   FavoriteBorderOutlined,
   Favorite,
   PlaylistAdd,
+  MoreHoriz,
 } from "@mui/icons-material";
 import Marquee from "react-fast-marquee";
 import { useState, useEffect } from "react";
@@ -22,12 +35,27 @@ import { useTranslation } from "react-i18next";
 import songApi from "../api/modules/song.api";
 import ForYouSongListSkeleton from "./skeletons/ForYouSongListSkeleton";
 import { AnimatePresence, motion } from "framer-motion";
+import { styled } from "@mui/material/styles";
+import { setAuthModalOpen } from "../redux/slices/authModalSlice";
+
+const Puller = styled(Box)(({ theme }) => ({
+  width: 30,
+  height: 6,
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: 3,
+  position: "absolute",
+  top: 8,
+  left: "calc(50% - 15px)",
+}));
 
 const ForYouSongList = ({
   currentPage,
   setSelectedSong,
   setIsPlaylistPopupOpen,
 }) => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.only("xs"));
+
   const { user, wishlist } = useSelector((state) => state.user);
   const { isPlaying, currentSong, queueType, queue } = useSelector(
     (state) => state.player
@@ -43,6 +71,9 @@ const ForYouSongList = ({
   const dispatch = useDispatch();
 
   const { t } = useTranslation();
+
+  const [openSwipeableDrawer, setOpenSwipeableDrawer] = useState(false);
+  const [isMoreVertClickedSong, setIsMoreVertClickedSong] = useState(null);
 
   const onAddSongToWishlistClick = async (song) => {
     if (onAddSongToWishlistRequest) return;
@@ -129,86 +160,176 @@ const ForYouSongList = ({
   return isRerender === 0 ? (
     <ForYouSongListSkeleton />
   ) : (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={currentPage}
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        transition={{ duration: 0.9, ease: "easeInOut" }}
-      >
-        <Box
-          sx={{
-            display: "grid",
-            gap: 3,
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(3, 1fr)",
-            },
-            padding: 2,
-          }}
+    <>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentPage}
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          transition={{ duration: 0.9, ease: "easeInOut" }}
         >
-          {songs.length > 0 &&
-            songs.map((song, index) => (
-              <Box
-                key={index}
-                sx={{
-                  visibility: song ? "visible" : "hidden",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  bgcolor: "background.default",
-                  borderRadius: 2,
-                  overflow: "hidden",
-                  cursor: song ? "pointer" : "default",
-                  "&:hover": song ? { bgcolor: "grey.300" } : {},
-                  boxShadow: song ? 1 : 0,
-                  px: 1,
-                  py: 1,
-                  "@media (hover: hover) and (pointer: fine)": {
-                    "&:hover": song ? { bgcolor: "grey.300" } : {},
-                  },
-                }}
-              >
-                {song && (
-                  <>
-                    <Box
-                      component="img"
-                      src={song.imageUrl || song.cover}
-                      alt={song.title}
-                      sx={{
-                        width: { xs: 80, sm: 60, md: 60 },
-                        height: { xs: 80, sm: 60, md: 60 },
-                        objectFit: "cover",
-                        flexShrink: 0,
-                        borderRadius: 1,
-                      }}
-                    />
-                    <Box sx={{ flexGrow: 1, px: 2, overflow: "hidden" }}>
-                      <Marquee
-                        pauseOnHover={true}
-                        speed={50}
-                        play={isPlaying && currentSong.id === song.id}
-                      >
+          <Box
+            sx={{
+              display: "grid",
+              gap: 3,
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, 1fr)",
+                md: "repeat(3, 1fr)",
+              },
+              pX: { xs: 0, sm: 2 },
+              pY: 2,
+            }}
+          >
+            {songs.length > 0 &&
+              songs.map((song, index) => (
+                <Box
+                  key={index}
+                  onClick={() => {
+                    if (!song || !isXs || currentSong.id === song.id) return;
+
+                    dispatch(initializeQueue([...songs]));
+                    dispatch(setCurrentSong(song));
+                  }}
+                  sx={{
+                    visibility: song ? "visible" : "hidden",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    bgcolor: "background.default",
+                    borderRadius: 2,
+                    overflow: "hidden",
+                    cursor: song ? "pointer" : "default",
+                    boxShadow: song ? 1 : 0,
+                    px: 1,
+                    py: 1,
+                    "@media (hover: hover) and (pointer: fine)": {
+                      "&:hover": song ? { bgcolor: "grey.300" } : {},
+                    },
+                  }}
+                >
+                  {song && (
+                    <>
+                      <Box
+                        component="img"
+                        src={song.imageUrl || song.cover}
+                        alt={song.title}
+                        sx={{
+                          width: { xs: 60, sm: 60, md: 60 },
+                          height: { xs: 60, sm: 60, md: 60 },
+                          objectFit: "cover",
+                          flexShrink: 0,
+                          borderRadius: 1,
+                        }}
+                      />
+                      <Box sx={{ flexGrow: 1, px: 2, overflow: "hidden" }}>
+                        {isPlaying && currentSong.id === song.id ? (
+                          <Marquee pauseOnHover={false} speed={50} play={true}>
+                            <Typography
+                              variant="subtitle2"
+                              noWrap
+                              fontWeight="bold"
+                            >
+                              {`${song.title}\u00A0\u00A0\u00A0`}
+                            </Typography>
+                          </Marquee>
+                        ) : (
+                          <Typography
+                            variant="subtitle2"
+                            noWrap
+                            fontWeight="bold"
+                          >
+                            {`${song.title}\u00A0\u00A0\u00A0`}
+                          </Typography>
+                        )}
                         <Typography
-                          variant="subtitle2"
+                          variant="body2"
+                          color="text.secondary"
                           noWrap
-                          fontWeight="bold"
                         >
-                          {`${song.title}\u00A0\u00A0\u00A0`}
+                          {song.artist}
                         </Typography>
-                      </Marquee>
-                      <Typography variant="body2" color="text.secondary" noWrap>
-                        {song.artist}
-                      </Typography>
+                        <Box
+                          sx={{
+                            display: {
+                              xs: "none",
+                              sm: "flex",
+                              md: "flex",
+                              lg: "none",
+                            },
+                          }}
+                        >
+                          {user && (
+                            <>
+                              <IconButton
+                                color="primary"
+                                size="small"
+                                sx={{ pr: 1 }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+
+                                  onAddSongToWishlistClick(song);
+                                }}
+                              >
+                                {wishlist.some((s) => s.id === song.id) ? (
+                                  <Favorite />
+                                ) : (
+                                  <FavoriteBorderOutlined />
+                                )}
+                              </IconButton>
+                              <IconButton
+                                color="primary"
+                                size="small"
+                                sx={{ pr: 1 }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+
+                                  setSelectedSong(song);
+                                  setIsPlaylistPopupOpen(true);
+                                }}
+                              >
+                                <PlaylistAdd />
+                              </IconButton>
+                            </>
+                          )}
+                          {currentSong.id === song.id ? (
+                            <IconButton
+                              color="primary"
+                              size="small"
+                              sx={{ pr: 1 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                dispatch(togglePlay());
+                              }}
+                            >
+                              {isPlaying ? <Pause /> : <PlayArrow />}
+                            </IconButton>
+                          ) : (
+                            <IconButton
+                              color="primary"
+                              size="small"
+                              sx={{ pr: 1 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                dispatch(initializeQueue([...songs]));
+                                dispatch(setCurrentSong(song));
+                              }}
+                            >
+                              <PlayArrow />
+                            </IconButton>
+                          )}
+                        </Box>
+                      </Box>
                       <Box
                         sx={{
                           display: {
-                            xs: "flex",
-                            sm: "flex",
-                            md: "flex",
-                            lg: "none",
+                            xs: "none",
+                            sm: "none",
+                            md: "none",
+                            lg: "flex",
                           },
                         }}
                       >
@@ -218,7 +339,11 @@ const ForYouSongList = ({
                               color="primary"
                               size="small"
                               sx={{ pr: 1 }}
-                              onClick={() => onAddSongToWishlistClick(song)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                onAddSongToWishlistClick(song);
+                              }}
                             >
                               {wishlist.some((s) => s.id === song.id) ? (
                                 <Favorite />
@@ -230,7 +355,9 @@ const ForYouSongList = ({
                               color="primary"
                               size="small"
                               sx={{ pr: 1 }}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
+
                                 setSelectedSong(song);
                                 setIsPlaylistPopupOpen(true);
                               }}
@@ -244,7 +371,11 @@ const ForYouSongList = ({
                             color="primary"
                             size="small"
                             sx={{ pr: 1 }}
-                            onClick={() => dispatch(togglePlay())}
+                            onClick={(e) => {
+                              e.stopPropagation();
+
+                              dispatch(togglePlay());
+                            }}
                           >
                             {isPlaying ? <Pause /> : <PlayArrow />}
                           </IconButton>
@@ -253,7 +384,9 @@ const ForYouSongList = ({
                             color="primary"
                             size="small"
                             sx={{ pr: 1 }}
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
+
                               dispatch(initializeQueue([...songs]));
                               dispatch(setCurrentSong(song));
                             }}
@@ -262,74 +395,169 @@ const ForYouSongList = ({
                           </IconButton>
                         )}
                       </Box>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: {
-                          xs: "none",
-                          sm: "none",
-                          md: "none",
-                          lg: "flex",
-                        },
-                      }}
-                    >
-                      {user && (
-                        <>
-                          <IconButton
-                            color="primary"
-                            size="small"
-                            sx={{ pr: 1 }}
-                            onClick={() => onAddSongToWishlistClick(song)}
-                          >
-                            {wishlist.some((s) => s.id === song.id) ? (
-                              <Favorite />
-                            ) : (
-                              <FavoriteBorderOutlined />
-                            )}
-                          </IconButton>
-                          <IconButton
-                            color="primary"
-                            size="small"
-                            sx={{ pr: 1 }}
-                            onClick={() => {
-                              setSelectedSong(song);
-                              setIsPlaylistPopupOpen(true);
-                            }}
-                          >
-                            <PlaylistAdd />
-                          </IconButton>
-                        </>
-                      )}
-                      {currentSong.id === song.id ? (
+                      <Box
+                        sx={{
+                          display: {
+                            xs: "flex",
+                            sm: "none",
+                            md: "none",
+                            lg: "none",
+                          },
+                        }}
+                      >
                         <IconButton
                           color="primary"
                           size="small"
                           sx={{ pr: 1 }}
-                          onClick={() => dispatch(togglePlay())}
-                        >
-                          {isPlaying ? <Pause /> : <PlayArrow />}
-                        </IconButton>
-                      ) : (
-                        <IconButton
-                          color="primary"
-                          size="small"
-                          sx={{ pr: 1 }}
-                          onClick={() => {
-                            dispatch(initializeQueue([...songs]));
-                            dispatch(setCurrentSong(song));
+                          onClick={(e) => {
+                            e.stopPropagation();
+
+                            if (!user) {
+                              dispatch(setAuthModalOpen(true));
+                              return;
+                            }
+
+                            setIsMoreVertClickedSong(song);
+                            setOpenSwipeableDrawer(true);
                           }}
                         >
-                          <PlayArrow />
+                          <MoreHoriz />
                         </IconButton>
-                      )}
-                    </Box>
-                  </>
-                )}
-              </Box>
-            ))}
+                      </Box>
+                    </>
+                  )}
+                </Box>
+              ))}
+          </Box>
+        </motion.div>
+      </AnimatePresence>
+
+      <SwipeableDrawer
+        anchor="bottom"
+        open={openSwipeableDrawer}
+        onClose={() => setOpenSwipeableDrawer(false)}
+        onOpen={() => setOpenSwipeableDrawer(true)}
+        disableSwipeToOpen={true}
+        PaperProps={{
+          sx: {
+            width: "95%",
+            margin: "0 auto",
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            height: "50vh",
+            overflow: "hidden",
+          },
+        }}
+      >
+        <Puller />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            marginTop: 2,
+          }}
+        >
+          <ListItem divider>
+            <ListItemAvatar sx={{ width: 70 }}>
+              <Avatar
+                variant="rounded"
+                src={isMoreVertClickedSong?.imageUrl}
+                sx={{ width: 60, height: 60 }}
+              ></Avatar>
+            </ListItemAvatar>
+
+            <ListItemText
+              primary={isMoreVertClickedSong?.title}
+              secondary={isMoreVertClickedSong?.artist}
+              primaryTypographyProps={{
+                noWrap: true,
+                fontWeight: "bold",
+              }}
+              secondaryTypographyProps={{
+                noWrap: true,
+              }}
+            />
+          </ListItem>
+
+          <Box
+            sx={{
+              overflow: "auto",
+              scrollBehavior: "smooth",
+              pr: 1,
+              "&::-webkit-scrollbar": { width: 5 },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "primary.main",
+                borderRadius: 5,
+              },
+              justifyItems: "center",
+            }}
+          >
+            <List
+              sx={{
+                width: "90%",
+              }}
+            >
+              <ListItem
+                button
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  onAddSongToWishlistClick(isMoreVertClickedSong);
+                }}
+                divider
+              >
+                <ListItemAvatar sx={{ width: 70 }}>
+                  <IconButton color="primary" size="small" sx={{ pr: 1 }}>
+                    {wishlist.some(
+                      (s) => s.id === isMoreVertClickedSong?.id
+                    ) ? (
+                      <Favorite />
+                    ) : (
+                      <FavoriteBorderOutlined />
+                    )}
+                  </IconButton>
+                </ListItemAvatar>
+
+                <ListItemText
+                  primary={t("menu.wishlist")}
+                  primaryTypographyProps={{
+                    noWrap: true,
+                    fontWeight: "bold",
+                  }}
+                />
+              </ListItem>
+
+              <ListItem
+                button
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  setOpenSwipeableDrawer(false);
+                  setSelectedSong(isMoreVertClickedSong);
+                  setIsPlaylistPopupOpen(true);
+                }}
+                divider
+              >
+                <ListItemAvatar sx={{ width: 70 }}>
+                  <IconButton color="primary" size="small" sx={{ pr: 1 }}>
+                    <PlaylistAdd />
+                  </IconButton>
+                </ListItemAvatar>
+
+                <ListItemText
+                  primary={t("userMenu.addSongIntoPlaylist")}
+                  primaryTypographyProps={{
+                    noWrap: true,
+                    fontWeight: "bold",
+                  }}
+                />
+              </ListItem>
+            </List>
+          </Box>
         </Box>
-      </motion.div>
-    </AnimatePresence>
+      </SwipeableDrawer>
+    </>
   );
 };
 

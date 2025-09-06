@@ -2,14 +2,9 @@ import { useEffect, useState } from "react";
 import {
   BottomNavigation,
   BottomNavigationAction,
-  Popper,
-  Typography,
   IconButton,
   Paper,
   Box,
-  ClickAwayListener,
-  Divider,
-  Button,
   SwipeableDrawer,
   List,
   ListItem,
@@ -58,7 +53,6 @@ const BottomNavigate = () => {
 
   const [value, setValue] = useState(appState);
   const [openSwipeableDrawer, setOpenSwipeableDrawer] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [isAddPlaylistDialogOpen, setIsAddPlaylistDialogOpen] = useState(false);
   const [isDeletePlaylistRequest, setIsDeletePlaylistRequest] = useState(false);
   const [displayPlaylistId, setDisplayPlaylistId] = useState(-1);
@@ -165,7 +159,6 @@ const BottomNavigate = () => {
             icon={<LibraryMusic />}
             onClick={(e) => {
               dispatch(setAppState("playlist"));
-              setAnchorEl(e.currentTarget);
               setOpenSwipeableDrawer(true);
             }}
           />
@@ -306,89 +299,6 @@ const BottomNavigate = () => {
         </SwipeableDrawer>
       )}
 
-      {/* {user && (
-        <Popper
-          open={openPopper}
-          anchorEl={anchorEl}
-          placement="top"
-          style={{ zIndex: 1200 }}
-        >
-          <ClickAwayListener onClickAway={() => setOpenPopper(false)}>
-            <Paper sx={{ p: 1, borderRadius: 2, minWidth: 150 }}>
-              <Box display="flex" flexDirection="column">
-                <IconButton
-                  onClick={() => {
-                    setOpenPopper(false);
-                    setIsAddPlaylistDialogOpen(true);
-                  }}
-                  sx={{
-                    justifyContent: "flex-start",
-                    px: 2,
-                    gap: 1,
-                    color: "primary.main",
-                  }}
-                >
-                  <Typography
-                    color="text.primary"
-                    fontWeight={"bold"}
-                    textTransform="capitalize"
-                  >
-                    {t("userMenu.createPlaylist")}
-                  </Typography>
-                  <AddCircleOutline />
-                </IconButton>
-                {allPlaylist.map((playlist) => (
-                  <>
-                    <Divider sx={{ borderColor: "primary.main" }} />
-                    <Box
-                      key={playlist.id}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        px: 2,
-                      }}
-                    >
-                      <Button
-                        component={Link}
-                        to={routesGen.playlist(playlist.id)}
-                        onClick={() => {
-                          setDisplayPlaylistId(playlist.id);
-                          setOpenPopper(false);
-                        }}
-                        sx={{
-                          justifyContent: "flex-start",
-                          textTransform: "none",
-                          flex: 1,
-                          color: "text.primary",
-                        }}
-                      >
-                        {playlist.name}
-                      </Button>
-
-                      {playlist.id === displayPlaylistId &&
-                      appState === "playlist" ? (
-                        <IconButton sx={{ color: "primary.main", mr: 1 }}>
-                          <Visibility />
-                        </IconButton>
-                      ) : (
-                        <IconButton
-                          onClick={() => {
-                            setOpenPopper(false);
-                            onDeletePlaylistClick(playlist);
-                          }}
-                          sx={{ color: "error.main", mr: 1 }}
-                        >
-                          <DeleteForever />
-                        </IconButton>
-                      )}
-                    </Box>
-                  </>
-                ))}
-              </Box>
-            </Paper>
-          </ClickAwayListener>
-        </Popper>
-      )} */}
       <AddPlaylistDialog
         isAddPlaylistDialogOpen={isAddPlaylistDialogOpen}
         setIsAddPlaylistDialogOpen={setIsAddPlaylistDialogOpen}

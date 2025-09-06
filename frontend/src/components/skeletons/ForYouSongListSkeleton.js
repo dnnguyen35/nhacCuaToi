@@ -13,7 +13,8 @@ const ForYouSongListSkeleton = ({ count = 6 }) => {
           sm: "repeat(2, 1fr)",
           md: "repeat(3, 1fr)",
         },
-        padding: 2,
+        pX: { xs: 0, sm: 2 },
+        pY: 2,
       }}
     >
       {placeholders.map((_, index) => (

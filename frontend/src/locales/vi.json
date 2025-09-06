@@ -5,7 +5,7 @@
   "menu": {
     "home": "xin chào",
     "search": "tìm kiếm",
-    "wishlist": "yêu thích"
+    "wishlist": "Yêu thích"
   },
   "homePage": {
     "forYou": "dành cho bạn",
@@ -30,7 +30,7 @@
     "lightMode": "nền sáng",
     "adminDashboard": "admin",
     "payPremium": "nâng cấp",
-    "addSongIntoPlaylist": "Thêm Vào Playlist"
+    "addSongIntoPlaylist": "Thêm vào Playlist"
   },
   "songTable": {
     "image": "ảnh bìa",

@@ -41,7 +41,7 @@ const HomePage = () => {
 
   return (
     <>
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ pX: { xs: 0, sm: 3 }, py: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }} textTransform="uppercase">
           {t("homePage.forYou")}
         </Typography>
@@ -56,7 +56,7 @@ const HomePage = () => {
         </Box>
       </Box>
 
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ pX: { xs: 0, sm: 3 }, py: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }} textTransform="uppercase">
           {t("homePage.treanding")}
         </Typography>
@@ -71,7 +71,7 @@ const HomePage = () => {
         )}
       </Box>
 
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ pX: { xs: 0, sm: 3 }, py: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }} textTransform="uppercase">
           {t("homePage.highRating")}
         </Typography>
