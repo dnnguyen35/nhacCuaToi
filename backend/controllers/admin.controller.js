@@ -136,6 +136,8 @@ const getSongStats = async (req, res) => {
         "artist",
         "duration",
         "imageUrl",
+        "artistId",
+        "albumId",
         "createdAt",
         [
           sequelize.literal(`(
@@ -250,6 +252,7 @@ const updateSong = async (req, res) => {
   try {
     const { songId } = req.params;
     const { title, artist } = req.body;
+    let tempArtist = null;
 
     const song = await songModel.findOne({ where: { id: songId } });
 
@@ -257,8 +260,24 @@ const updateSong = async (req, res) => {
       return res.status(404).json({ message: "Song not founded" });
     }
 
+    if (isNaN(artist)) {
+      const newArtist = await artistModel.create({
+        artist,
+      });
+
+      tempArtist = newArtist;
+    } else {
+      tempArtist = await artistModel.findOne({ where: { id: artist } });
+
+      if (!tempArtist) {
+        return res.status(400).json({ message: "Artist not exists" });
+      }
+    }
+
     song.title = title !== "" ? title : song.title;
-    song.artist = artist !== "" ? artist : song.artist;
+    song.artist =
+      tempArtist && tempArtist.artist !== "" ? tempArtist.artist : song.artist;
+    song.artistId = tempArtist ? tempArtist.id : song.artistId;
 
     await song.save();
 
@@ -267,7 +286,11 @@ const updateSong = async (req, res) => {
       redis.del("artist-stats"),
     ]);
 
-    res.status(200).json({ message: "Song updated successfully", song });
+    res.status(200).json({
+      message: "Song updated successfully",
+      song,
+      newArtist: tempArtist,
+    });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

@@ -197,12 +197,12 @@ const SongsTable = () => {
                       >
                         <Edit />
                       </IconButton>
-                      <IconButton
+                      {/* <IconButton
                         onClick={() => onDeleteSongClick(song)}
                         color={"error"}
                       >
                         <DeleteForever />
-                      </IconButton>
+                      </IconButton> */}
                     </Box>
                   </TableCell>
                 </TableRow>
@@ -215,6 +215,7 @@ const SongsTable = () => {
             song={updateSong}
             isUpdateSongDialogOpen={isUpdateSongDialogOpen}
             setIsUpdateSongDialogOpen={setIsUpdateSongDialogOpen}
+            setSong={setUpdateSong}
           />
         )}
 

@@ -458,7 +458,7 @@ const ForYouSongList = ({
             marginTop: 2,
           }}
         >
-          <ListItem divider>
+          <ListItem>
             <ListItemAvatar sx={{ width: 70 }}>
               <Avatar
                 variant="rounded"

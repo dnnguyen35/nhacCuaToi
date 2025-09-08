@@ -12,6 +12,7 @@ import {
   CircularProgress,
   Box,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -27,19 +28,26 @@ const UpdateSongDialog = ({
   song,
   isUpdateSongDialogOpen,
   setIsUpdateSongDialogOpen,
+  setSong,
 }) => {
   const { listSongs, listArtists } = useSelector((state) => state.statsData);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
   const [updateSong, setUpdateSong] = useState({
-    title: song.title,
-    artist: song.artist,
+    title: "",
+    oldArtistId: "",
+    artist: "",
     newArtist: "",
   });
 
   useEffect(() => {
-    setUpdateSong({ title: song.title, artist: song.artist, newArtist: "" });
+    setUpdateSong({
+      title: song.title,
+      oldArtistId: song.artistId,
+      artist: song.artist,
+      newArtist: "",
+    });
   }, [song]);
 
   const handleSubmit = async () => {
@@ -56,8 +64,8 @@ const UpdateSongDialog = ({
     }
 
     const artistName =
-      updateSong.artist !== "" && updateSong.artist !== "otherArtist"
-        ? updateSong.artist
+      updateSong.artist !== "" && updateSong.artist !== "Other artist"
+        ? listArtists.find((a) => a.artist === updateSong.artist).id
         : updateSong.newArtist;
 
     setIsLoading(true);
@@ -76,22 +84,29 @@ const UpdateSongDialog = ({
 
     if (response) {
       if (updateSong.newArtist && updateSong.newArtist !== "") {
-        const newListArtists = [
-          ...listArtists,
-          {
-            artist: updateSong.newArtist,
-            songCount: 1,
-            playlistCount: 0,
-            wishlistCount: 0,
-          },
-        ];
+        const newListArtists = listArtists.map((artist) =>
+          artist.id === updateSong.oldArtistId
+            ? { ...artist, songCount: artist.songCount - 1 }
+            : artist
+        );
+
+        newListArtists.push({
+          ...response.newArtist,
+          songCount: 1,
+          playlistCount: 0,
+          wishlistCount: 0,
+        });
 
         dispatch(setListArtists(newListArtists));
         dispatch(setTotalArtists(newListArtists.length));
       } else {
         const newListArtists = listArtists.map((artist) =>
-          artist.artist === updateSong.artist
+          updateSong.oldArtistId === response.newArtist.id
+            ? artist
+            : artist.id === response.newArtist.id
             ? { ...artist, songCount: artist.songCount + 1 }
+            : artist.id === updateSong.oldArtistId
+            ? { ...artist, songCount: artist.songCount - 1 }
             : artist
         );
 
@@ -108,11 +123,15 @@ const UpdateSongDialog = ({
               ...prevSong,
               title: response.song.title,
               artist: response.song.artist,
+              artistId: response.song.artistId,
             }
           : prevSong
       );
 
       dispatch(setListSongs(newListSongs));
+
+      setUpdateSong({ title: "", artist: "", oldArtistId: "", newArtist: "" });
+      setSong(null);
     }
   };
 
@@ -151,7 +170,7 @@ const UpdateSongDialog = ({
             }
             fullWidth
           />
-          <FormControl fullWidth>
+          {/* <FormControl fullWidth>
             <InputLabel>Artist</InputLabel>
             <Select
               value={updateSong.artist}
@@ -170,6 +189,32 @@ const UpdateSongDialog = ({
           </FormControl>
 
           {updateSong.artist === "otherArtist" && (
+            <TextField
+              fullWidth
+              label="New artist"
+              value={updateSong.newArtist}
+              onChange={(e) =>
+                setUpdateSong({
+                  ...updateSong,
+                  newArtist: e.target.value,
+                })
+              }
+            />
+          )} */}
+
+          <Autocomplete
+            sx={{ width: "100%" }}
+            options={["Other artist", ...listArtists.map((a) => a.artist)]}
+            value={updateSong.artist}
+            onChange={(e, newValue) =>
+              setUpdateSong({ ...updateSong, artist: newValue || "" })
+            }
+            renderInput={(params) => (
+              <TextField fullWidth {...params} label="Artist" />
+            )}
+          />
+
+          {updateSong.artist === "Other artist" && (
             <TextField
               fullWidth
               label="New artist"
