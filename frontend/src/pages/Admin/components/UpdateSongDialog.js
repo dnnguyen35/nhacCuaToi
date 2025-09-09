@@ -100,15 +100,21 @@ const UpdateSongDialog = ({
         dispatch(setListArtists(newListArtists));
         dispatch(setTotalArtists(newListArtists.length));
       } else {
-        const newListArtists = listArtists.map((artist) =>
-          updateSong.oldArtistId === response.newArtist.id
-            ? artist
-            : artist.id === response.newArtist.id
-            ? { ...artist, songCount: artist.songCount + 1 }
-            : artist.id === updateSong.oldArtistId
-            ? { ...artist, songCount: artist.songCount - 1 }
-            : artist
-        );
+        const newListArtists = listArtists.map((artist) => {
+          if (updateSong.oldArtistId === response.newArtist.id) {
+            return artist;
+          }
+
+          if (artist.id === response.newArtist.id) {
+            return { ...artist, songCount: artist.songCount + 1 };
+          }
+
+          if (artist.id === updateSong.oldArtistId) {
+            return { ...artist, songCount: artist.songCount - 1 };
+          }
+
+          return artist;
+        });
 
         dispatch(setListArtists(newListArtists));
         dispatch(setTotalArtists(newListArtists.length));
@@ -170,37 +176,6 @@ const UpdateSongDialog = ({
             }
             fullWidth
           />
-          {/* <FormControl fullWidth>
-            <InputLabel>Artist</InputLabel>
-            <Select
-              value={updateSong.artist}
-              label="Artist"
-              onChange={(e) =>
-                setUpdateSong({ ...updateSong, artist: e.target.value })
-              }
-            >
-              <MenuItem value="otherArtist">Other artist</MenuItem>
-              {listArtists.map((artist, index) => (
-                <MenuItem key={index} value={artist.artist}>
-                  {artist.artist}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {updateSong.artist === "otherArtist" && (
-            <TextField
-              fullWidth
-              label="New artist"
-              value={updateSong.newArtist}
-              onChange={(e) =>
-                setUpdateSong({
-                  ...updateSong,
-                  newArtist: e.target.value,
-                })
-              }
-            />
-          )} */}
 
           <Autocomplete
             sx={{ width: "100%" }}

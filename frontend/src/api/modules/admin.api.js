@@ -7,10 +7,12 @@ const adminEndpoints = {
   getArtistStats: "admins/artist-stats",
   getPaymentStats: "admins/payment-stats",
   createSong: "admins/create-song",
+  createArtist: "admins/create-artist",
   blockUser: ({ userId }) => `admins/block-user/${userId}`,
   unBlockUser: ({ userId }) => `admins/unblock-user/${userId}`,
   updateSong: ({ songId }) => `admins/update-song/${songId}`,
   deleteSong: ({ songId }) => `admins/delete-song/${songId}`,
+  updateArtist: ({ artistId }) => `admins/update-artist/${artistId}`,
 };
 
 const adminApi = {
@@ -112,6 +114,32 @@ const adminApi = {
     try {
       const response = await privateClient.delete(
         adminEndpoints.deleteSong({ songId })
+      );
+
+      return { response };
+    } catch (error) {
+      return { error };
+    }
+  },
+
+  createArtist: async (formData) => {
+    try {
+      const response = await privateClient.post(
+        adminEndpoints.createArtist,
+        formData
+      );
+
+      return { response };
+    } catch (error) {
+      return { error };
+    }
+  },
+
+  updateArtist: async ({ artistId, formData }) => {
+    try {
+      const response = await privateClient.put(
+        adminEndpoints.updateArtist({ artistId }),
+        formData
       );
 
       return { response };

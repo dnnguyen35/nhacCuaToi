@@ -283,7 +283,7 @@ const updateSong = async (req, res) => {
 
     await Promise.all([
       redis.del("admin:song-stats"),
-      redis.del("artist-stats"),
+      redis.del("admin:artist-stats"),
     ]);
 
     res.status(200).json({

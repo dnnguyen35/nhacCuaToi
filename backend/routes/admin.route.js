@@ -5,7 +5,12 @@ import {
   validateCreateSong,
   validateUpdateSong,
 } from "../validators/song.validator.js";
+import {
+  validateCreateArtist,
+  validateUpdateArtist,
+} from "../validators/artist.validator.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
+import artistController from "../controllers/artist.controller.js";
 
 const router = express.Router();
 
@@ -81,6 +86,22 @@ router.get(
   authMiddleware.auth,
   authMiddleware.checkAdmin,
   adminController.getPaymentStats
+);
+
+router.post(
+  "/create-artist",
+  authMiddleware.auth,
+  authMiddleware.checkAdmin,
+  validateCreateArtist,
+  artistController.createArtist
+);
+
+router.put(
+  "/update-artist/:artistId",
+  authMiddleware.auth,
+  authMiddleware.checkAdmin,
+  validateUpdateArtist,
+  artistController.updateArtist
 );
 
 export default router;
