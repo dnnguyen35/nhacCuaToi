@@ -2,6 +2,33 @@ import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
 import redis from "../configs/redis.js";
 import artistModel from "../models/artist.model.js";
 
+import sequelize from "../configs/db.js";
+
+const getAllArtists = async (req, res) => {
+  try {
+    const cachedAllArtists = await redis.get("artists:all-artists");
+
+    if (cachedAllArtists) {
+      return res.status(200).json(cachedAllArtists);
+    }
+
+    const allArtists = await artistModel.findAll({
+      order: [sequelize.literal("RAND()")],
+      limit: 10,
+    });
+
+    if (!allArtists || allArtists.length === 0) {
+      return res.status(400).json({ message: "There is no artist now" });
+    }
+
+    await redis.setex("artists:all-artists", 300, JSON.stringify(allArtists));
+
+    res.status(200).json(allArtists);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const createArtist = async (req, res) => {
   try {
     if (!req.files || !req.files.artistImageFile) {
@@ -67,6 +94,7 @@ const updateArtist = async (req, res) => {
 };
 
 export default {
+  getAllArtists,
   createArtist,
   updateArtist,
 };

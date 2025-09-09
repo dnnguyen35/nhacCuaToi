@@ -27,6 +27,10 @@ import wishlistApi from "../api/modules/wishlist.api";
 import { toast } from "react-toastify";
 import { setQueue, deleteSongFromQueue } from "../redux/slices/playerSlice";
 import { useTranslation } from "react-i18next";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 
 const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
   const { user, wishlist } = useSelector((state) => state.user);
@@ -107,144 +111,140 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
   return (
     <Box
       sx={{
-        overflowX: "auto",
-        whiteSpace: "nowrap",
         px: 2,
-        scrollBehavior: "smooth",
-        "&::-webkit-scrollbar": { height: 5 },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "primary.main",
-          borderRadius: 5,
-        },
-        cursor: "pointer",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          gap: 5,
-          marginBottom: 2,
-        }}
+      <Swiper
+        modules={[Navigation]}
+        navigation
+        grabCursor
+        spaceBetween={40}
+        slidesPerView="auto"
+        style={{ marginBottom: "8px" }}
+        loop
       >
         {songs.map((song, i) => (
-          <Card
+          <SwiperSlide
             key={i}
-            sx={{
-              minWidth: 152,
-              maxWidth: 152,
-              minHeight: 240,
-              maxHeight: 240,
-              flexShrink: 0,
-              px: 1,
-              py: 1,
-              borderRadius: 2,
-            }}
+            style={{ width: "152px", height: "auto", paddingBottom: "8px" }}
           >
-            <CardMedia
-              component="img"
-              height="140"
-              image={song.imageUrl}
-              sx={{ borderRadius: 2 }}
-            />
-            <CardContent
+            <Card
+              key={i}
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                flexDirection: "column",
+                width: 136,
+                height: 240,
+                flexShrink: 0,
+                px: 1,
+                py: 1,
+                borderRadius: 2,
               }}
             >
-              <Box sx={{ overflow: "hidden", textAlign: "center" }}>
-                {isPlaying && currentSong.id === song.id ? (
-                  <>
-                    <Marquee
-                      pauseOnHover={true}
-                      speed={50}
-                      play={isPlaying && currentSong.id === song.id}
-                    >
-                      <Typography variant="body1" fontWeight="bold">
-                        {`${song.title}\u00A0\u00A0\u00A0`}
-                      </Typography>
-                    </Marquee>
-                  </>
-                ) : (
-                  <Tooltip
-                    title={`${song.title} - ${song.artist}`}
-                    arrow
-                    placement="top"
-                  >
-                    <Typography variant="body1" fontWeight="bold">
-                      {song.title.length > 12
-                        ? `${song.title.slice(0, 12)}...`
-                        : song.title}
-                    </Typography>
-                  </Tooltip>
-                )}
-                <Typography variant="body2" color="text.secondary">
-                  {song.artist.length > 12
-                    ? `${song.artist.slice(0, 12)}...`
-                    : song.artist}
-                </Typography>
-              </Box>
-              <Box
+              <CardMedia
+                component="img"
+                height="140"
+                image={song.imageUrl}
+                sx={{ borderRadius: 2 }}
+              />
+              <CardContent
                 sx={{
-                  display: { xs: "flex", sm: "flex", md: "flex" },
-                  justifyContent: "center",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  flexDirection: "column",
                 }}
               >
-                {user && (
-                  <>
+                <Box sx={{ textAlign: "center" }}>
+                  {isPlaying && currentSong.id === song.id ? (
+                    <>
+                      <Marquee
+                        pauseOnHover={true}
+                        speed={50}
+                        play={isPlaying && currentSong.id === song.id}
+                      >
+                        <Typography variant="body1" fontWeight="bold" noWrap>
+                          {`${song.title}\u00A0\u00A0\u00A0`}
+                        </Typography>
+                      </Marquee>
+                    </>
+                  ) : (
+                    <Tooltip
+                      title={`${song.title} - ${song.artist}`}
+                      arrow
+                      placement="top"
+                    >
+                      <Typography variant="body1" fontWeight="bold" noWrap>
+                        {song.title.length > 12
+                          ? `${song.title.slice(0, 12)}...`
+                          : song.title}
+                      </Typography>
+                    </Tooltip>
+                  )}
+                  <Typography variant="body2" color="text.secondary" noWrap>
+                    {song.artist.length > 12
+                      ? `${song.artist.slice(0, 12)}...`
+                      : song.artist}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: { xs: "flex", sm: "flex", md: "flex" },
+                    justifyContent: "center",
+                  }}
+                >
+                  {user && (
+                    <>
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        sx={{ pr: 1 }}
+                        onClick={() => onAddSongToWishlistClick(song)}
+                      >
+                        {wishlist.some((s) => s.id === song.id) ? (
+                          <Favorite />
+                        ) : (
+                          <FavoriteBorderOutlined />
+                        )}
+                      </IconButton>
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        sx={{ pr: 1 }}
+                        onClick={() => {
+                          setSelectedSong(song);
+                          setIsPlaylistPopupOpen(true);
+                        }}
+                      >
+                        <PlaylistAdd />
+                      </IconButton>
+                    </>
+                  )}
+                  {isPlaying && currentSong.id === song.id ? (
                     <IconButton
                       color="primary"
                       size="small"
                       sx={{ pr: 1 }}
-                      onClick={() => onAddSongToWishlistClick(song)}
+                      onClick={() => dispatch(togglePlay())}
                     >
-                      {wishlist.some((s) => s.id === song.id) ? (
-                        <Favorite />
-                      ) : (
-                        <FavoriteBorderOutlined />
-                      )}
+                      <Pause />
                     </IconButton>
+                  ) : (
                     <IconButton
                       color="primary"
                       size="small"
                       sx={{ pr: 1 }}
                       onClick={() => {
-                        setSelectedSong(song);
-                        setIsPlaylistPopupOpen(true);
+                        dispatch(initializeQueue([...songs]));
+                        dispatch(setCurrentSong(song));
                       }}
                     >
-                      <PlaylistAdd />
+                      <PlayArrow />
                     </IconButton>
-                  </>
-                )}
-                {isPlaying && currentSong.id === song.id ? (
-                  <IconButton
-                    color="primary"
-                    size="small"
-                    sx={{ pr: 1 }}
-                    onClick={() => dispatch(togglePlay())}
-                  >
-                    <Pause />
-                  </IconButton>
-                ) : (
-                  <IconButton
-                    color="primary"
-                    size="small"
-                    sx={{ pr: 1 }}
-                    onClick={() => {
-                      dispatch(initializeQueue([...songs]));
-                      dispatch(setCurrentSong(song));
-                    }}
-                  >
-                    <PlayArrow />
-                  </IconButton>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          </SwiperSlide>
         ))}
-      </Box>
+      </Swiper>
     </Box>
   );
 };

@@ -6,6 +6,7 @@ import playlistRoute from "./playlist.route.js";
 import wishlistRoute from "./wishlist.route.js";
 import authRoute from "./auth.route.js";
 import paymentRoute from "./payment.route.js";
+import artistRoute from "./artist.route.js";
 
 const router = express.Router();
 
@@ -22,5 +23,7 @@ router.use("/wishlists", wishlistRoute);
 router.use("/auth", authRoute);
 
 router.use("/payments", paymentRoute);
+
+router.use("/artists", artistRoute);
 
 export default router;
