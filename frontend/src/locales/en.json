@@ -10,7 +10,8 @@
   "homePage": {
     "forYou": "for you",
     "treanding": "trending",
-    "highRating": "high rating"
+    "highRating": "high rating",
+    "trendingArtists": "trending artists"
   },
   "userMenu": {
     "changePassword": "change password",

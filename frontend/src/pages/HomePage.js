@@ -112,7 +112,7 @@ const HomePage = () => {
 
       <Box sx={{ px: { xs: 0, sm: 3 }, py: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }} textTransform="uppercase">
-          {t("homePage.highRating")}
+          {t("homePage.trendingArtists")}
         </Typography>
         {allArtistsLoading ? (
           <GridSongListSkeleton />

@@ -183,9 +183,9 @@ const ForYouSongList = ({
             }}
           >
             {songs.length > 0 &&
-              songs.map((song, index) => (
+              songs.map((song) => (
                 <Box
-                  key={index}
+                  key={song.id}
                   onClick={() => {
                     if (!song || !isXs || currentSong.id === song.id) return;
 
@@ -207,6 +207,7 @@ const ForYouSongList = ({
                     "@media (hover: hover) and (pointer: fine)": {
                       "&:hover": song ? { bgcolor: "grey.300" } : {},
                     },
+                    WebkitTapHighlightColor: "transparent",
                   }}
                 >
                   {song && (

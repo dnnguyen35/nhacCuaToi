@@ -6,6 +6,7 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  useMediaQuery,
 } from "@mui/material";
 import {
   PlayArrow,
@@ -35,6 +36,8 @@ import "swiper/css/navigation";
 const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
   const { user, wishlist } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
+  const isHavePointer = useMediaQuery("(pointer: fine)");
 
   const { t } = useTranslation();
 
@@ -116,20 +119,24 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     >
       <Swiper
         modules={[Navigation]}
-        navigation
+        navigation={isHavePointer}
         grabCursor
         spaceBetween={40}
         slidesPerView="auto"
         style={{ marginBottom: "8px" }}
         loop
       >
-        {songs.map((song, i) => (
+        {songs.map((song) => (
           <SwiperSlide
-            key={i}
-            style={{ width: "152px", height: "auto", paddingBottom: "8px" }}
+            key={song.id}
+            style={{
+              width: "152px",
+              height: "auto",
+              paddingBottom: "8px",
+            }}
           >
             <Card
-              key={i}
+              key={song.id}
               sx={{
                 width: 136,
                 height: 240,
