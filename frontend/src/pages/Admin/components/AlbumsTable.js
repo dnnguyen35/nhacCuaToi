@@ -1,4 +1,4 @@
-import { Mic, Edit } from "@mui/icons-material";
+import { Album, Edit } from "@mui/icons-material";
 import {
   Table,
   TableBody,
@@ -20,49 +20,48 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { rowOnEachPage } from "../../../configs/pagination.configs";
-import AddArtistDialog from "./AddArtistDialog";
-import UpdateArtistDialog from "./UpdateArtistDialog";
+import AddAlbumDialog from "./AddAlbumDialog";
+import UpdateAlbumDialog from "./UpdateAlbumDialog";
 
-const ArtistsTable = () => {
-  const { listArtists } = useSelector((state) => state.statsData);
+const AlbumsTable = () => {
+  const { listAlbums } = useSelector((state) => state.statsData);
 
   const rowPerPage = rowOnEachPage.wishlistTable;
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [displayListArtists, setDisplayListArtists] = useState([]);
+  const [displayListAlbums, setDisplayListAlbums] = useState([]);
 
-  const [updateArtist, setUpdateArtist] = useState(null);
-  const [isUpdateArtistDialogOpen, setIsUpdateArtistDialogOpen] =
-    useState(false);
+  const [updateAlbum, setUpdateAlbum] = useState(null);
+  const [isUpdateAlbumDialogOpen, setIsUpdateAlbumDialogOpen] = useState(false);
 
-  const onUpdateArtistClick = (openUpdateArtistDialogStatus, artist) => {
-    setUpdateArtist(artist);
+  const onUpdateAlbumClick = (openUpdateAlbumDialogStatus, album) => {
+    setUpdateAlbum(album);
 
-    setIsUpdateArtistDialogOpen(openUpdateArtistDialogStatus);
+    setIsUpdateAlbumDialogOpen(openUpdateAlbumDialogStatus);
   };
 
   useEffect(() => {
-    const newTotalPages = Math.ceil(listArtists.length / rowPerPage) || 0;
+    const newTotalPages = Math.ceil(listAlbums.length / rowPerPage) || 0;
     setTotalPages(newTotalPages);
 
     const startIndex = (currentPage - 1) * rowPerPage;
 
     const displayList =
-      listArtists.slice(startIndex, startIndex + rowPerPage) || [];
-    setDisplayListArtists(displayList);
-  }, [currentPage, listArtists]);
+      listAlbums.slice(startIndex, startIndex + rowPerPage) || [];
+    setDisplayListAlbums(displayList);
+  }, [currentPage, listAlbums]);
 
   return (
     <Card>
       <CardHeader
         title={
           <Box display="flex" alignItems="center" gap={1}>
-            <Mic sx={{ color: "green" }} fontSize="small" />
-            <Typography variant="h6">Artists List</Typography>
+            <Album sx={{ color: "green" }} fontSize="small" />
+            <Typography variant="h6">Albums List</Typography>
           </Box>
         }
-        subheader="Manage your artists"
-        action={<AddArtistDialog />}
+        subheader="Manage your albums"
+        action={<AddAlbumDialog />}
       />
       <CardContent>
         <TableContainer
@@ -88,44 +87,32 @@ const ArtistsTable = () => {
               <TableRow>
                 <TableCell sx={{ color: "primary.main" }}>#</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Image</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>Title</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Artist</TableCell>
-                <TableCell sx={{ color: "primary.main" }}>
-                  Total Songs
-                </TableCell>
-                <TableCell sx={{ color: "primary.main" }}>
-                  Song in playlists
-                </TableCell>
-                <TableCell sx={{ color: "primary.main" }}>
-                  Song in wishlists
-                </TableCell>
+                <TableCell sx={{ color: "primary.main" }}>Songs</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayListArtists.map((artist, index) => (
-                <TableRow key={artist.id}>
+              {displayListAlbums.map((album, index) => (
+                <TableRow key={album.id}>
                   <TableCell>
                     {(currentPage - 1) * rowPerPage + index + 1}
                   </TableCell>
                   <TableCell>
                     <Avatar
-                      src={artist.imageUrl || undefined}
-                      alt={artist.artist}
-                      variant="circle"
-                      sx={{ bgcolor: "primary.main" }}
-                    >
-                      {" "}
-                      {artist?.artist?.[0]}
-                    </Avatar>
+                      src={album.imageUrl}
+                      alt={album.title}
+                      variant="rounded"
+                    />
                   </TableCell>
-                  <TableCell>{artist.artist}</TableCell>
-                  <TableCell>{artist.songCount}</TableCell>
-                  <TableCell>{artist.playlistCount}</TableCell>
-                  <TableCell>{artist.wishlistCount}</TableCell>
+                  <TableCell>{album.title}</TableCell>
+                  <TableCell>{album.artist}</TableCell>
+                  <TableCell>{album.songCount}</TableCell>
                   <TableCell>
                     <Box display={"flex"} gap={1}>
                       <IconButton
-                        onClick={() => onUpdateArtistClick(true, artist)}
+                        onClick={() => onUpdateAlbumClick(true, album)}
                         color="success"
                       >
                         <Edit />
@@ -138,16 +125,16 @@ const ArtistsTable = () => {
           </Table>
         </TableContainer>
 
-        {updateArtist !== null && (
-          <UpdateArtistDialog
-            artistToUpdate={updateArtist}
-            isUpdateArtistDialogOpen={isUpdateArtistDialogOpen}
-            setIsUpdateArtistDialogOpen={setIsUpdateArtistDialogOpen}
-            setArtistToUpdate={setUpdateArtist}
+        {updateAlbum !== null && (
+          <UpdateAlbumDialog
+            album={updateAlbum}
+            isUpdateAlbumDialogOpen={isUpdateAlbumDialogOpen}
+            setIsUpdateAlbumDialogOpen={setIsUpdateAlbumDialogOpen}
+            setAlbum={setUpdateAlbum}
           />
         )}
 
-        {listArtists.length > 0 && (
+        {listAlbums.length > 0 && (
           <Box display="flex" justifyContent="center" mt={3}>
             <Pagination
               count={totalPages}
@@ -162,4 +149,4 @@ const ArtistsTable = () => {
   );
 };
 
-export default ArtistsTable;
+export default AlbumsTable;

@@ -4,13 +4,14 @@ import PeopleIcon from "@mui/icons-material/People";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import MicIcon from "@mui/icons-material/Mic";
-import { PaidOutlined } from "@mui/icons-material";
+import { PaidOutlined, Album } from "@mui/icons-material";
 
 import UsersTable from "./UsersTable";
 import SongsTable from "./SongsTable";
 import PlaylistsTable from "./PlaylistsTable";
 import ArtistsTable from "./ArtistsTable";
 import PaymentsTable from "./PaymentsTable";
+import AlbumsTable from "./AlbumsTable";
 
 const TabsMenu = () => {
   const [value, setValue] = useState(0);
@@ -18,6 +19,7 @@ const TabsMenu = () => {
   const tabsIcon = [
     { icon: <PeopleIcon />, label: "Users" },
     { icon: <LibraryMusicIcon />, label: "Songs" },
+    { icon: <Album />, label: "Albums" },
     { icon: <QueueMusicIcon />, label: "Playlists" },
     { icon: <MicIcon />, label: "Artists" },
     { icon: <PaidOutlined />, label: "Payments" },
@@ -65,9 +67,10 @@ const TabsMenu = () => {
       <Box sx={{ mt: 2 }}>
         {value === 0 && <UsersTable />}
         {value === 1 && <SongsTable />}
-        {value === 2 && <PlaylistsTable />}
-        {value === 3 && <ArtistsTable />}
-        {value === 4 && <PaymentsTable />}
+        {value === 2 && <AlbumsTable />}
+        {value === 3 && <PlaylistsTable />}
+        {value === 4 && <ArtistsTable />}
+        {value === 5 && <PaymentsTable />}
       </Box>
     </Box>
   );

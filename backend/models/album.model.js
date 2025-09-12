@@ -14,7 +14,7 @@ const albumModel = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    artist: {
+    artistId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {

@@ -14,55 +14,62 @@ import {
   Typography,
   Autocomplete,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import adminApi from "../../../api/modules/admin.api";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setListArtists,
-  setTotalArtists,
-} from "../../../redux/slices/statsDataSlice";
-import { useRef } from "react";
+import { setListAlbums } from "../../../redux/slices/statsDataSlice";
 
-const UpdateArtistDialog = ({
-  artistToUpdate,
-  isUpdateArtistDialogOpen,
-  setIsUpdateArtistDialogOpen,
-  setArtistToUpdate,
+const UpdateAlbumDialog = ({
+  album,
+  isUpdateAlbumDialogOpen,
+  setIsUpdateAlbumDialogOpen,
+  setAlbum,
 }) => {
-  const { listArtists } = useSelector((state) => state.statsData);
+  const { listAlbums, listArtists } = useSelector((state) => state.statsData);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const [updateArtist, setUpdateArtist] = useState({
+  const [updateAlbum, setUpdateAlbum] = useState({
+    title: "",
     artist: "",
   });
 
   const [files, setFiles] = useState({
-    artistImageFile: null,
+    albumImageFile: null,
   });
 
   const imageInputRef = useRef(null);
 
   useEffect(() => {
-    setUpdateArtist({
-      artist: artistToUpdate.artist,
+    setUpdateAlbum({
+      title: album.title,
+      artist: album.artist,
     });
-  }, [artistToUpdate]);
+  }, [album]);
 
   const handleSubmit = async () => {
-    if (!updateArtist.artist || updateArtist.artist === "") {
-      return toast.error("Please fill out artist name");
+    if (!updateAlbum || updateAlbum.title === "") {
+      return toast.error("Please fill out album title");
     }
 
+    if (updateAlbum.artist === "") {
+      return toast.error("Please choose artist");
+    }
+
+    const artistId = listArtists.find(
+      (a) => a.artist === updateAlbum.artist
+    ).id;
+
     const formData = new FormData();
-    formData.append("artist", updateArtist.artist);
-    formData.append("artistImageFile", files.artistImageFile);
+    formData.append("title", updateAlbum.title);
+    formData.append("artistId", artistId);
+    formData.append("albumImageFile", files.albumImageFile);
 
     setIsLoading(true);
 
-    const { response, error } = await adminApi.updateArtist({
-      artistId: artistToUpdate.id,
+    const { response, error } = await adminApi.updateAlbum({
+      albumId: album.id,
       formData,
     });
 
@@ -73,33 +80,34 @@ const UpdateArtistDialog = ({
     }
 
     if (response) {
-      const newListArtists = listArtists.map((artist) =>
-        artist.id === response.updatedArtist.id
+      setIsUpdateAlbumDialogOpen(false);
+      toast.success("Album updated succeefully");
+
+      const newListAlbums = listAlbums.map((album) =>
+        album.id === response.updatedAlbum.id
           ? {
-              ...artist,
-              imageUrl: response.updatedArtist.imageUrl,
-              artist: response.updatedArtist.artist,
+              ...album,
+              title: response.updatedAlbum.title,
+              artist: listArtists.find(
+                (a) => a.id === response.updatedAlbum.artistId
+              ).artist,
+              imageUrl: response.updatedAlbum.imageUrl,
             }
-          : artist
+          : album
       );
 
-      dispatch(setListArtists(newListArtists));
-      dispatch(setTotalArtists(newListArtists.length));
+      dispatch(setListAlbums(newListAlbums));
 
-      setIsUpdateArtistDialogOpen(false);
-      toast.success("Artist updated successfully");
-
-      setUpdateArtist({ artist: "" });
-      setFiles({ artistImageFile: null });
-      setArtistToUpdate(null);
+      setUpdateAlbum({ title: "", artist: "" });
+      setAlbum(null);
     }
   };
 
   return (
     <>
       <Dialog
-        open={isUpdateArtistDialogOpen}
-        onClose={() => setIsUpdateArtistDialogOpen(false)}
+        open={isUpdateAlbumDialogOpen}
+        onClose={() => setIsUpdateAlbumDialogOpen(false)}
         fullWidth
         maxWidth="xs"
       >
@@ -114,7 +122,7 @@ const UpdateArtistDialog = ({
               display: "inline-block",
             }}
           >
-            Update Artist
+            Update Album
           </Typography>
         </DialogTitle>
         <DialogContent
@@ -124,9 +132,9 @@ const UpdateArtistDialog = ({
             variant="outlined"
             onClick={() => imageInputRef.current?.click()}
           >
-            {files.artistImageFile
-              ? `Image: ${files.artistImageFile.name.slice(0, 20)}`
-              : "Choose Artist Image"}
+            {files.image
+              ? `Image: ${files.image.name.slice(0, 20)}`
+              : "Choose Artwork"}
           </Button>
           <input
             ref={imageInputRef}
@@ -136,26 +144,38 @@ const UpdateArtistDialog = ({
             onChange={(e) =>
               setFiles((prev) => ({
                 ...prev,
-                artistImageFile: e.target.files?.[0] || null,
+                albumImageFile: e.target.files?.[0] || null,
               }))
             }
           />
 
           <TextField
             sx={{ marginTop: 1 }}
-            label="Artist"
+            label="Title"
             variant="outlined"
-            value={updateArtist.artist}
+            value={updateAlbum.title}
             onChange={(e) =>
-              setUpdateArtist({ ...updateArtist, artist: e.target.value })
+              setUpdateAlbum({ ...updateAlbum, title: e.target.value })
             }
             fullWidth
+          />
+
+          <Autocomplete
+            sx={{ width: "100%" }}
+            options={[...listArtists.map((a) => a.artist)]}
+            value={updateAlbum.artist}
+            onChange={(e, newValue) =>
+              setUpdateAlbum({ ...updateAlbum, artist: newValue || "" })
+            }
+            renderInput={(params) => (
+              <TextField fullWidth {...params} label="Artist" />
+            )}
           />
         </DialogContent>
 
         <DialogActions>
           <Button
-            onClick={() => setIsUpdateArtistDialogOpen(false)}
+            onClick={() => setIsUpdateAlbumDialogOpen(false)}
             disabled={isLoading}
           >
             Cancel
@@ -171,7 +191,7 @@ const UpdateArtistDialog = ({
                 Updating...
               </Box>
             ) : (
-              "Update Artist"
+              "Update Album"
             )}
           </Button>
         </DialogActions>
@@ -180,4 +200,4 @@ const UpdateArtistDialog = ({
   );
 };
 
-export default UpdateArtistDialog;
+export default UpdateAlbumDialog;

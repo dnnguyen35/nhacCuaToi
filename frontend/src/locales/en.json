@@ -11,7 +11,8 @@
     "forYou": "for you",
     "treanding": "trending",
     "highRating": "high rating",
-    "trendingArtists": "trending artists"
+    "trendingArtists": "trending artists",
+    "trendingAlbums": "trending albums"
   },
   "userMenu": {
     "changePassword": "change password",

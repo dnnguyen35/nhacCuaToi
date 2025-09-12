@@ -10,6 +10,8 @@ import PlaylistPopup from "../components/PlaylistPopup";
 import { useTranslation } from "react-i18next";
 import GridArtistList from "../components/GridArtistList";
 import artistApi from "../api/modules/artist.api";
+import albumApi from "../api/modules/album.api";
+import GridAlbumList from "../components/GridAlbumList";
 
 const HomePage = () => {
   const [trendingSongs, setTrendingSongs] = useState([]);
@@ -23,6 +25,9 @@ const HomePage = () => {
 
   const [allArtists, setAllArtists] = useState([]);
   const [allArtistsLoading, setAllArtistsLoading] = useState(false);
+
+  const [allAlbums, setAllAlbums] = useState([]);
+  const [allAlbumsLoading, setAllAlbumsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,7 +62,28 @@ const HomePage = () => {
           toast.error(error.message);
         }
       };
-      await Promise.all([fetchTrendingSongs(), fetchAllArtists()]);
+
+      const fetchAllAlbums = async () => {
+        setAllAlbumsLoading(true);
+
+        const { response, error } = await albumApi.getAllAlbums();
+
+        setAllAlbumsLoading(false);
+
+        if (response) {
+          setAllAlbums(response);
+        }
+
+        if (error) {
+          toast.error(error.message);
+        }
+      };
+
+      await Promise.all([
+        fetchTrendingSongs(),
+        fetchAllArtists(),
+        fetchAllAlbums(),
+      ]);
     };
 
     fetchData();
@@ -97,16 +123,12 @@ const HomePage = () => {
 
       <Box sx={{ px: { xs: 0, sm: 3 }, py: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }} textTransform="uppercase">
-          {t("homePage.highRating")}
+          {t("homePage.trendingAlbums")}
         </Typography>
-        {isLoading ? (
+        {allAlbumsLoading ? (
           <GridSongListSkeleton />
         ) : (
-          <GridSongList
-            songs={[...trendingSongs].reverse()}
-            setSelectedSong={setSelectedSong}
-            setIsPlaylistPopupOpen={setIsPlaylistPopupOpen}
-          />
+          <GridAlbumList albums={allAlbums} />
         )}
       </Box>
 

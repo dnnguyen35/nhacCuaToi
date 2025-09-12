@@ -8,7 +8,6 @@ const artistApi = {
   getAllArtists: async () => {
     try {
       const response = await publicClient.get(artistEndpoints.allArtists);
-      console.log("gdjdjdjd", response);
 
       return { response };
     } catch (error) {

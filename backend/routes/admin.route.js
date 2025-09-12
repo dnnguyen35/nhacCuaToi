@@ -9,8 +9,13 @@ import {
   validateCreateArtist,
   validateUpdateArtist,
 } from "../validators/artist.validator.js";
+import {
+  validateCreateAlbum,
+  validateUpdateAlbum,
+} from "../validators/album.validator.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import artistController from "../controllers/artist.controller.js";
+import albumController from "../controllers/album.controller.js";
 
 const router = express.Router();
 
@@ -102,6 +107,22 @@ router.put(
   authMiddleware.checkAdmin,
   validateUpdateArtist,
   artistController.updateArtist
+);
+
+router.post(
+  "/create-album",
+  authMiddleware.auth,
+  authMiddleware.checkAdmin,
+  validateCreateAlbum,
+  albumController.createAlbum
+);
+
+router.put(
+  "/update-album/:albumId",
+  authMiddleware.auth,
+  authMiddleware.checkAdmin,
+  validateUpdateAlbum,
+  albumController.updateAlbum
 );
 
 export default router;

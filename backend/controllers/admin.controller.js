@@ -400,6 +400,50 @@ const getArtistStats = async (req, res) => {
   }
 };
 
+const getAlbumStats = async (req, res) => {
+  try {
+    const cachedAlbumStats = await redis.get("admin:album-stats");
+
+    if (cachedAlbumStats) {
+      return res.status(200).json(cachedAlbumStats);
+    }
+
+    const albumStats = await albumModel.findAll({
+      attributes: [
+        "id",
+        "title",
+        "imageUrl",
+        [
+          sequelize.literal(`(
+            SELECT a.artist
+            FROM artists AS a
+            WHERE a.id = Album.artistId
+          )`),
+          "artist",
+        ],
+        [
+          sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM songs AS s
+            WHERE s.albumId = Album.id
+          )`),
+          "songCount",
+        ],
+      ],
+    });
+
+    if (!albumStats) {
+      return res.status(404).json({ message: "AlbumStats not founded" });
+    }
+
+    await redis.setex("admin:album-stats", 300, JSON.stringify(albumStats));
+
+    res.status(200).json(albumStats);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const getPaymentStats = async (req, res) => {
   try {
     const cachedPaymentStats = await redis.get("admin:payment-stats");
@@ -442,5 +486,6 @@ export default {
   updateSong,
   getPlaylistStats,
   getArtistStats,
+  getAlbumStats,
   getPaymentStats,
 };

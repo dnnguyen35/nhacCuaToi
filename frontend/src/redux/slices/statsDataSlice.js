@@ -9,12 +9,14 @@ const statsDataSlice = createSlice({
     totalPlaylists: 0,
     totalPayments: 0,
     totalProfit: 0,
+    totalAlbums: 0,
 
     listUsers: [],
     listSongs: [],
     listArtists: [],
     listPlaylists: [],
     listPayments: [],
+    listAlbums: [],
 
     userOnline: [],
 
@@ -39,6 +41,9 @@ const statsDataSlice = createSlice({
     setUserOnline: (state, action) => {
       state.userOnline = action.payload;
     },
+    setListAlbums: (state, action) => {
+      state.listAlbums = action.payload;
+    },
 
     setTotalUsers: (state, action) => {
       state.totalUsers = action.payload;
@@ -57,6 +62,9 @@ const statsDataSlice = createSlice({
     },
     setTotalProfit: (state, action) => {
       state.totalProfit = action.payload;
+    },
+    setTotalAlbums: (state, action) => {
+      state.totalAlbums = action.payload;
     },
 
     setNewPayment: (state, action) => {
@@ -96,6 +104,7 @@ export const {
   setListPlaylists,
   setListArtists,
   setListPayments,
+  setListAlbums,
   setUserOnline,
   setTotalUsers,
   setTotalSongs,
@@ -103,6 +112,7 @@ export const {
   setTotalArtists,
   setTotalPayments,
   setTotalProfit,
+  setTotalAlbums,
   setNewPayment,
   setUpdatePayment,
   setNewUser,

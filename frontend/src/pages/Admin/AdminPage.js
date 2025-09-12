@@ -20,6 +20,8 @@ import {
   setTotalPayments,
   setTotalProfit,
   setIsLoading,
+  setTotalAlbums,
+  setListAlbums,
 } from "../../redux/slices/statsDataSlice";
 
 const AdminPage = () => {
@@ -30,14 +32,21 @@ const AdminPage = () => {
     const fetchData = async () => {
       dispatch(setIsLoading(true));
 
-      const [usersRes, songsRes, playlistsRes, artistsRes, paymentsRes] =
-        await Promise.all([
-          adminApi.getUserStats(),
-          adminApi.getSongStats(),
-          adminApi.getPlaylistStats(),
-          adminApi.getArtistStats(),
-          adminApi.getPaymentStats(),
-        ]);
+      const [
+        usersRes,
+        songsRes,
+        playlistsRes,
+        artistsRes,
+        paymentsRes,
+        albumsRes,
+      ] = await Promise.all([
+        adminApi.getUserStats(),
+        adminApi.getSongStats(),
+        adminApi.getPlaylistStats(),
+        adminApi.getArtistStats(),
+        adminApi.getPaymentStats(),
+        adminApi.getAlbumStats(),
+      ]);
 
       dispatch(setIsLoading(false));
 
@@ -63,11 +72,17 @@ const AdminPage = () => {
         dispatch(setTotalProfit(paymentsRes.response.totalProfit));
       }
 
+      if (albumsRes.response) {
+        dispatch(setTotalAlbums(albumsRes.response.length));
+        dispatch(setListAlbums(albumsRes.response));
+      }
+
       if (usersRes.error) toast.error(usersRes.error.message);
       if (songsRes.error) toast.error(songsRes.error.message);
       if (playlistsRes.error) toast.error(playlistsRes.error.message);
       if (artistsRes.error) toast.error(artistsRes.error.message);
       if (paymentsRes.error) toast.error(paymentsRes.error.message);
+      if (albumsRes.error) toast.error(albumsRes.error.message);
     };
 
     if (user && user?.isAdmin) {
