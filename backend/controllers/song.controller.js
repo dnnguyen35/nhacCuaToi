@@ -17,6 +17,16 @@ const getAllSongs = async (req, res) => {
 
       const allSongs = await songModel.findAll({
         order: [["createdAt", "DESC"]],
+        attributes: {
+          include: [
+            [
+              sequelize.literal(
+                `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`
+              ),
+              "artist",
+            ],
+          ],
+        },
       });
 
       if (!allSongs || allSongs.length === 0) {
@@ -46,6 +56,16 @@ const getAllSongs = async (req, res) => {
           limit: parseInt(limit),
           offset: parseInt(offset),
           order: [["createdAt", "DESC"]],
+          attributes: {
+            include: [
+              [
+                sequelize.literal(
+                  `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`
+                ),
+                "artist",
+              ],
+            ],
+          },
         });
 
       if (!allSongs || allSongs.length === 0) {
@@ -84,6 +104,16 @@ const getTrendingSongs = async (req, res) => {
     const featuredSongs = await songModel.findAll({
       order: [sequelize.literal("RAND()")],
       limit: 10,
+      attributes: {
+        include: [
+          [
+            sequelize.literal(
+              `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`
+            ),
+            "artist",
+          ],
+        ],
+      },
     });
 
     if (!featuredSongs || featuredSongs.length === 0) {
@@ -127,6 +157,16 @@ const searchSong = async (req, res) => {
         limit: parseInt(limit),
         offset: parseInt(offset),
         order: [["createdAt", "DESC"]],
+        attributes: {
+          include: [
+            [
+              sequelize.literal(
+                `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`
+              ),
+              "artist",
+            ],
+          ],
+        },
       });
 
     res.status(200).json({

@@ -1,4 +1,4 @@
-import { Album, Edit } from "@mui/icons-material";
+import { Album, Edit, PlaylistAdd } from "@mui/icons-material";
 import {
   Table,
   TableBody,
@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import { rowOnEachPage } from "../../../configs/pagination.configs";
 import AddAlbumDialog from "./AddAlbumDialog";
 import UpdateAlbumDialog from "./UpdateAlbumDialog";
+import AddSongIntoAlbumDialog from "./AddSongIntoAlbumDialog";
 
 const AlbumsTable = () => {
   const { listAlbums } = useSelector((state) => state.statsData);
@@ -34,10 +35,20 @@ const AlbumsTable = () => {
   const [updateAlbum, setUpdateAlbum] = useState(null);
   const [isUpdateAlbumDialogOpen, setIsUpdateAlbumDialogOpen] = useState(false);
 
+  const [addSongAlbum, setAddSongAlbum] = useState(null);
+  const [isAddSongIntoAlbumDialogOpen, setIsAddSongIntoAlbumDialogOpen] =
+    useState(false);
+
   const onUpdateAlbumClick = (openUpdateAlbumDialogStatus, album) => {
     setUpdateAlbum(album);
 
     setIsUpdateAlbumDialogOpen(openUpdateAlbumDialogStatus);
+  };
+
+  const onAddSongIntoAlbumClick = (openAddSongIntoAlbumDialogStatus, album) => {
+    setAddSongAlbum(album);
+
+    setIsAddSongIntoAlbumDialogOpen(openAddSongIntoAlbumDialogStatus);
   };
 
   useEffect(() => {
@@ -117,6 +128,13 @@ const AlbumsTable = () => {
                       >
                         <Edit />
                       </IconButton>
+
+                      <IconButton
+                        onClick={() => onAddSongIntoAlbumClick(true, album)}
+                        color="success"
+                      >
+                        <PlaylistAdd />
+                      </IconButton>
                     </Box>
                   </TableCell>
                 </TableRow>
@@ -131,6 +149,15 @@ const AlbumsTable = () => {
             isUpdateAlbumDialogOpen={isUpdateAlbumDialogOpen}
             setIsUpdateAlbumDialogOpen={setIsUpdateAlbumDialogOpen}
             setAlbum={setUpdateAlbum}
+          />
+        )}
+
+        {addSongAlbum !== null && (
+          <AddSongIntoAlbumDialog
+            album={addSongAlbum}
+            isAddSongIntoAlbumDialogOpen={isAddSongIntoAlbumDialogOpen}
+            setIsAddSongIntoAlbumDialogOpen={setIsAddSongIntoAlbumDialogOpen}
+            setAlbum={setAddSongAlbum}
           />
         )}
 

@@ -21,6 +21,8 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   setListArtists,
   setTotalArtists,
+  setListAlbums,
+  setListSongs,
 } from "../../../redux/slices/statsDataSlice";
 import { useRef } from "react";
 
@@ -30,7 +32,9 @@ const UpdateArtistDialog = ({
   setIsUpdateArtistDialogOpen,
   setArtistToUpdate,
 }) => {
-  const { listArtists } = useSelector((state) => state.statsData);
+  const { listArtists, listSongs, listAlbums } = useSelector(
+    (state) => state.statsData
+  );
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
@@ -82,6 +86,21 @@ const UpdateArtistDialog = ({
             }
           : artist
       );
+
+      const newListSongs = listSongs.map((song) =>
+        song.artistId === response.updatedArtist.id
+          ? { ...song, artist: response.updatedArtist.artist }
+          : song
+      );
+
+      const newListAlbums = listAlbums.map((album) =>
+        album.artistId === response.updatedArtist.id
+          ? { ...album, artist: response.updatedArtist.artist }
+          : album
+      );
+
+      dispatch(setListSongs(newListSongs));
+      dispatch(setListAlbums(newListAlbums));
 
       dispatch(setListArtists(newListArtists));
       dispatch(setTotalArtists(newListArtists.length));

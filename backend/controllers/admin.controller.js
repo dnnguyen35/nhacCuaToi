@@ -8,6 +8,7 @@ import redis from "../configs/redis.js";
 import { getIO, getUserSocketId } from "../configs/socket.js";
 import artistModel from "../models/artist.model.js";
 import albumModel from "../models/album.model.js";
+import { TimeoutError } from "sequelize";
 
 const getUserStats = async (req, res) => {
   try {
@@ -133,12 +134,27 @@ const getSongStats = async (req, res) => {
       attributes: [
         "id",
         "title",
-        "artist",
         "duration",
         "imageUrl",
         "artistId",
         "albumId",
         "createdAt",
+        [
+          sequelize.literal(`(
+            SELECT artist
+            FROM artists
+            WHERE artists.id = Song.artistId
+          )`),
+          "artist",
+        ],
+        [
+          sequelize.literal(`(
+            SELECT title
+            FROM albums
+            WHERE albums.id = Song.albumId  
+          )`),
+          "albumTitle",
+        ],
         [
           sequelize.literal(`(
             SELECT COUNT(*) 
@@ -275,8 +291,6 @@ const updateSong = async (req, res) => {
     }
 
     song.title = title !== "" ? title : song.title;
-    song.artist =
-      tempArtist && tempArtist.artist !== "" ? tempArtist.artist : song.artist;
     song.artistId = tempArtist ? tempArtist.id : song.artistId;
 
     await song.save();
@@ -288,7 +302,7 @@ const updateSong = async (req, res) => {
 
     res.status(200).json({
       message: "Song updated successfully",
-      song,
+      song: { ...song, artist: tempArtist.artist },
       newArtist: tempArtist,
     });
   } catch (error) {
@@ -413,6 +427,7 @@ const getAlbumStats = async (req, res) => {
         "id",
         "title",
         "imageUrl",
+        "artistId",
         [
           sequelize.literal(`(
             SELECT a.artist

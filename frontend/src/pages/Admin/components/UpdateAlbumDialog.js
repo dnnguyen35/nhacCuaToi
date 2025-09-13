@@ -18,7 +18,10 @@ import { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import adminApi from "../../../api/modules/admin.api";
 import { useSelector, useDispatch } from "react-redux";
-import { setListAlbums } from "../../../redux/slices/statsDataSlice";
+import {
+  setListAlbums,
+  setListSongs,
+} from "../../../redux/slices/statsDataSlice";
 
 const UpdateAlbumDialog = ({
   album,
@@ -26,7 +29,9 @@ const UpdateAlbumDialog = ({
   setIsUpdateAlbumDialogOpen,
   setAlbum,
 }) => {
-  const { listAlbums, listArtists } = useSelector((state) => state.statsData);
+  const { listAlbums, listArtists, listSongs } = useSelector(
+    (state) => state.statsData
+  );
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
@@ -96,7 +101,14 @@ const UpdateAlbumDialog = ({
           : album
       );
 
+      const newListSongs = listSongs.map((song) =>
+        song.albumId === response.updatedAlbum.id
+          ? { ...song, albumTitle: response.updatedAlbum.title }
+          : song
+      );
+
       dispatch(setListAlbums(newListAlbums));
+      dispatch(setListSongs(newListSongs));
 
       setUpdateAlbum({ title: "", artist: "" });
       setAlbum(null);

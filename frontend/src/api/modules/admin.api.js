@@ -16,6 +16,7 @@ const adminEndpoints = {
   deleteSong: ({ songId }) => `admins/delete-song/${songId}`,
   updateArtist: ({ artistId }) => `admins/update-artist/${artistId}`,
   updateAlbum: ({ albumId }) => `admins/update-album/${albumId}`,
+  addSongIntoAlbum: ({ albumId }) => `admins/album/add-songs/${albumId}`,
 };
 
 const adminApi = {
@@ -178,6 +179,19 @@ const adminApi = {
       const response = await privateClient.put(
         adminEndpoints.updateAlbum({ albumId }),
         formData
+      );
+
+      return { response };
+    } catch (error) {
+      return { error };
+    }
+  },
+
+  addSongIntoAlbum: async ({ albumId, songIdArray }) => {
+    try {
+      const response = await privateClient.post(
+        adminEndpoints.addSongIntoAlbum({ albumId }),
+        { songIdArray }
       );
 
       return { response };

@@ -3,6 +3,8 @@ import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
 import redis from "../configs/redis.js";
 import sequelize from "../configs/db.js";
 import artistModel from "../models/artist.model.js";
+import songModel from "../models/song.model.js";
+import { Op } from "sequelize";
 
 const getAllAlbums = async (req, res) => {
   try {
@@ -56,6 +58,17 @@ const createAlbum = async (req, res) => {
       return res.status(404).json({ message: "Artist not exist" });
     }
 
+    const isAlbumExisted = await albumModel.findOne({
+      where: {
+        title,
+        artistId,
+      },
+    });
+
+    if (isAlbumExisted) {
+      return res.status(400).json({ message: "Album alredy existed" });
+    }
+
     const albumImageFile = req.files.albumImageFile;
 
     const albumImageUrl = await uploadToCloudinary(albumImageFile);
@@ -81,6 +94,17 @@ const updateAlbum = async (req, res) => {
     const { albumId } = req.params;
 
     const { title, artistId } = req.body;
+
+    const isAlbumExisted = await albumModel.findOne({
+      where: {
+        title,
+        artistId,
+      },
+    });
+
+    if (isAlbumExisted) {
+      return res.status(400).json({ message: "Album alredy existed" });
+    }
 
     const albumImageFile = req.files ? req.files.albumImageFile : null;
 
@@ -118,8 +142,48 @@ const updateAlbum = async (req, res) => {
   }
 };
 
+const addSongIntoAlbum = async (req, res) => {
+  try {
+    const { albumId } = req.params;
+
+    const { songIdArray } = req.body;
+
+    if (
+      !songIdArray ||
+      !Array.isArray(songIdArray) ||
+      songIdArray.length === 0
+    ) {
+      return res.status(400).json({ message: "Song ID array is required" });
+    }
+
+    const isValidAlbum = await albumModel.findByPk(Number(albumId));
+
+    if (!isValidAlbum) {
+      return res.status(404).json({ message: "Album not founded" });
+    }
+
+    await songModel.update(
+      { albumId: albumId },
+      { where: { id: { [Op.in]: [...songIdArray] } } }
+    );
+
+    const songInAlbum = await songModel.findAll({
+      where: { albumId: albumId },
+    });
+
+    res.status(200).json({
+      message: "Add song into album successfully",
+      songInAlbum: songInAlbum,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export default {
   getAllAlbums,
   createAlbum,
   updateAlbum,
+  addSongIntoAlbum,
 };

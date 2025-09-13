@@ -109,6 +109,13 @@ router.put(
   artistController.updateArtist
 );
 
+router.get(
+  "/album-stats",
+  authMiddleware.auth,
+  authMiddleware.checkAdmin,
+  adminController.getAlbumStats
+);
+
 router.post(
   "/create-album",
   authMiddleware.auth,
@@ -123,6 +130,13 @@ router.put(
   authMiddleware.checkAdmin,
   validateUpdateAlbum,
   albumController.updateAlbum
+);
+
+router.post(
+  "/album/add-songs/:albumId",
+  authMiddleware.auth,
+  authMiddleware.checkAdmin,
+  albumController.addSongIntoAlbum
 );
 
 export default router;

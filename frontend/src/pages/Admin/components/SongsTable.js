@@ -153,6 +153,7 @@ const SongsTable = () => {
                 <TableCell sx={{ color: "primary.main" }}>Image</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Title</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>Artist</TableCell>
+                <TableCell sx={{ color: "primary.main" }}>Album</TableCell>
                 <TableCell sx={{ color: "primary.main" }}>
                   <AccessTime />
                 </TableCell>
@@ -185,6 +186,7 @@ const SongsTable = () => {
                   </TableCell>
                   <TableCell>{song.title}</TableCell>
                   <TableCell>{song.artist}</TableCell>
+                  <TableCell>{song.albumTitle || "N/A"}</TableCell>
                   <TableCell>{formatDurationToHMS(song.duration)}</TableCell>
                   <TableCell>{song.createdAt.split("T")[0]}</TableCell>
                   <TableCell>{song.playlistCount}</TableCell>
