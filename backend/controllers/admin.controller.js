@@ -302,7 +302,7 @@ const updateSong = async (req, res) => {
 
     res.status(200).json({
       message: "Song updated successfully",
-      song: { ...song, artist: tempArtist.artist },
+      song: { ...song.toJSON(), artist: tempArtist.artist },
       newArtist: tempArtist,
     });
   } catch (error) {
