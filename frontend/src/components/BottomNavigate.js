@@ -128,7 +128,6 @@ const BottomNavigate = () => {
           borderRadius: 5,
           boxShadow: 3,
           gap: 1,
-          zIndex: 1400,
         }}
         value={value}
         onChange={(e, val) => setValue(val)}
