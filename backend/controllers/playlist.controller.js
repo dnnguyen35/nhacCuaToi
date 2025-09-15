@@ -2,6 +2,8 @@ import playlistModel from "../models/playlist.model.js";
 import songModel from "../models/song.model.js";
 import playlistSongModel from "../models/playlistSong.model.js";
 import redis from "../configs/redis.js";
+import artistModel from "../models/artist.model.js";
+import sequelize from "../configs/db.js";
 
 const createPlaylist = async (req, res) => {
   try {
@@ -95,10 +97,24 @@ const getAllSongsOfPlaylist = async (req, res) => {
         {
           model: songModel,
           through: { attributes: [] },
+          include: [
+            {
+              model: artistModel,
+              attributes: ["artist"],
+              required: false,
+            },
+          ],
         },
       ],
       order: [[songModel, playlistSongModel, "id", "ASC"]],
     });
+
+    const allSongsPlain = allSongs.get({ plain: true });
+
+    allSongsPlain.Songs = allSongsPlain.Songs.map((song) => ({
+      ...song,
+      artist: song.Artist ? song.Artist.artist : null,
+    }));
 
     if (!allSongs) {
       return res.status(400).json({ message: "Playlist doesn't exists" });
@@ -107,11 +123,12 @@ const getAllSongsOfPlaylist = async (req, res) => {
     await redis.setex(
       `playlist:all-songs:${playlistId}`,
       300,
-      JSON.stringify(allSongs)
+      JSON.stringify(allSongsPlain)
     );
 
-    res.status(200).json(allSongs);
+    res.status(200).json(allSongsPlain);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

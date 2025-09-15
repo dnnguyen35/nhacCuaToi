@@ -35,6 +35,7 @@ const PleaseLogin = () => {
             WebkitTextFillColor: "transparent",
             display: "inline-block",
           }}
+          textAlign={"center"}
         >
           {t("responseError.Please sign in to see this page")}
         </Typography>

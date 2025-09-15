@@ -1,7 +1,7 @@
 import songModel from "../models/song.model.js";
+import artistModel from "../models/artist.model.js";
 import sequelize from "../configs/db.js";
 import { Op } from "sequelize";
-
 import redis from "../configs/redis.js";
 
 const getAllSongs = async (req, res) => {
@@ -144,13 +144,20 @@ const searchSong = async (req, res) => {
 
     const { rows: searchResult, count: totalRows } =
       await songModel.findAndCountAll({
+        include: [
+          {
+            model: artistModel,
+            attributes: ["id", "artist"],
+            required: false,
+          },
+        ],
         where: {
           [Op.or]: [
             sequelize.literal(
               `title COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`
             ),
             sequelize.literal(
-              `artist COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`
+              `Artist.artist COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`
             ),
           ],
         },
@@ -158,14 +165,7 @@ const searchSong = async (req, res) => {
         offset: parseInt(offset),
         order: [["createdAt", "DESC"]],
         attributes: {
-          include: [
-            [
-              sequelize.literal(
-                `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`
-              ),
-              "artist",
-            ],
-          ],
+          include: [[sequelize.col("Artist.artist"), "artist"]],
         },
       });
 

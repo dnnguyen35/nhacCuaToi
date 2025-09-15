@@ -7,6 +7,7 @@ import redis from "../configs/redis.js";
 import { verifyEmailExists } from "../utils/verifyEmailExists.js";
 import { getIO } from "../configs/socket.js";
 import { pushEmailJob } from "../utils/pushJob.js";
+import artistModel from "../models/artist.model.js";
 
 const signup = async (req, res) => {
   try {
@@ -220,13 +221,32 @@ const signin = async (req, res) => {
           model: songModel,
           as: "WishlistedSongs",
           through: { attributes: [] },
+          include: [
+            {
+              model: artistModel,
+              attributes: ["artist"],
+              required: false,
+            },
+          ],
         },
       ],
     });
 
-    const wishlist = userWishlist.WishlistedSongs;
+    const wishlistedSongsPlain = userWishlist.WishlistedSongs.map((song) => {
+      const s = song.toJSON();
 
-    res.status(200).json({ access_token, refresh_token, userData, wishlist });
+      return {
+        ...s,
+        artist: s.Artist ? s.Artist.artist : null,
+      };
+    });
+
+    res.status(200).json({
+      access_token,
+      refresh_token,
+      userData,
+      wishlist: wishlistedSongsPlain,
+    });
   } catch (err) {
     res.status(500).json({ message: "Opp sorry! some thing went wrong" });
   }

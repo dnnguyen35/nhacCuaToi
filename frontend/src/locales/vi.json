@@ -62,7 +62,7 @@
     "choosePlaylist": "Chọn playlist",
 
     "playlistName": "Tên playlist",
-    "searchInput": "Tìm bài hát theo tên hoặc nghệ sĩ! Vui lòng nhập để tìm"
+    "searchInput": "Vui lòng nhập để tìm"
   },
   "validateField": {
     "emailRequired": "Thiếu email",
