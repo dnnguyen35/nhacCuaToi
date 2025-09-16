@@ -472,138 +472,119 @@ const PlaylistPage = () => {
             flexDirection="column"
             alignItems={"center"}
           >
-            <TableContainer
-              component={Paper}
+            <Box
               sx={{
-                maxHeight: { xs: 300, md: 500 },
-                maxWidth: { xs: "100%", md: "80%" },
-                overflow: "auto",
-                "&::-webkit-scrollbar": {
-                  width: "2px",
-                  height: "2px",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: "primary.main",
-                  borderRadius: "10px",
-                },
-                "&::-webkit-scrollbar-track": {
-                  backgroundColor: "transparent",
-                },
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+                width: { xs: "100%", md: "80%" },
               }}
             >
-              <Table stickyHeader>
-                <TableBody>
-                  {displayPlaylist.length <= 0 ? (
-                    <TableRow>
-                      <TableCell
-                        align="center"
-                        colSpan={5}
-                        sx={{ color: "primary.main", fontWeight: "bold" }}
-                      >
-                        {t("songTable.thereNoSong")}
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    displayPlaylist.map((song, index) => {
-                      const isCurrentSong = currentSong?.id === song.id;
-                      return (
-                        <TableRow
-                          key={song.id}
-                          hover
-                          sx={{
-                            cursor: "pointer",
-                            backgroundColor:
-                              isCurrentSong && queueType === "playlist"
-                                ? "primary.main"
-                                : "inherit",
-                          }}
-                          onClick={() => handlePlaySong(song)}
-                        >
-                          {multipleSelectMode && (
-                            <TableCell padding="checkbox">
-                              <Checkbox
-                                size="small"
-                                checked={
-                                  deletedSongListId.some(
-                                    (sId) => sId === song.id
-                                  )
-                                    ? true
-                                    : false
-                                }
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  onSongCheckedClick(song.id);
-                                }}
-                              />
-                            </TableCell>
-                          )}
-                          <TableCell
-                            align="center"
-                            width={40}
-                            sx={{ display: { xs: "none", md: "table-cell" } }}
-                          >
-                            {isCurrentSong &&
-                            currentPlaylist?.id === playlist?.id &&
-                            isPlaying &&
-                            queueType === "playlist" ? (
-                              <Typography color="success">♫</Typography>
-                            ) : (
-                              <Typography>
-                                {(currentPage - 1) * rowPerPage + index + 1}
-                              </Typography>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <Box display="flex" alignItems="center" gap={2}>
-                              <Avatar
-                                src={song.imageUrl}
-                                alt={song.title}
-                                variant="rounded"
-                                sx={{ width: 48, height: 48 }}
-                              />
-                              <Box>
-                                <Typography
-                                  variant="subtitle1"
-                                  color="text.primary"
-                                >
-                                  {song.title}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {song.artist}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell
-                            sx={{ display: { xs: "none", sm: "table-cell" } }}
-                          >
-                            {formatDurationToHMS(song.duration)}
-                          </TableCell>
-                          <TableCell padding="none">
-                            <IconButton
-                              size="small"
-                              disabled={multipleSelectMode ? true : false}
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                onDeleteSongFromPlaylistClick(song);
-                              }}
-                              sx={{ color: "primary.main" }}
-                            >
-                              <Favorite />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+              {currentPlaylist?.Songs?.length <= 0 ? (
+                <Typography
+                  align="center"
+                  sx={{ color: "primary.main", fontWeight: "bold", mt: 2 }}
+                >
+                  {t("songTable.thereNoSong")}
+                </Typography>
+              ) : (
+                currentPlaylist?.Songs?.map((song, index) => {
+                  const isCurrentSong = currentSong?.id === song.id;
 
-            {currentPlaylist?.Songs?.length > 0 && (
+                  return (
+                    <Box
+                      key={song.id}
+                      onClick={() => handlePlaySong(song)}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        p: 1.2,
+                        borderRadius: 2,
+                        cursor: "pointer",
+                        bgcolor:
+                          isCurrentSong && queueType === "playlist"
+                            ? "primary.main"
+                            : "background.paper",
+                        "&:hover": {
+                          bgcolor:
+                            isCurrentSong && queueType === "playlist"
+                              ? "primary.dark"
+                              : "action.hover",
+                        },
+                        transition: "0.2s",
+                      }}
+                    >
+                      {multipleSelectMode && (
+                        <Box width={30} textAlign="center">
+                          <Checkbox
+                            size="small"
+                            checked={
+                              deletedSongListId.some((sId) => sId === song.id)
+                                ? true
+                                : false
+                            }
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onSongCheckedClick(song.id);
+                            }}
+                          />
+                        </Box>
+                      )}
+
+                      <Avatar
+                        src={song.imageUrl}
+                        alt={song.title}
+                        variant="rounded"
+                        sx={{ width: 48, height: 48 }}
+                      />
+
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="subtitle1"
+                          color="text.primary"
+                          noWrap
+                        >
+                          {song.title}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          noWrap
+                        >
+                          {song.artist}
+                        </Typography>
+                      </Box>
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          display: { xs: "none", sm: "block" },
+                          minWidth: 60,
+                        }}
+                      >
+                        {formatDurationToHMS(song.duration)}
+                      </Typography>
+
+                      <IconButton
+                        size="small"
+                        disabled={multipleSelectMode}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onDeleteSongFromPlaylistClick(song);
+                        }}
+                        sx={{ color: "primary.main" }}
+                      >
+                        <Favorite />
+                      </IconButton>
+                    </Box>
+                  );
+                })
+              )}
+            </Box>
+
+            {/* {currentPlaylist?.Songs?.length > 0 && (
               <Box display="flex" justifyContent="center" mt={3}>
                 <Pagination
                   count={totalPages}
@@ -612,7 +593,7 @@ const PlaylistPage = () => {
                   color="primary"
                 />
               </Box>
-            )}
+            )} */}
           </Box>
         </Box>
       </Box>

@@ -85,9 +85,7 @@ const WishlistPage = () => {
 
     const confirm = await Swal.fire({
       title: t("sweetalert.Are you sure?"),
-      text: `${t("sweetalert.Do you really want to delete all.")}${t(
-        "sweetalert.? This action cannot be undone."
-      )}`,
+      text: t("sweetalert.? This action cannot be undone."),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -166,22 +164,6 @@ const WishlistPage = () => {
 
   const onDeleteSongFromWishlistClick = async (deleteSong) => {
     if (onDeleteSongRequest) return;
-
-    const confirm = await Swal.fire({
-      title: t("sweetalert.Are you sure?"),
-      text: `${t("sweetalert.Do you really want to delete")} "${
-        deleteSong.title
-      }"${t("sweetalert.? This action cannot be undone.")}`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: t("sweetalert.Yes, delete it!"),
-      cancelButtonText: t("sweetalert.Cancel"),
-      theme: themeMode,
-    });
-
-    if (!confirm.isConfirmed) return;
 
     setOnDeleteSongRequest(true);
 
@@ -377,137 +359,119 @@ const WishlistPage = () => {
             flexDirection="column"
             alignItems={"center"}
           >
-            <TableContainer
-              component={Paper}
+            <Box
               sx={{
-                maxHeight: { xs: 300, md: 500 },
-                maxWidth: { xs: "100%", md: "80%" },
-                overflow: "auto",
-                "&::-webkit-scrollbar": {
-                  width: "2px",
-                  height: "2px",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: "primary.main",
-                  borderRadius: "10px",
-                },
-                "&::-webkit-scrollbar-track": {
-                  backgroundColor: "transparent",
-                },
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+                width: { xs: "100%", md: "80%" },
               }}
             >
-              <Table stickyHeader>
-                <TableBody>
-                  {wishlist.length <= 0 ? (
-                    <TableRow>
-                      <TableCell
-                        align="center"
-                        colSpan={5}
-                        sx={{ color: "primary.main", fontWeight: "bold" }}
-                      >
-                        {t("songTable.thereNoSong")}
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    displayWishlist.map((song, index) => {
-                      const isCurrentSong = currentSong?.id === song.id;
+              {wishlist.length <= 0 ? (
+                <Typography
+                  align="center"
+                  sx={{ color: "primary.main", fontWeight: "bold", mt: 2 }}
+                >
+                  {t("songTable.thereNoSong")}
+                </Typography>
+              ) : (
+                wishlist.map((song, index) => {
+                  const isCurrentSong = currentSong?.id === song.id;
 
-                      return (
-                        <TableRow
-                          key={song.id}
-                          hover
-                          sx={{
-                            cursor: "pointer",
-                            backgroundColor:
-                              isCurrentSong && queueType === "wishlist"
-                                ? "primary.main"
-                                : "inherit",
-                          }}
-                          onClick={() => handlePlaySong(song)}
+                  return (
+                    <Box
+                      key={song.id}
+                      onClick={() => handlePlaySong(song)}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        p: 1.2,
+                        borderRadius: 2,
+                        cursor: "pointer",
+                        bgcolor:
+                          isCurrentSong && queueType === "wishlist"
+                            ? "primary.main"
+                            : "background.paper",
+                        "&:hover": {
+                          bgcolor:
+                            isCurrentSong && queueType === "wishlist"
+                              ? "primary.dark"
+                              : "action.hover",
+                        },
+                        transition: "0.2s",
+                      }}
+                    >
+                      {multipleSelectMode && (
+                        <Box width={30} textAlign="center">
+                          <Checkbox
+                            size="small"
+                            checked={
+                              deletedSongListId.some((sId) => sId === song.id)
+                                ? true
+                                : false
+                            }
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onSongCheckedClick(song.id);
+                            }}
+                          />
+                        </Box>
+                      )}
+
+                      <Avatar
+                        src={song.imageUrl}
+                        alt={song.title}
+                        variant="rounded"
+                        sx={{ width: 48, height: 48 }}
+                      />
+
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="subtitle1"
+                          color="text.primary"
+                          noWrap
                         >
-                          {multipleSelectMode && (
-                            <TableCell padding="checkbox">
-                              <Checkbox
-                                size="small"
-                                checked={
-                                  deletedSongListId.some(
-                                    (sId) => sId === song.id
-                                  )
-                                    ? true
-                                    : false
-                                }
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  onSongCheckedClick(song.id);
-                                }}
-                              />
-                            </TableCell>
-                          )}
-                          <TableCell
-                            align="center"
-                            width={40}
-                            sx={{ display: { xs: "none", md: "table-cell" } }}
-                          >
-                            {isCurrentSong &&
-                            isPlaying &&
-                            queueType === "wishlist" ? (
-                              <Typography color="success">♫</Typography>
-                            ) : (
-                              <Typography>
-                                {(currentPage - 1) * rowPerPage + index + 1}
-                              </Typography>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <Box display="flex" alignItems="center" gap={2}>
-                              <Avatar
-                                src={song.imageUrl}
-                                alt={song.title}
-                                variant="rounded"
-                                sx={{ width: 48, height: 48 }}
-                              />
-                              <Box>
-                                <Typography
-                                  variant="subtitle1"
-                                  color="text.primary"
-                                >
-                                  {song.title}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                >
-                                  {song.artist}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell
-                            sx={{ display: { xs: "none", sm: "table-cell" } }}
-                          >
-                            {formatDurationToHMS(song.duration)}
-                          </TableCell>
-                          <TableCell padding="none">
-                            <IconButton
-                              size="small"
-                              disabled={multipleSelectMode ? true : false}
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                onDeleteSongFromWishlistClick(song);
-                              }}
-                              sx={{ color: "primary.main" }}
-                            >
-                              <Favorite />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            {wishlist.length > 0 && (
+                          {song.title}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          noWrap
+                        >
+                          {song.artist}
+                        </Typography>
+                      </Box>
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          display: { xs: "none", sm: "block" },
+                          minWidth: 60,
+                        }}
+                      >
+                        {formatDurationToHMS(song.duration)}
+                      </Typography>
+
+                      <IconButton
+                        size="small"
+                        disabled={multipleSelectMode}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onDeleteSongFromWishlistClick(song);
+                        }}
+                        sx={{ color: "primary.main" }}
+                      >
+                        <Favorite />
+                      </IconButton>
+                    </Box>
+                  );
+                })
+              )}
+            </Box>
+
+            {/* {wishlist.length > 0 && (
               <Box display="flex" justifyContent="center" mt={3}>
                 <Pagination
                   count={totalPages}
@@ -516,7 +480,7 @@ const WishlistPage = () => {
                   color="primary"
                 />
               </Box>
-            )}
+            )} */}
           </Box>
         </Box>
       </Box>
