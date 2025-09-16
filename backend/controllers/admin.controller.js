@@ -220,7 +220,6 @@ const createSong = async (req, res) => {
 
     const newSong = songModel.build({
       title,
-      artist: tempArtist.artist,
       duration,
       audioUrl,
       imageUrl,
@@ -228,13 +227,16 @@ const createSong = async (req, res) => {
     });
     await newSong.save();
 
+    const newSongPlain = newSong.toJSON();
+    newSongPlain.artist = tempArtist.artist;
+
     await Promise.all([
       redis.del("admin:song-stats"),
       redis.del("admin:playlist-stats"),
       redis.del("artist-stats"),
     ]);
 
-    res.status(201).json({ newSong, newArtist: tempArtist });
+    res.status(201).json({ newSong: newSongPlain, newArtist: tempArtist });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
