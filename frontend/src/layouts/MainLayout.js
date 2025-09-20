@@ -111,7 +111,7 @@ const MainLayout = () => {
               flex: 1,
               overflowY: "auto",
               py: 2,
-              px: { xs: 0, sm: 2 },
+              px: { xs: 1, sm: 2 },
               scrollBehavior: "smooth",
               scrollbarWidth: "none",
               "&::-webkit-scrollbar": {

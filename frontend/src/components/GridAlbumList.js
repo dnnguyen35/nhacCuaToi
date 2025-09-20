@@ -19,11 +19,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import Marquee from "react-fast-marquee";
 import { useState } from "react";
-import {
-  togglePlay,
-  setCurrentSong,
-  initializeQueue,
-} from "../redux/slices/playerSlice";
+import { togglePlay, playAlbum } from "../redux/slices/playerSlice";
 import { setWishlist } from "../redux/slices/userSlice";
 import wishlistApi from "../api/modules/wishlist.api";
 import { toast } from "react-toastify";
@@ -37,6 +33,32 @@ import "swiper/css/navigation";
 const GridAlbumList = ({ albums }) => {
   const isHavePointer = useMediaQuery("(pointer: fine)");
   const { t } = useTranslation();
+
+  const { currentSong, isPlaying, queueType } = useSelector(
+    (state) => state.player
+  );
+
+  const dispatch = useDispatch();
+
+  const handlePlayAlbum = (albumId) => {
+    const chooseAlbum = albums?.find((a) => a.id === albumId);
+
+    const ischooseAlbumPlaying = chooseAlbum?.Songs.some(
+      (s) => s.id === currentSong.id
+    );
+
+    if (
+      ischooseAlbumPlaying &&
+      chooseAlbum.id === Number(queueType.split(":")[1]) &&
+      queueType.split(":")[0] === "album"
+    ) {
+      dispatch(togglePlay());
+    } else {
+      const songs = chooseAlbum?.Songs;
+      const startIndex = 0;
+      dispatch(playAlbum({ songs, startIndex, albumId }));
+    }
+  };
 
   return (
     <Box
@@ -84,11 +106,22 @@ const GridAlbumList = ({ albums }) => {
                 }}
               >
                 <Box sx={{ textAlign: "center" }}>
-                  <Tooltip title={album.title} arrow placement="top">
-                    <Typography variant="body1" fontWeight="bold" noWrap>
-                      {album.title}
-                    </Typography>
-                  </Tooltip>
+                  {isPlaying &&
+                  album.id === Number(queueType.split(":")[1]) &&
+                  queueType.split(":")[0] === "album" &&
+                  album?.Songs?.some((song) => song.id === currentSong?.id) ? (
+                    <Marquee pauseOnHover={false} speed={50} play={true}>
+                      <Typography variant="body1" fontWeight="bold" noWrap>
+                        {`${album.title}\u00A0\u00A0\u00A0`}
+                      </Typography>
+                    </Marquee>
+                  ) : (
+                    <Tooltip title={album.title} arrow placement="top">
+                      <Typography variant="body1" fontWeight="bold" noWrap>
+                        {`${album.title}\u00A0\u00A0\u00A0`}
+                      </Typography>
+                    </Tooltip>
+                  )}
                   <Typography variant="body2" color="text.secondary" noWrap>
                     {album.artist}
                   </Typography>
@@ -108,6 +141,26 @@ const GridAlbumList = ({ albums }) => {
                     }}
                   >
                     <List />
+                  </IconButton>
+
+                  <IconButton
+                    color="primary"
+                    size="small"
+                    sx={{ pr: 1 }}
+                    onClick={() => {
+                      handlePlayAlbum(album.id);
+                    }}
+                  >
+                    {isPlaying &&
+                    album.id === Number(queueType.split(":")[1]) &&
+                    queueType.split(":")[0] === "album" &&
+                    album?.Songs?.some(
+                      (song) => song.id === currentSong?.id
+                    ) ? (
+                      <Pause />
+                    ) : (
+                      <PlayArrow />
+                    )}
                   </IconButton>
                 </Box>
               </CardContent>

@@ -15,27 +15,47 @@ const getAllAlbums = async (req, res) => {
     }
 
     const allAlbums = await albumModel.findAll({
-      order: [sequelize.literal("RAND()")],
+      order: sequelize.literal("RAND()"), // random 10 album
       limit: 10,
-      attributes: {
-        include: [
-          [
-            sequelize.literal(
-              `(SELECT a.artist FROM artists AS a WHERE a.id = Album.artistId)`
-            ),
-            "artist",
+      include: [
+        {
+          model: songModel,
+          include: [
+            {
+              model: artistModel,
+              attributes: ["artist"],
+              required: false,
+            },
           ],
-        ],
-      },
+        },
+        {
+          model: artistModel,
+          attributes: ["artist"],
+          required: false,
+        },
+      ],
     });
 
     if (!allAlbums || allAlbums.length === 0) {
       return res.status(404).json({ message: "There is no album now" });
     }
 
-    await redis.setex("album:all-albums", 300, JSON.stringify(allAlbums));
+    const allAlbumsPlain = allAlbums.map((album) => {
+      const albumPlain = album.get({ plain: true });
 
-    res.status(200).json(allAlbums);
+      return {
+        ...albumPlain,
+        artist: albumPlain.Artist ? albumPlain.Artist.artist : null,
+        Songs: albumPlain.Songs.map((s) => ({
+          ...s,
+          artist: s.Artist ? s.Artist.artist : null,
+        })),
+      };
+    });
+
+    await redis.setex("album:all-albums", 300, JSON.stringify(allAlbumsPlain));
+
+    res.status(200).json(allAlbumsPlain);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -181,9 +201,71 @@ const addSongIntoAlbum = async (req, res) => {
   }
 };
 
+const getAllSongsOfAlbum = async (req, res) => {
+  try {
+    const { albumId } = req.params;
+
+    const album = await albumModel.findByPk(albumId);
+
+    if (!album) {
+      return res.status(404).json({ message: "Album not founded" });
+    }
+
+    const cachedAllSongs = await redis.get(`album:all-songs:${albumId}`);
+
+    if (cachedAllSongs) {
+      return res.status(200).json(cachedAllSongs);
+    }
+
+    const allSongs = await albumModel.findByPk(albumId, {
+      include: [
+        {
+          model: songModel,
+          include: [
+            {
+              model: artistModel,
+              attributes: ["artist"],
+              required: false,
+            },
+          ],
+        },
+        {
+          model: artistModel,
+          attributes: ["artist"],
+          required: false,
+        },
+      ],
+      order: [[songModel, "id", "ASC"]],
+    });
+
+    const allSongsPlain = allSongs.get({ plain: true });
+
+    allSongsPlain.artist = allSongsPlain.Artist
+      ? allSongsPlain.Artist.artist
+      : null;
+
+    allSongsPlain.Songs = allSongsPlain.Songs.map((song) => ({
+      ...song,
+      artist: song.Artist ? song.Artist.artist : null,
+    }));
+
+    await redis.setex(
+      `album:all-songs:${albumId}`,
+      300,
+      JSON.stringify(allSongsPlain)
+    );
+
+    res.status(200).json(allSongsPlain);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export default {
   getAllAlbums,
   createAlbum,
   updateAlbum,
   addSongIntoAlbum,
+  getAllSongsOfAlbum,
 };

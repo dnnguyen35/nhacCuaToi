@@ -5,4 +5,6 @@ const router = express.Router();
 
 router.get("/all-albums", albumController.getAllAlbums);
 
+router.get("/all-songs/:albumId", albumController.getAllSongsOfAlbum);
+
 export default router;
