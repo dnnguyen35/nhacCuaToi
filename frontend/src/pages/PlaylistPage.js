@@ -41,6 +41,7 @@ import PageNotFound from "../components/PageNotFound";
 import { formatDurationToHMS } from "../utils/formatDurationToHMS";
 import { motion } from "framer-motion";
 import { rowOnEachPage } from "../configs/pagination.configs";
+import Marquee from "react-fast-marquee";
 
 const PlaylistPage = () => {
   const { playlistId } = useParams();
@@ -328,7 +329,7 @@ const PlaylistPage = () => {
             display="flex"
             padding={3}
             gap={3}
-            flexDirection={{ xs: "column", sm: "row" }}
+            flexDirection={{ xs: "row", sm: "row" }}
           >
             <Box
               component="img"
@@ -355,42 +356,32 @@ const PlaylistPage = () => {
               flexDirection="column"
               justifyContent="flex-end"
             >
-              <Typography variant="subtitle2" color="text.secondary">
-                Playlist
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: {
-                    xs: "1.5rem",
-                    sm: "3rem",
-                    md: "5rem",
-                  },
-                  fontWeight: "bold",
-                }}
-                fontWeight="bold"
-                marginY={2}
-              >
-                {currentPlaylist?.name}
-              </Typography>
+              <Box display="flex" flexDirection="row" gap={1}>
+                <Typography color="text.secondary">Playlist</Typography>
+                <Typography fontWeight="bold" noWrap>
+                  {currentPlaylist?.name}
+                </Typography>
+              </Box>
               <Box
                 display="flex"
                 alignItems="center"
                 gap={1}
                 color="text.secondary"
               >
-                <Typography>{currentPlaylist?.Songs?.length}</Typography>
-                <Typography textTransform="uppercase">
-                  ~ {t("songs")}
-                </Typography>
-                <Typography>
-                  ~{" "}
-                  {formatDurationToHMS(
-                    currentPlaylist?.Songs?.reduce(
-                      (acc, cur) => acc + cur.duration,
-                      0
-                    )
-                  )}
-                </Typography>
+                <Box display="flex" flexDirection="row">
+                  <Typography textTransform="uppercase">
+                    {t("songs")}({currentPlaylist?.Songs?.length || 0})
+                  </Typography>
+                  <Typography>
+                    ~{" "}
+                    {formatDurationToHMS(
+                      currentPlaylist?.Songs?.reduce(
+                        (acc, cur) => acc + cur.duration,
+                        0
+                      )
+                    )}
+                  </Typography>
+                </Box>
               </Box>
 
               <Box
@@ -503,13 +494,17 @@ const PlaylistPage = () => {
                         borderRadius: 2,
                         cursor: "pointer",
                         bgcolor:
-                          isCurrentSong && queueType === "playlist"
+                          isCurrentSong &&
+                          queueType === "playlist" &&
+                          currentPlaylist?.id === playlist?.id
                             ? "primary.main"
-                            : "background.paper",
+                            : "background.default",
                         "&:hover": {
                           bgcolor:
-                            isCurrentSong && queueType === "playlist"
-                              ? "primary.dark"
+                            isCurrentSong &&
+                            queueType === "playlist" &&
+                            currentPlaylist?.id === playlist?.id
+                              ? "background.paper"
                               : "action.hover",
                         },
                         transition: "0.2s",
@@ -540,13 +535,28 @@ const PlaylistPage = () => {
                       />
 
                       <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography
-                          variant="subtitle1"
-                          color="text.primary"
-                          noWrap
-                        >
-                          {song.title}
-                        </Typography>
+                        {isCurrentSong &&
+                        queueType === "playlist" &&
+                        isPlaying &&
+                        currentPlaylist?.id === playlist?.id ? (
+                          <Marquee pauseOnHover={false} speed={50} play={true}>
+                            <Typography
+                              variant="subtitle1"
+                              color="text.primary"
+                              noWrap
+                            >
+                              {`${song.title}\u00A0\u00A0\u00A0`}
+                            </Typography>
+                          </Marquee>
+                        ) : (
+                          <Typography
+                            variant="subtitle1"
+                            color="text.primary"
+                            noWrap
+                          >
+                            {`${song.title}\u00A0\u00A0\u00A0`}
+                          </Typography>
+                        )}
                         <Typography
                           variant="body2"
                           color="text.secondary"

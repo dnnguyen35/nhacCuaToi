@@ -39,6 +39,7 @@ import { formatDurationToHMS } from "../utils/formatDurationToHMS";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { rowOnEachPage } from "../configs/pagination.configs";
+import Marquee from "react-fast-marquee";
 
 const WishlistPage = () => {
   const { wishlist } = useSelector((state) => state.user);
@@ -240,7 +241,7 @@ const WishlistPage = () => {
         >
           <Box
             display="flex"
-            flexDirection={{ xs: "column", sm: "row" }}
+            flexDirection={{ xs: "row", sm: "row" }}
             padding={3}
             gap={3}
           >
@@ -275,16 +276,17 @@ const WishlistPage = () => {
                 gap={1}
                 color="text.secondary"
               >
-                <Typography>{wishlist?.length}</Typography>
-                <Typography textTransform="uppercase">
-                  ~ {t("songs")}
-                </Typography>
-                <Typography>
-                  ~{" "}
-                  {formatDurationToHMS(
-                    wishlist?.reduce((acc, cur) => acc + cur.duration, 0)
-                  )}
-                </Typography>
+                <Box display="flex" flexDirection="row">
+                  <Typography textTransform="uppercase">
+                    {t("songs")}({wishlist?.length || 0})
+                  </Typography>
+                  <Typography>
+                    ~{" "}
+                    {formatDurationToHMS(
+                      wishlist?.reduce((acc, cur) => acc + cur.duration, 0)
+                    )}
+                  </Typography>
+                </Box>
               </Box>
 
               <Box
@@ -392,11 +394,11 @@ const WishlistPage = () => {
                         bgcolor:
                           isCurrentSong && queueType === "wishlist"
                             ? "primary.main"
-                            : "background.paper",
+                            : "background.default",
                         "&:hover": {
                           bgcolor:
                             isCurrentSong && queueType === "wishlist"
-                              ? "primary.dark"
+                              ? "background.paper"
                               : "action.hover",
                         },
                         transition: "0.2s",
@@ -427,13 +429,27 @@ const WishlistPage = () => {
                       />
 
                       <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography
-                          variant="subtitle1"
-                          color="text.primary"
-                          noWrap
-                        >
-                          {song.title}
-                        </Typography>
+                        {isCurrentSong &&
+                        queueType === "wishlist" &&
+                        isPlaying ? (
+                          <Marquee pauseOnHover={false} speed={50} play={true}>
+                            <Typography
+                              variant="subtitle1"
+                              color="text.primary"
+                              noWrap
+                            >
+                              {`${song.title}\u00A0\u00A0\u00A0`}
+                            </Typography>
+                          </Marquee>
+                        ) : (
+                          <Typography
+                            variant="subtitle1"
+                            color="text.primary"
+                            noWrap
+                          >
+                            {`${song.title}\u00A0\u00A0\u00A0`}
+                          </Typography>
+                        )}
                         <Typography
                           variant="body2"
                           color="text.secondary"
