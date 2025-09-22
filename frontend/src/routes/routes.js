@@ -1,16 +1,17 @@
 import HomePage from "../pages/HomePage";
 import PlaylistPage from "../pages/PlaylistPage";
 import ProtectedPage from "../components/ProtectedPage";
-
 import WishlistPage from "../pages/WishlistPage";
 import SearchPage from "../pages/SearchPage";
 import PaymentHistoryPage from "../pages/PaymentHistoryPage";
+import AlbumPage from "../pages/AlbumPage";
 
 export const routesGen = {
   home: "/",
   playlist: (playlistId) => `/playlist/${playlistId}`,
   wishlist: "/wishlist",
   payment: "/payment",
+  album: (albumId) => `/album/${albumId}`,
 };
 
 const routes = [
@@ -50,6 +51,11 @@ const routes = [
       </ProtectedPage>
     ),
     state: "payment",
+  },
+  {
+    path: "/album/:albumId",
+    element: <AlbumPage />,
+    state: "album",
   },
 ];
 

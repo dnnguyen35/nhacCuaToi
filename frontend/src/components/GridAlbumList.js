@@ -8,27 +8,17 @@ import {
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
-import {
-  PlayArrow,
-  FavoriteBorderOutlined,
-  PlaylistAdd,
-  Favorite,
-  Pause,
-  List,
-} from "@mui/icons-material";
+import { PlayArrow, Pause, List } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 import Marquee from "react-fast-marquee";
-import { useState } from "react";
 import { togglePlay, playAlbum } from "../redux/slices/playerSlice";
-import { setWishlist } from "../redux/slices/userSlice";
-import wishlistApi from "../api/modules/wishlist.api";
-import { toast } from "react-toastify";
-import { setQueue, deleteSongFromQueue } from "../redux/slices/playerSlice";
 import { useTranslation } from "react-i18next";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import { Link } from "react-router-dom";
+import { routesGen } from "../routes/routes";
 
 const GridAlbumList = ({ albums }) => {
   const isHavePointer = useMediaQuery("(pointer: fine)");
@@ -136,9 +126,8 @@ const GridAlbumList = ({ albums }) => {
                     color="primary"
                     size="small"
                     sx={{ pr: 1 }}
-                    onClick={() => {
-                      return;
-                    }}
+                    component={Link}
+                    to={routesGen.album(album.id)}
                   >
                     <List />
                   </IconButton>
