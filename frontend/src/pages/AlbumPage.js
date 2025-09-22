@@ -402,6 +402,7 @@ const AlbumPage = () => {
                                 : "action.hover",
                           },
                           transition: "0.2s",
+                          WebkitTapHighlightColor: "transparent",
                         }}
                       >
                         <Avatar
