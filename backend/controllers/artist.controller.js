@@ -1,8 +1,54 @@
 import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
 import redis from "../configs/redis.js";
 import artistModel from "../models/artist.model.js";
+import songModel from "../models/song.model.js";
+import albumController from "./album.controller.js";
 
 import sequelize from "../configs/db.js";
+
+const getAllSongsOfArtist = async (req, res) => {
+  try {
+    const { artistId } = req.params;
+
+    const artist = await artistModel.findByPk(artistId);
+
+    if (!artist) {
+      return res.status(404).json({ message: "Artist not founded" });
+    }
+
+    const cachedAllSongs = await redis.get(`artist:all-songs:${artistId}`);
+
+    if (cachedAllSongs) {
+      return res.status(200).json(cachedAllSongs);
+    }
+
+    const allSongs = await artistModel.findByPk(artistId, {
+      include: [
+        {
+          model: songModel,
+        },
+      ],
+      order: [[songModel, "id", "ASC"]],
+    });
+
+    const allSongsPlain = allSongs.get({ plain: true });
+
+    allSongsPlain.Songs = allSongsPlain.Songs.map((song) => ({
+      ...song,
+      artist: allSongsPlain.artist ? allSongsPlain.artist : null,
+    }));
+
+    await redis.setex(
+      `artist:all-songs:${artistId}`,
+      300,
+      JSON.stringify(allSongsPlain)
+    );
+
+    res.status(200).json(allSongsPlain);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 const getAllArtists = async (req, res) => {
   try {
@@ -94,6 +140,7 @@ const updateArtist = async (req, res) => {
 };
 
 export default {
+  getAllSongsOfArtist,
   getAllArtists,
   createArtist,
   updateArtist,

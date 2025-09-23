@@ -15,7 +15,7 @@ const getAllAlbums = async (req, res) => {
     }
 
     const allAlbums = await albumModel.findAll({
-      order: sequelize.literal("RAND()"), // random 10 album
+      order: sequelize.literal("RAND()"),
       limit: 10,
       include: [
         {

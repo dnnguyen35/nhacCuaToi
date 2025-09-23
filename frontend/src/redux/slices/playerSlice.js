@@ -53,6 +53,17 @@ const playerSlice = createSlice({
       state.queueType = `album:${albumId}`;
     },
 
+    playArtistSongs: (state, action) => {
+      const { songs, startIndex = 0, artistId } = action.payload;
+      if (songs.length === 0) return;
+
+      state.queue = songs;
+      state.currentSong = songs[startIndex];
+      state.currentIndex = startIndex;
+      state.isPlaying = true;
+      state.queueType = `artist:${artistId}`;
+    },
+
     setQueue: (state, action) => {
       const newQueue = action.payload;
 
@@ -226,6 +237,7 @@ export const {
   playPlaylist,
   playWishlist,
   playAlbum,
+  playArtistSongs,
   setQueue,
   setCurrentSong,
   setIsPlaying,

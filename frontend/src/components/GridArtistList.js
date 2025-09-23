@@ -33,6 +33,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import { Link } from "react-router-dom";
+import { routesGen } from "../routes/routes";
 
 const GridArtistList = ({ artists }) => {
   const isHavePointer = useMediaQuery("(pointer: fine)");
@@ -105,9 +107,8 @@ const GridArtistList = ({ artists }) => {
                     color="primary"
                     size="small"
                     sx={{ pr: 1 }}
-                    onClick={() => {
-                      return;
-                    }}
+                    component={Link}
+                    to={routesGen.artist(artist.id)}
                   >
                     <List />
                   </IconButton>
