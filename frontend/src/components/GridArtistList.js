@@ -7,6 +7,7 @@ import {
   IconButton,
   Tooltip,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   PlayArrow,
@@ -37,6 +38,9 @@ import { Link } from "react-router-dom";
 import { routesGen } from "../routes/routes";
 
 const GridArtistList = ({ artists }) => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.only("xs"));
+
   const isHavePointer = useMediaQuery("(pointer: fine)");
   const { t } = useTranslation();
 
@@ -44,80 +48,94 @@ const GridArtistList = ({ artists }) => {
     <Box
       sx={{
         px: 2,
+        py: 2,
       }}
     >
-      <Swiper
-        modules={[Navigation]}
-        navigation={isHavePointer}
-        grabCursor
-        spaceBetween={40}
-        slidesPerView="auto"
-        style={{ marginBottom: "8px" }}
-        loop
-      >
-        {artists.map((artist) => (
-          <SwiperSlide
-            key={artist.id}
-            style={{ width: "152px", height: "auto", paddingBottom: "8px" }}
-          >
-            <Card
-              sx={{
-                width: 136,
-                height: 240,
-                flexShrink: 0,
-                px: 1,
-                py: 1,
-                borderRadius: 2,
+      {artists?.length <= 0 ? (
+        <Typography
+          align="center"
+          sx={{ color: "primary.main", fontWeight: "bold", mt: 2 }}
+        >
+          {t("responseError.Song not founded")}
+        </Typography>
+      ) : (
+        <Swiper
+          modules={[Navigation]}
+          navigation={isHavePointer}
+          grabCursor
+          spaceBetween={40}
+          slidesPerView="auto"
+          style={{ marginBottom: "8px" }}
+          loop
+        >
+          {artists.map((artist) => (
+            <SwiperSlide
+              key={artist.id}
+              style={{
+                width: isXs ? "152px" : "170px",
+                height: "auto",
+                paddingBottom: "8px",
               }}
             >
-              <CardMedia
-                component="img"
-                height="140"
-                image={artist.imageUrl || "/noDataFound.webp"}
+              <Card
                 sx={{
-                  borderRadius: "50%",
-                  mx: "auto",
-                  objectFit: "cover",
-                }}
-              />
-              <CardContent
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  flexDirection: "column",
+                  width: isXs ? 136 : 162,
+                  height: isXs ? 240 : 250,
+                  flexShrink: 0,
+                  px: 1,
+                  py: 1,
+                  borderRadius: 2,
                 }}
               >
-                <Box sx={{ textAlign: "center" }}>
-                  <Tooltip title={artist.artist} arrow placement="top">
-                    <Typography variant="body1" fontWeight="bold" noWrap>
-                      {artist.artist}
-                    </Typography>
-                  </Tooltip>
-                  <Typography variant="body2" color="text.secondary" noWrap>
-                    .....
-                  </Typography>
-                </Box>
-                <Box
+                <CardMedia
+                  component="img"
+                  height={isXs ? "136" : "162"}
+                  image={artist.imageUrl || "/noDataFound.webp"}
                   sx={{
-                    display: { xs: "flex", sm: "flex", md: "flex" },
-                    justifyContent: "center",
+                    borderRadius: "50%",
+                    mx: "auto",
+                    objectFit: "cover",
+                  }}
+                />
+                <CardContent
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    flexDirection: "column",
                   }}
                 >
-                  <IconButton
-                    color="primary"
-                    size="small"
-                    sx={{ pr: 1 }}
-                    component={Link}
-                    to={routesGen.artist(artist.id)}
+                  <Box sx={{ textAlign: "center" }}>
+                    <Tooltip title={artist.artist} arrow placement="top">
+                      <Typography variant="body1" fontWeight="bold" noWrap>
+                        {artist.artist}
+                      </Typography>
+                    </Tooltip>
+                    <Typography variant="body2" color="text.secondary" noWrap>
+                      .....
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: { xs: "flex", sm: "flex", md: "flex" },
+                      justifyContent: "center",
+                    }}
                   >
-                    <List />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      sx={{ pr: 1 }}
+                      component={Link}
+                      to={routesGen.artist(artist.id)}
+                    >
+                      <List />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      )}
     </Box>
   );
 };

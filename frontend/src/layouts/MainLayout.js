@@ -109,7 +109,7 @@ const MainLayout = () => {
             ref={outletRef}
             sx={{
               flex: 1,
-              overflowY: "auto",
+              overflowY: appState === "search" ? "hidden" : "auto",
               py: 2,
               px: { xs: 1, sm: 2 },
               scrollBehavior: "smooth",

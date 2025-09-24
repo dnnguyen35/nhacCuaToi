@@ -7,6 +7,7 @@ import {
   IconButton,
   Tooltip,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   PlayArrow,
@@ -34,6 +35,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.only("xs"));
+
   const { user, wishlist } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
@@ -115,6 +119,7 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
     <Box
       sx={{
         px: 2,
+        py: 2,
       }}
     >
       <Swiper
@@ -130,7 +135,7 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
           <SwiperSlide
             key={song.id}
             style={{
-              width: "152px",
+              width: isXs ? "152px" : "170px",
               height: "auto",
               paddingBottom: "8px",
             }}
@@ -138,8 +143,8 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
             <Card
               key={song.id}
               sx={{
-                width: 136,
-                height: 240,
+                width: isXs ? 136 : 162,
+                height: isXs ? 240 : 250,
                 flexShrink: 0,
                 px: 1,
                 py: 1,
@@ -148,7 +153,7 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
             >
               <CardMedia
                 component="img"
-                height="140"
+                height={isXs ? "136" : "162"}
                 image={song.imageUrl}
                 sx={{ borderRadius: 2 }}
               />
@@ -193,7 +198,11 @@ const GridSongList = ({ songs, setSelectedSong, setIsPlaylistPopupOpen }) => {
                 </Box>
                 <Box
                   sx={{
-                    display: { xs: "flex", sm: "flex", md: "flex" },
+                    display: {
+                      xs: "flex",
+                      sm: "flex",
+                      md: "flex",
+                    },
                     justifyContent: "center",
                   }}
                 >

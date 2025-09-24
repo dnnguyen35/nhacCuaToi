@@ -8,6 +8,12 @@
     "search": "tìm kiếm",
     "wishlist": "Yêu thích"
   },
+  "search": {
+    "all": "Tat ca",
+    "song": "bài hát",
+    "album": "album",
+    "artist": "nghệ sĩ"
+  },
   "homePage": {
     "forYou": "dành cho bạn",
     "treanding": "thịnh hành",
@@ -43,7 +49,7 @@
     "inWishlists": "yêu thích",
     "releasedDate": "phát hànhh",
     "actions": "chỉnh",
-    "thereNoSong": "Chưa thêm bài hát nào"
+    "thereNoSong": "Chưa có bài hát nào"
   },
   "paymentTable": {
     "content": "nội dung",

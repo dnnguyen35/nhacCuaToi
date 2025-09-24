@@ -8,6 +8,12 @@
     "search": "search",
     "wishlist": "Favorite"
   },
+  "search": {
+    "all": "All",
+    "song": "song",
+    "album": "album",
+    "artist": "artist"
+  },
   "homePage": {
     "forYou": "for you",
     "treanding": "trending",

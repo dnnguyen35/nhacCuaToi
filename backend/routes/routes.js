@@ -8,6 +8,7 @@ import authRoute from "./auth.route.js";
 import paymentRoute from "./payment.route.js";
 import artistRoute from "./artist.route.js";
 import albumRoute from "./album.route.js";
+import searchRoute from "./search.route.js";
 
 const router = express.Router();
 
@@ -28,5 +29,7 @@ router.use("/payments", paymentRoute);
 router.use("/artists", artistRoute);
 
 router.use("/albums", albumRoute);
+
+router.use("/searchs", searchRoute);
 
 export default router;
