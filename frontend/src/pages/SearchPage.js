@@ -130,7 +130,7 @@ const SearchPage = () => {
           display: "flex",
           flexDirection: "column",
           gap: 1,
-          height: { xs: "57vh", sm: "59vh", md: "71vh" },
+          height: { xs: "69vh", sm: "59vh", md: "71vh" },
           maxWidth: { xs: "100%", md: "90%" },
           margin: "auto",
         }}
@@ -173,7 +173,7 @@ const SearchPage = () => {
           sx={{
             flex: 1,
             overflowY: "auto",
-            my: 2,
+            mb: { xs: 3, sm: 0 },
             scrollBehavior: "smooth",
             scrollbarWidth: "none",
             "&::-webkit-scrollbar": {
@@ -191,7 +191,7 @@ const SearchPage = () => {
                 transition={{ duration: 0.3 }}
               >
                 <SearchSongListSkeleton
-                  count={{ xs: 1, sm: 2, md: 6, lg: 7 }}
+                  count={{ xs: 2, sm: 2, md: 6, lg: 7 }}
                 />
               </motion.div>
             ) : query === "" ? (

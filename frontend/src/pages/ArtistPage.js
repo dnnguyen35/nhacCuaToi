@@ -354,7 +354,7 @@ const ArtistPage = () => {
             <Box
               paddingX={3}
               flexGrow={1}
-              sx={{ overflowY: "auto" }}
+              sx={{ overflowY: "auto", mb: { xs: 4, sm: 0 } }}
               paddingY={2}
               display="flex"
               flexDirection="column"

@@ -92,7 +92,7 @@ const MainLayout = () => {
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            maxHeight: { xs: "70vh", md: "81vh" },
+            maxHeight: { xs: "80vh", md: "81vh" },
             marginTop: { xs: 1, sm: 2 },
             marginRight: { xs: 1, md: 2 },
             marginLeft: { xs: 1, md: 0 },
