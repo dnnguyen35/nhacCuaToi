@@ -33,21 +33,24 @@ const SearchSongListSkeleton = ({ count }) => {
         display: "grid",
         gap: 2,
         rowGap: 2,
-        gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+        gridTemplateColumns: isXs
+          ? "repeat(auto-fill, minmax(150px, 1fr))"
+          : "repeat(auto-fill, minmax(178px, 1fr))",
         maxWidth: "100%",
         margin: "0 auto",
         justifyContent: "center",
         justifyItems: "center",
+        pt: { xs: 0, sm: 2 },
       }}
     >
       {[...Array(numberOfSkeletons)].map((_, i) => (
         <Card
           key={i}
           sx={{
-            minWidth: 152,
-            maxWidth: 152,
-            minHeight: 240,
-            maxHeight: 240,
+            minWidth: isXs ? 152 : 178,
+            maxWidth: isXs ? 152 : 178,
+            minHeight: isXs ? 240 : 270,
+            maxHeight: isXs ? 240 : 270,
             flexShrink: 0,
             px: 1,
             py: 1,
@@ -56,7 +59,7 @@ const SearchSongListSkeleton = ({ count }) => {
         >
           <Skeleton
             variant="rounded"
-            height={140}
+            height={isXs ? 140 : 162}
             sx={{ borderRadius: 2 }}
             animation="wave"
           />

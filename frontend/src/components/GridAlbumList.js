@@ -66,7 +66,7 @@ const GridAlbumList = ({ albums }) => {
           align="center"
           sx={{ color: "primary.main", fontWeight: "bold", mt: 2 }}
         >
-          {t("responseError.Song not founded")}
+          {t("responseError.Album not founded")}
         </Typography>
       ) : (
         <Swiper

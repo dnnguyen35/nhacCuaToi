@@ -56,7 +56,7 @@ const GridArtistList = ({ artists }) => {
           align="center"
           sx={{ color: "primary.main", fontWeight: "bold", mt: 2 }}
         >
-          {t("responseError.Song not founded")}
+          {t("responseError.Artist not founded")}
         </Typography>
       ) : (
         <Swiper
@@ -111,7 +111,7 @@ const GridArtistList = ({ artists }) => {
                       </Typography>
                     </Tooltip>
                     <Typography variant="body2" color="text.secondary" noWrap>
-                      .....
+                      {t("artist")}
                     </Typography>
                   </Box>
                   <Box

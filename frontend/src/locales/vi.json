@@ -154,7 +154,9 @@
     "You only can reset 2 times! Come back tomorrow": "Bạn đã reset 2 lần! Mai tiếp nha",
     "Playlist name exceed 15 characters": "Tên playlist vượt quá 15 kí tự",
     "You have exceed 5 playlist slot": "Bạn đã tạo nhiều playlist. Hãy nâng cấp để tạo thêm",
-    "You are blocked": "Tài khoản đang bị khóa"
+    "You are blocked": "Tài khoản đang bị khóa",
+    "Album not founded": "Không tìm thấy album",
+    "Artist not founded": "Không tìm thấy nghệ sĩ"
   },
   "sweetalert": {
     "Are you sure?": "Bạn chắc chưa?",

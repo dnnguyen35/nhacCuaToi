@@ -155,7 +155,9 @@
     "Playlist name exceed 15 characters": "Playlist name exceed 15 characters",
 
     "You have exceed 5 playlist slot": "You have exceed playlist slot, Please pay for more slot",
-    "You are blocked": "Your account is currently blocked"
+    "You are blocked": "Your account is currently blocked",
+    "Album not founded": "Album not founded",
+    "Artist not founded": "Artist not founded"
   },
   "sweetalert": {
     "Are you sure?": "Are you sure?",

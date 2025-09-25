@@ -29,7 +29,7 @@ const searchAllTypes = async (req, res) => {
       return res.status(200).json({ searchResult: cachedSearchResult });
     }
 
-    const searchResult = {};
+    const searchResult = { Songs: [], Albums: [], Artists: [] };
 
     if (types.includes("song")) {
       searchResult.Songs = await songModel.findAll({

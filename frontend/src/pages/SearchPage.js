@@ -7,6 +7,8 @@ import {
   InputAdornment,
   Tabs,
   Tab,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import SearchSongList from "../components/SearchSongList";
 import SearchSongListSkeleton from "../components/skeletons/SearchSongListSkeleton";
@@ -18,6 +20,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "@mui/icons-material";
 import GridAlbumList from "../components/GridAlbumList";
 import GridArtistList from "../components/GridArtistList";
+import SearchAlbumTab from "../components/SearchAlbumTab";
+import SearchArtistTab from "../components/SearchArtistTab";
 
 const EmptySearch = ({ query }) => {
   const { t } = useTranslation();
@@ -67,6 +71,9 @@ const EmptySearch = ({ query }) => {
 };
 
 const SearchPage = () => {
+  const theme = useTheme();
+  const isSm = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [query, setQuery] = useState("");
   const [debounceQuery, setDebounceQuery] = useState("");
   const [songs, setSongs] = useState([]);
@@ -191,7 +198,7 @@ const SearchPage = () => {
                 transition={{ duration: 0.3 }}
               >
                 <SearchSongListSkeleton
-                  count={{ xs: 2, sm: 2, md: 6, lg: 7 }}
+                  count={{ xs: 2, sm: 4, md: 4, lg: 6 }}
                 />
               </motion.div>
             ) : query === "" ? (
@@ -259,6 +266,40 @@ const SearchPage = () => {
                       setSelectedSong={setSelectedSong}
                       setIsPlaylistPopupOpen={setIsPlaylistPopupOpen}
                     />
+                  </Box>
+                )}
+
+                {tab === 2 && (
+                  <Box sx={{ py: 3 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ mb: 0 }}
+                      textTransform="uppercase"
+                    >
+                      {t("search.album")}
+                    </Typography>
+                    {!isSm ? (
+                      <SearchAlbumTab searchAlbums={albums} />
+                    ) : (
+                      <GridAlbumList albums={albums} />
+                    )}
+                  </Box>
+                )}
+
+                {tab === 3 && (
+                  <Box sx={{ py: 3 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ mb: 0 }}
+                      textTransform="uppercase"
+                    >
+                      {t("search.artist")}
+                    </Typography>
+                    {!isSm ? (
+                      <SearchArtistTab searchArtists={artists} />
+                    ) : (
+                      <GridArtistList artists={artists} />
+                    )}
                   </Box>
                 )}
               </motion.div>
