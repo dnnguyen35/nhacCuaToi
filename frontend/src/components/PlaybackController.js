@@ -129,6 +129,7 @@ const PlaybackController = () => {
         justifyContent: "space-between",
         boxShadow: 3,
         gap: 1,
+        zIndex: 10,
       }}
     >
       <Box
