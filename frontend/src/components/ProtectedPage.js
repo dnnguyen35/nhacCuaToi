@@ -46,28 +46,8 @@ const PleaseLogin = () => {
 
 const ProtectedPage = ({ children }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.user);
-  const { appState } = useSelector((state) => state.appState);
-  const { queueType } = useSelector((state) => state.player);
-
-  useEffect(() => {
-    if (!user && appState !== "playlist") {
-      if (queueType === "playlist" || queueType === "wishlist") {
-        dispatch(setQueue([]));
-        dispatch(setCurrentSong(null));
-      }
-      dispatch(setAuthModalOpen(!user));
-    } else if (!user && appState === "playlist") {
-      if (queueType === "playlist" || queueType === "wishlist") {
-        dispatch(setQueue([]));
-        dispatch(setCurrentSong(null));
-      }
-      dispatch(setAppState("home"));
-      navigate("/");
-    }
-  }, [user, dispatch]);
 
   return user ? children : <PleaseLogin />;
 };

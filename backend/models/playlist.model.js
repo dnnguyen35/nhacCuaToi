@@ -22,6 +22,11 @@ const playlistModel = sequelize.define(
       },
       allowNull: false,
     },
+    isPublic: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
   },
   {
     tableName: "playlists",

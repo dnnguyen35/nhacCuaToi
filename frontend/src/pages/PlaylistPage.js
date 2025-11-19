@@ -22,6 +22,8 @@ import {
   AccessTime,
   DeleteForever,
   Favorite,
+  DisabledVisible,
+  Visibility,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -45,12 +47,14 @@ import Marquee from "react-fast-marquee";
 
 const PlaylistPage = () => {
   const { playlistId } = useParams();
-  const { playlist } = useSelector((state) => state.user);
+  const { playlist, user } = useSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPlaylist, setCurrentPlaylist] = useState(null);
   const [onDeleteSongRequest, setOnDeleteSongRequest] = useState(false);
   const [invalidPlaylistId, setInvalidPlaylistId] = useState(false);
   const { themeMode } = useSelector((state) => state.themeMode);
+  const [onChangeDisplayStatusRequest, setOnChangeDisplayStatusRequest] =
+    useState(false);
 
   const { t } = useTranslation();
 
@@ -285,6 +289,38 @@ const PlaylistPage = () => {
     }
   };
 
+  const changePlaylistDisplayStatus = async () => {
+    if (onChangeDisplayStatusRequest) return;
+
+    setOnChangeDisplayStatusRequest(true);
+
+    const { response, error } = await playlistApi.changePlaylistDisplayStatus({
+      playlistId: currentPlaylist.id,
+    });
+
+    setOnChangeDisplayStatusRequest(false);
+
+    if (response) {
+      setCurrentPlaylist({
+        ...currentPlaylist,
+        isPublic: !currentPlaylist.isPublic,
+      });
+      toast.success(
+        t("responseSuccess.Changed playlist display status successfully")
+      );
+    }
+
+    if (error) {
+      toast.error(t(`responseError.${error.message}`));
+    }
+  };
+
+  useEffect(() => {
+    if (!user && !currentPlaylist?.isPublic) {
+      setCurrentPlaylist(null);
+    }
+  }, [user]);
+
   if (invalidPlaylistId) return <PageNotFound />;
 
   if (isLoading)
@@ -359,7 +395,13 @@ const PlaylistPage = () => {
               <Box display="flex" flexDirection="row" gap={1}>
                 <Typography color="text.secondary">Playlist</Typography>
                 <Typography fontWeight="bold" noWrap>
-                  {currentPlaylist?.name}
+                  {currentPlaylist?.name || ""}
+                </Typography>
+              </Box>
+              <Box display="flex" flexDirection="row" gap={1}>
+                <Typography color="text.secondary">Created by</Typography>
+                <Typography fontWeight="bold" noWrap>
+                  {currentPlaylist?.createdBy || ""}
                 </Typography>
               </Box>
               <Box
@@ -445,13 +487,39 @@ const PlaylistPage = () => {
               currentPlaylist?.id === playlist?.id &&
               queueType === "playlist" &&
               currentPlaylist?.Songs?.some(
-                (song) => song.id === currentSong?.id
+                (song) => song?.id === currentSong?.id
               ) ? (
                 <Pause sx={{ color: "black", fontSize: 28 }} />
               ) : (
                 <PlayArrow sx={{ color: "black", fontSize: 28 }} />
               )}
             </Button>
+
+            {currentPlaylist?.userId === user?.id && (
+              <Button
+                onClick={changePlaylistDisplayStatus}
+                sx={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: "50%",
+                  backgroundColor: "primary.main",
+                  "&:hover": {
+                    backgroundColor: "primary.main",
+                    transform: "scale(1.05)",
+                  },
+                  transition: "all 0.3s",
+                  minWidth: "unset",
+                  padding: 0,
+                  ml: 2,
+                }}
+              >
+                {currentPlaylist?.isPublic ? (
+                  <Visibility sx={{ color: "black", fontSize: 28 }} />
+                ) : (
+                  <DisabledVisible sx={{ color: "black", fontSize: 28 }} />
+                )}
+              </Button>
+            )}
           </Box>
 
           <Box
@@ -480,7 +548,7 @@ const PlaylistPage = () => {
                 </Typography>
               ) : (
                 currentPlaylist?.Songs?.map((song, index) => {
-                  const isCurrentSong = currentSong?.id === song.id;
+                  const isCurrentSong = currentSong?.id === song?.id;
 
                   return (
                     <Box
@@ -574,20 +642,22 @@ const PlaylistPage = () => {
                           minWidth: 60,
                         }}
                       >
-                        {formatDurationToHMS(song.duration)}
+                        {formatDurationToHMS(song?.duration ?? 0)}
                       </Typography>
 
-                      <IconButton
-                        size="small"
-                        disabled={multipleSelectMode}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          onDeleteSongFromPlaylistClick(song);
-                        }}
-                        sx={{ color: "primary.main" }}
-                      >
-                        <Favorite />
-                      </IconButton>
+                      {currentPlaylist?.userId === user?.id && (
+                        <IconButton
+                          size="small"
+                          disabled={multipleSelectMode}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onDeleteSongFromPlaylistClick(song);
+                          }}
+                          sx={{ color: "primary.main" }}
+                        >
+                          <Favorite />
+                        </IconButton>
+                      )}
                     </Box>
                   );
                 })

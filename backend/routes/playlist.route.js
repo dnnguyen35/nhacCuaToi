@@ -20,6 +20,8 @@ router.post(
   playlistController.addSongToPlaylist
 );
 
+router.get("/all-public-playlists", playlistController.getAllPublicPlaylists);
+
 router.get(
   "/all-playlists",
   authMiddleware.auth,
@@ -28,7 +30,7 @@ router.get(
 
 router.get(
   "/all-songs/:playlistId",
-  authMiddleware.auth,
+  authMiddleware.optionalAuth,
   playlistController.getAllSongsOfPlaylist
 );
 
@@ -48,6 +50,12 @@ router.post(
   "/delete-multiple-song",
   authMiddleware.auth,
   playlistController.deleteMultipleSongFromPlaylist
+);
+
+router.put(
+  "/change-display-status/:playlistId",
+  authMiddleware.auth,
+  playlistController.changePlaylistDisplayStatus
 );
 
 export default router;

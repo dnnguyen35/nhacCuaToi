@@ -24,11 +24,7 @@ const routes = [
   },
   {
     path: "/playlist/:playlistId",
-    element: (
-      <ProtectedPage>
-        <PlaylistPage />
-      </ProtectedPage>
-    ),
+    element: <PlaylistPage />,
     state: "playlist",
   },
   {

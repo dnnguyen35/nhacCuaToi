@@ -60,7 +60,43 @@ const checkAdmin = (req, res, next) => {
   next();
 };
 
+const optionalAuth = async (req, res, next) => {
+  try {
+    const tokenDecoded = tokenDecode(req);
+
+    if (!tokenDecoded) {
+      return next();
+    }
+
+    const userId = tokenDecoded.data;
+
+    const user = await userModel.findOne({
+      where: { id: userId },
+      attributes: [
+        "id",
+        "username",
+        "email",
+        "isAdmin",
+        "isBlocked",
+        "playlistLimit",
+        "songLimit",
+      ],
+    });
+
+    if (!user) {
+      return next();
+    }
+
+    req.user = user;
+
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export default {
   auth,
   checkAdmin,
+  optionalAuth,
 };

@@ -12,14 +12,16 @@
     "all": "All",
     "song": "song",
     "album": "album",
-    "artist": "artist"
+    "artist": "artist",
+    "playlist": "playlist"
   },
   "homePage": {
     "forYou": "for you",
     "treanding": "trending",
     "highRating": "high rating",
     "trendingArtists": "trending artists",
-    "trendingAlbums": "trending albums"
+    "trendingAlbums": "trending albums",
+    "trendingPlaylists": "trending playlists"
   },
   "userMenu": {
     "changePassword": "change password",
@@ -99,7 +101,8 @@
     "Song updated successfully": "Song updated successfully",
     "Playlist created successfully": "Playlist created successfully",
     "Added song to playlist successfully": "Added song to playlist successfully",
-    "Added song to wishlist successfully": "Added song to wishlist successfully"
+    "Added song to wishlist successfully": "Added song to wishlist successfully",
+    "Changed playlist display status successfully": "Changed playlist display status successfully"
   },
   "responseError": {
     "Email already exists": "Email already exists",
@@ -157,7 +160,8 @@
     "You have exceed 5 playlist slot": "You have exceed playlist slot, Please pay for more slot",
     "You are blocked": "Your account is currently blocked",
     "Album not founded": "Album not founded",
-    "Artist not founded": "Artist not founded"
+    "Artist not founded": "Artist not founded",
+    "Access denied": "Access denied"
   },
   "sweetalert": {
     "Are you sure?": "Are you sure?",

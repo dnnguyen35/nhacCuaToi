@@ -11,7 +11,13 @@ import { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { setUser } from "../redux/slices/userSlice";
+import {
+  setUser,
+  setAllPlaylist,
+  setPlaylist,
+} from "../redux/slices/userSlice";
+import { setCurrentSong, setQueue } from "../redux/slices/playerSlice";
+import { setAuthModalOpen } from "../redux/slices/authModalSlice";
 
 const MainLayout = () => {
   const id = useSelector((state) => state.user?.user?.id);
@@ -22,6 +28,11 @@ const MainLayout = () => {
 
   const { appState } = useSelector((state) => state.appState);
   const outletRef = useRef(null);
+
+  const { user, allPlaylist, playlist } = useSelector(
+    (state) => state.user ?? {}
+  );
+  const { queueType } = useSelector((state) => state.player);
 
   useEffect(() => {
     if (outletRef && outletRef.current) {
@@ -71,6 +82,46 @@ const MainLayout = () => {
       socket.off("user_blocked");
     };
   }, [id]);
+
+  useEffect(() => {
+    if (!user) {
+      if (appState === "playlist") {
+        if (queueType === "wishlist") {
+          dispatch(setQueue([]));
+          dispatch(setCurrentSong(null));
+        } else if (queueType === "playlist") {
+          if (
+            allPlaylist.find((pl) => pl.id === Number(playlist?.id)) &&
+            !playlist?.isPublic
+          ) {
+            dispatch(setQueue([]));
+            dispatch(setCurrentSong(null));
+          }
+
+          //handled after signout
+          dispatch(
+            setPlaylist(
+              playlist?.isPublic ? { ...playlist } : { id: -1, isNull: true }
+            )
+          );
+          dispatch(setAllPlaylist([]));
+        }
+      } else if (queueType === "playlist" || queueType === "wishlist") {
+        if (queueType === "playlist") {
+          if (
+            allPlaylist.find((pl) => pl.id === Number(playlist?.id)) &&
+            !playlist?.isPublic
+          ) {
+            dispatch(setQueue([]));
+            dispatch(setCurrentSong(null));
+          }
+        } else {
+          dispatch(setQueue([]));
+          dispatch(setCurrentSong(null));
+        }
+      }
+    }
+  }, [user, dispatch]);
 
   return (
     <>

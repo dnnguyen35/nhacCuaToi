@@ -4,6 +4,7 @@ import playlistSongModel from "../models/playlistSong.model.js";
 import redis from "../configs/redis.js";
 import artistModel from "../models/artist.model.js";
 import sequelize from "../configs/db.js";
+import userModel from "../models/user.model.js";
 
 const createPlaylist = async (req, res) => {
   try {
@@ -47,6 +48,74 @@ const createPlaylist = async (req, res) => {
   }
 };
 
+const getAllPublicPlaylists = async (req, res) => {
+  try {
+    const cachedAllPublicPlaylists = await redis.get(
+      "playlist:all-public-playlists"
+    );
+
+    if (cachedAllPublicPlaylists) {
+      return res.status(200).json(cachedAllPublicPlaylists);
+    }
+
+    const allPublicPlaylists = await playlistModel.findAll({
+      where: { isPublic: true },
+      order: sequelize.literal("RAND()"),
+      limit: 10,
+      include: [
+        {
+          model: songModel,
+          through: { attributes: [] },
+          include: [
+            {
+              model: artistModel,
+              attributes: ["artist"],
+              required: false,
+            },
+          ],
+        },
+        {
+          model: userModel,
+          attributes: [["username", "createdBy"]],
+          required: false,
+        },
+      ],
+    });
+
+    if (!allPublicPlaylists || allPublicPlaylists.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "There is no public playlist now" });
+    }
+
+    const allPublicPlaylistsPlain = allPublicPlaylists.map((playlist) =>
+      playlist.get({ plain: true })
+    );
+
+    allPublicPlaylistsPlain.forEach((playlist) => {
+      playlist.createdBy = playlist?.User?.createdBy
+        ? playlist.User.createdBy
+        : null;
+
+      playlist.Songs = playlist.Songs.map((song) => ({
+        ...song,
+        artist: song.Artist ? song.Artist.artist : null,
+      }));
+    });
+
+    await redis.setex(
+      "playlist:all-public-playlists",
+      300,
+      JSON.stringify(allPublicPlaylistsPlain)
+    );
+
+    res.status(200).json(allPublicPlaylistsPlain);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const getAllPlaylistsOfUser = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -76,13 +145,17 @@ const getAllPlaylistsOfUser = async (req, res) => {
 const getAllSongsOfPlaylist = async (req, res) => {
   try {
     const { playlistId } = req.params;
-    const userId = req.user.id;
+    const userId = req?.user?.id || null;
 
     const playlist = await playlistModel.findOne({
-      where: { id: playlistId, userId },
+      where: { id: playlistId },
     });
 
     if (!playlist) {
+      return res.status(404).json({ message: "Playlist doesn't exists" });
+    }
+
+    if (playlist.userId !== userId && !playlist.isPublic) {
       return res.status(403).json({ message: "Access denied" });
     }
 
@@ -105,11 +178,20 @@ const getAllSongsOfPlaylist = async (req, res) => {
             },
           ],
         },
+        {
+          model: userModel,
+          attributes: [["username", "createdBy"]],
+          required: false,
+        },
       ],
       order: [[songModel, playlistSongModel, "id", "ASC"]],
     });
 
     const allSongsPlain = allSongs.get({ plain: true });
+
+    allSongsPlain.createdBy = allSongsPlain?.User?.createdBy
+      ? allSongsPlain.User.createdBy
+      : null;
 
     allSongsPlain.Songs = allSongsPlain.Songs.map((song) => ({
       ...song,
@@ -269,12 +351,42 @@ const deleteMultipleSongFromPlaylist = async (req, res) => {
   }
 };
 
+const changePlaylistDisplayStatus = async (req, res) => {
+  try {
+    const { playlistId } = req.params;
+    const userId = req.user.id;
+
+    const playlist = await playlistModel.findOne({
+      where: { id: playlistId, userId: userId },
+    });
+
+    if (!playlist) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    playlist.isPublic = playlist.isPublic ? false : true;
+
+    await playlist.save();
+    await redis.del(`playlist:all-songs:${playlistId}`);
+
+    res.status(200).json({
+      message: "Playlist display status changed successfully",
+      playlist,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export default {
   createPlaylist,
+  getAllPublicPlaylists,
   getAllPlaylistsOfUser,
   getAllSongsOfPlaylist,
   deletePlaylist,
   deleteSongFromPlaylist,
   addSongToPlaylist,
   deleteMultipleSongFromPlaylist,
+  changePlaylistDisplayStatus,
 };

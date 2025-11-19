@@ -2,6 +2,7 @@ import privateClient from "../client/private.client";
 
 const playlistEndpoints = {
   createPlaylist: "playlists/create",
+  getAllPublicPlaylists: "playlists/all-public-playlists",
   getAllPlaylistsOfUser: "playlists/all-playlists",
   getAllSongsOfPlaylist: ({ playlistId }) =>
     `playlists/all-songs/${playlistId}`,
@@ -11,6 +12,8 @@ const playlistEndpoints = {
   deleteSongFromPlaylist: ({ playlistId, songId }) =>
     `playlists/delete-song/${playlistId}/${songId}`,
   deleteMultipleSong: "playlists/delete-multiple-song",
+  changePlaylistDisplayStatus: ({ playlistId }) =>
+    `/playlists/change-display-status/${playlistId}`,
 };
 
 const playlistApi = {
@@ -19,6 +22,17 @@ const playlistApi = {
       const response = await privateClient.post(
         playlistEndpoints.createPlaylist,
         { playlistName }
+      );
+
+      return { response };
+    } catch (error) {
+      return { error };
+    }
+  },
+  getAllPublicPlaylists: async () => {
+    try {
+      const response = await privateClient.get(
+        playlistEndpoints.getAllPublicPlaylists
       );
 
       return { response };
@@ -86,6 +100,17 @@ const playlistApi = {
       const response = await privateClient.post(
         playlistEndpoints.deleteMultipleSong,
         { playlistId, deletedSongListId }
+      );
+
+      return { response };
+    } catch (error) {
+      return { error };
+    }
+  },
+  changePlaylistDisplayStatus: async ({ playlistId }) => {
+    try {
+      const response = await privateClient.put(
+        playlistEndpoints.changePlaylistDisplayStatus({ playlistId })
       );
 
       return { response };

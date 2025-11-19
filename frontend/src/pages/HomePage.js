@@ -12,6 +12,8 @@ import GridArtistList from "../components/GridArtistList";
 import artistApi from "../api/modules/artist.api";
 import albumApi from "../api/modules/album.api";
 import GridAlbumList from "../components/GridAlbumList";
+import playlistApi from "../api/modules/playlist.api";
+import GridPublicPlaylistList from "../components/GridPublicPlaylistList";
 
 const HomePage = () => {
   const [trendingSongs, setTrendingSongs] = useState([]);
@@ -28,6 +30,10 @@ const HomePage = () => {
 
   const [allAlbums, setAllAlbums] = useState([]);
   const [allAlbumsLoading, setAllAlbumsLoading] = useState(false);
+
+  const [allPublicPlaylists, setAllPublicPlaylists] = useState([]);
+  const [allPublicPlaylistsLoading, setAllPublicPlaylistsLoading] =
+    useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,10 +85,27 @@ const HomePage = () => {
         }
       };
 
+      const fetchAllPublicPlaylists = async () => {
+        setAllPublicPlaylistsLoading(true);
+
+        const { response, error } = await playlistApi.getAllPublicPlaylists();
+
+        setAllPublicPlaylistsLoading(false);
+
+        if (response) {
+          setAllPublicPlaylists(response);
+        }
+
+        if (error) {
+          toast.error(error.message);
+        }
+      };
+
       await Promise.all([
         fetchTrendingSongs(),
         fetchAllArtists(),
         fetchAllAlbums(),
+        fetchAllPublicPlaylists(),
       ]);
     };
 
@@ -140,6 +163,17 @@ const HomePage = () => {
           <GridSongListSkeleton />
         ) : (
           <GridArtistList artists={allArtists} />
+        )}
+      </Box>
+
+      <Box sx={{ px: { xs: 0, sm: 3 }, py: 3 }}>
+        <Typography variant="h6" sx={{ mb: 2 }} textTransform="uppercase">
+          {t("homePage.trendingPlaylists")}
+        </Typography>
+        {allAlbumsLoading ? (
+          <GridSongListSkeleton />
+        ) : (
+          <GridPublicPlaylistList publicPlaylists={allPublicPlaylists} />
         )}
       </Box>
 

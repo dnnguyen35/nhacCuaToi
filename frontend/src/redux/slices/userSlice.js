@@ -27,9 +27,9 @@ const userSlice = createSlice({
         sessionStorage.removeItem("allPlaylist");
 
         state.user = null;
-        state.allPlaylist = [];
+        // state.allPlaylist = []; after signout will be handled in MainLayout.js
         state.wishlist = [];
-        state.playlist = [];
+        // state.playlist = [];
       } else {
         sessionStorage.setItem("user", JSON.stringify(action.payload.userData));
 

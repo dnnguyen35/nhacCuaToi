@@ -12,14 +12,16 @@
     "all": "Tat ca",
     "song": "bài hát",
     "album": "album",
-    "artist": "nghệ sĩ"
+    "artist": "nghệ sĩ",
+    "playlist": "playlist"
   },
   "homePage": {
     "forYou": "dành cho bạn",
     "treanding": "thịnh hành",
     "highRating": "nổi bật",
     "trendingArtists": "nghệ sĩ thịnh hành",
-    "trendingAlbums": "album thịnh hành"
+    "trendingAlbums": "album thịnh hành",
+    "trendingPlaylists": "playlist nổi bật"
   },
   "userMenu": {
     "changePassword": "đổi mật khẩu",
@@ -99,7 +101,8 @@
     "Song updated successfully": "Cập nhật bài hát thành công",
     "Playlist created successfully": "Thêm playlist thành công",
     "Added song to playlist successfully": "Thêm vào playlist thành công",
-    "Added song to wishlist successfully": "Thêm vào wishlist thành công"
+    "Added song to wishlist successfully": "Thêm vào wishlist thành công",
+    "Changed playlist display status successfully": "Thay đổi trạng thái playlist thành công"
   },
   "responseError": {
     "Email already exists": "Email đã tồn tại",
@@ -156,7 +159,8 @@
     "You have exceed 5 playlist slot": "Bạn đã tạo nhiều playlist. Hãy nâng cấp để tạo thêm",
     "You are blocked": "Tài khoản đang bị khóa",
     "Album not founded": "Không tìm thấy album",
-    "Artist not founded": "Không tìm thấy nghệ sĩ"
+    "Artist not founded": "Không tìm thấy nghệ sĩ",
+    "Access denied": "Truy cập bị từ chối"
   },
   "sweetalert": {
     "Are you sure?": "Bạn chắc chưa?",

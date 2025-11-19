@@ -22,6 +22,8 @@ import GridAlbumList from "../components/GridAlbumList";
 import GridArtistList from "../components/GridArtistList";
 import SearchAlbumTab from "../components/SearchAlbumTab";
 import SearchArtistTab from "../components/SearchArtistTab";
+import SearchPublicPlaylistTab from "../components/SearchPublicPlaylistTab";
+import GridPublicPlaylistList from "../components/GridPublicPlaylistList";
 
 const EmptySearch = ({ query }) => {
   const { t } = useTranslation();
@@ -79,6 +81,7 @@ const SearchPage = () => {
   const [songs, setSongs] = useState([]);
   const [albums, setAlbums] = useState([]);
   const [artists, setArtists] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
   const [onSearch, setOnSearch] = useState(false);
   const { t } = useTranslation();
 
@@ -110,12 +113,11 @@ const SearchPage = () => {
         keyword: query,
       });
 
-      console.log("searchResult: ", response);
-
       if (response) {
         setSongs(response.searchResult.Songs);
         setAlbums(response.searchResult.Albums);
         setArtists(response.searchResult.Artists);
+        setPlaylists(response.searchResult.Playlists);
       }
 
       if (error) {
@@ -174,6 +176,7 @@ const SearchPage = () => {
           <Tab label={t("search.song")} />
           <Tab label={t("search.album")} />
           <Tab label={t("search.artist")} />
+          <Tab label={t("search.playlist")} />
         </Tabs>
 
         <Box
@@ -249,6 +252,17 @@ const SearchPage = () => {
                       </Typography>
                       <GridArtistList artists={artists} />
                     </Box>
+
+                    <Box sx={{ py: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{ mb: 0 }}
+                        textTransform="uppercase"
+                      >
+                        {t("search.playlist")}
+                      </Typography>
+                      <GridPublicPlaylistList publicPlaylists={playlists} />
+                    </Box>
                   </>
                 )}
 
@@ -299,6 +313,25 @@ const SearchPage = () => {
                       <SearchArtistTab searchArtists={artists} />
                     ) : (
                       <GridArtistList artists={artists} />
+                    )}
+                  </Box>
+                )}
+
+                {tab === 4 && (
+                  <Box sx={{ py: 3 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ mb: 0 }}
+                      textTransform="uppercase"
+                    >
+                      {t("search.playlist")}
+                    </Typography>
+                    {!isSm ? (
+                      <SearchPublicPlaylistTab
+                        searchPublicPlaylists={playlists}
+                      />
+                    ) : (
+                      <GridPublicPlaylistList publicPlaylists={playlists} />
                     )}
                   </Box>
                 )}

@@ -4,6 +4,8 @@ import albumModel from "../models/album.model.js";
 import sequelize from "../configs/db.js";
 import { Op } from "sequelize";
 import redis from "../configs/redis.js";
+import playlistModel from "../models/playlist.model.js";
+import userModel from "../models/user.model.js";
 
 const searchAllTypes = async (req, res) => {
   try {
@@ -13,8 +15,8 @@ const searchAllTypes = async (req, res) => {
       return res.status(400).json({ message: "Keyword is required" });
     }
 
-    const validTypes = ["album", "artist", "song"];
-    let types = type ? type.split(",") : validTypes;
+    const validTypes = ["album", "artist", "song", "playlist"];
+    let types = type ? type.split(",") : [...validTypes];
 
     types = types.filter((t) => validTypes.includes(t));
 
@@ -29,7 +31,7 @@ const searchAllTypes = async (req, res) => {
       return res.status(200).json({ searchResult: cachedSearchResult });
     }
 
-    const searchResult = { Songs: [], Albums: [], Artists: [] };
+    const searchResult = { Songs: [], Albums: [], Artists: [], Playlists: [] };
 
     if (types.includes("song")) {
       searchResult.Songs = await songModel.findAll({
@@ -136,6 +138,58 @@ const searchAllTypes = async (req, res) => {
       });
 
       searchResult.Artists = searchArtistsPlain;
+    }
+
+    if (types.includes("playlist")) {
+      const searchPublicPlaylists = await playlistModel.findAll({
+        where: {
+          isPublic: true,
+          [Op.or]: [
+            sequelize.literal(
+              `Playlist.name COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`
+            ),
+            sequelize.literal(
+              `User.username COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`
+            ),
+          ],
+        },
+        order: [["createdAt", "ASC"]],
+        include: [
+          {
+            model: songModel,
+            through: { attributes: [] },
+            include: [
+              {
+                model: artistModel,
+                attributes: ["artist"],
+                required: false,
+              },
+            ],
+          },
+          {
+            model: userModel,
+            attributes: [["username", "createdBy"]],
+            required: false,
+          },
+        ],
+      });
+
+      let searchPublicPlaylistsPlain = searchPublicPlaylists.map((playlist) =>
+        playlist.get({ plain: true })
+      );
+
+      searchPublicPlaylistsPlain.forEach((playlist) => {
+        playlist.createdBy = playlist?.User?.createdBy
+          ? playlist.User.createdBy
+          : null;
+
+        playlist.Songs = playlist.Songs.map((song) => ({
+          ...song,
+          artist: song.Artist ? song.Artist.artist : null,
+        }));
+      });
+
+      searchResult.Playlists = searchPublicPlaylistsPlain;
     }
 
     await redis.setex(cacheKey, 3600, JSON.stringify(searchResult));
