@@ -48,8 +48,8 @@ const signup = async (req, res) => {
     await Promise.all([
       redis.setex(`signup-otp:${email}`, 120, otp.toString()),
       redis.setex(`signup-info:${email}`, 900, signupInfo),
-      pushEmailJob(email, "otp", otp),
-      // sendEmail(email, "otp", otp),
+      // pushEmailJob(email, "otp", otp),
+      sendEmail(email, "otp", otp),
     ]);
 
     res
@@ -152,8 +152,8 @@ const resendOtp = async (req, res) => {
 
     await Promise.all([
       redis.setex(`signup-otp:${email}`, 120, otp.toString()),
-      pushEmailJob(email, "otp", otp),
-      // sendEmail(email, "otp", otp),
+      // pushEmailJob(email, "otp", otp),
+      sendEmail(email, "otp", otp),
     ]);
 
     res
