@@ -23,7 +23,9 @@ export const sendEmail = async (toEmail, type, content) => {
           ? "Verify your email for nhacCuaToi"
           : type === "payment"
             ? "Payment successfully"
-            : "Reset password for nhacCuaToi acccount",
+            : type === "reset_password"
+              ? "Reset password for nhacCuaToi acccount"
+              : "Alert from nhacCuaToi",
       html:
         type === "otp"
           ? `
@@ -37,10 +39,13 @@ export const sendEmail = async (toEmail, type, content) => {
         <p>Your payment for upgrade service</p>
         <h3>OrderId: ${content} - Total: 10.000(VND)</h3>
         <p>Thanks you</p>`
-            : `<h2>Hello friend,</h2>
+            : type === "reset_password"
+              ? `<h2>Hello friend,</h2>
         <p>Your reset password request was done</p>
         <h3>Password: ${content}</h3>
-        <p>Please change your password after sign in</p>`,
+        <p>Please change your password after sign in</p>`
+              : `<h2>Alert from nhacCuaToi</h2>
+        <p>${content}</p>`,
     };
 
     const result = await transporter.sendMail(mailOptions);

@@ -8,20 +8,12 @@ import "dotenv/config";
 import routes from "./routes/routes.js";
 import fileUpload from "express-fileupload";
 import path from "path";
-import {
-  sequelize,
-  userModel,
-  songModel,
-  playlistModel,
-  playlistSongModel,
-  wishlistModel,
-  artistModel,
-  albumModel,
-} from "./models/main.js";
+import { sequelize } from "./models/main.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger.js";
 import { initializeSocket } from "./configs/socket.js";
 import { initRabbitMQ } from "./configs/rabbitmq.js";
+import { initCronJobs } from "./jobs/cronJobs.js";
 
 const app = express();
 const __dirname = path.resolve();
@@ -69,6 +61,8 @@ sequelize
   })
   .then(async () => {
     await initRabbitMQ();
+
+    initCronJobs();
 
     server.listen(process.env.PORT, () => {
       console.log("Server listening on port 5000");
