@@ -2,6 +2,8 @@ import userModel from "../models/user.model.js";
 import songModel from "../models/song.model.js";
 import wishlistModel from "../models/wishlist.model.js";
 import redis from "../configs/redis.js";
+import { Sequelize } from "sequelize";
+import Artist from "../models/artist.model.js";
 
 const addSongToWishlist = async (req, res) => {
   try {
@@ -47,6 +49,7 @@ const addSongToWishlist = async (req, res) => {
 
     res.status(201).json(newWishlistSong);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
