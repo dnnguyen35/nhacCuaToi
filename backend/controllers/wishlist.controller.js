@@ -16,7 +16,21 @@ const addSongToWishlist = async (req, res) => {
       return res.status(400).json({ message: "Song has been alredy added" });
     }
 
-    const songExist = await songModel.findOne({ where: { id: songId } });
+    const songExist = await songModel.findOne({
+      where: { id: songId },
+
+      attributes: {
+        include: [[Sequelize.col("Artist.artist"), "artist"]],
+      },
+
+      include: [
+        {
+          model: Artist,
+          attributes: [],
+          required: false,
+        },
+      ],
+    });
 
     if (!songExist) {
       return res.status(400).json({ message: "Song not exist" });
