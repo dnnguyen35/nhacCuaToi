@@ -1,16 +1,16 @@
 import { Box, IconButton, Slider, Typography, Avatar } from "@mui/material";
 import {
-  SkipPrevious,
-  PlayArrow,
-  SkipNext,
+  SkipBack,
+  Play,
+  SkipForward,
   Repeat,
   Shuffle,
   Pause,
-  VolumeUp,
-  VolumeOff,
-  RepeatOne,
-  MusicOff,
-} from "@mui/icons-material";
+  Volume2,
+  VolumeX,
+  Repeat1,
+} from "lucide-react";
+import { MusicOff } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -198,14 +198,14 @@ const PlaybackController = () => {
               currentSong?.isNull || queue?.length < 2 || currentIndex === 0
             }
           >
-            <SkipPrevious />
+            <SkipBack />
           </IconButton>
           <IconButton
             onClick={() => dispatch(togglePlay())}
             disabled={currentSong?.isNull ? true : false}
           >
             {!isPlaying ? (
-              <PlayArrow fontSize="large" />
+              <Play fontSize="large" />
             ) : (
               <Pause fontSize="large" />
             )}
@@ -224,7 +224,7 @@ const PlaybackController = () => {
               currentIndex === queue.length - 1
             }
           >
-            <SkipNext />
+            <SkipForward />
           </IconButton>
           {repeatMode === -1 ? (
             <IconButton onClick={() => dispatch(setRepeatMode(0))}>
@@ -242,7 +242,7 @@ const PlaybackController = () => {
               onClick={() => dispatch(setRepeatMode(-1))}
               sx={{ color: "primary.main" }}
             >
-              <RepeatOne />
+              <Repeat1 />
             </IconButton>
           )}
         </Box>
@@ -314,7 +314,7 @@ const PlaybackController = () => {
         }}
       >
         <IconButton onClick={handleVolumeMute}>
-          {!isMute ? <VolumeUp /> : <VolumeOff />}
+          {!isMute ? <Volume2 /> : <VolumeX />}
         </IconButton>
         <Slider
           size="small"
