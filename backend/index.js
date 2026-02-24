@@ -22,7 +22,7 @@ app.use(
   cors({
     origin: "*",
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -35,12 +35,12 @@ app.use(
     limits: {
       fileSize: 50 * 1024 * 1024,
     },
-  })
+  }),
 );
 
 app.get("/api/v1/check", (req, res) => {
   res.json({
-    message: "Everything still ok",
+    message: "Hello world! Everything still ok",
     timestamp: new Date().toLocaleString("en-US", {
       timeZone: "Asia/Ho_Chi_Minh",
     }),
