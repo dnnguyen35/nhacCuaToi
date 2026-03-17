@@ -92,31 +92,33 @@ const Header = () => {
           alignItems="center"
           sx={{ display: { xs: "none", sm: "flex" } }}
         >
-          <IconButton
-            sx={{
-              "&:hover svg": {
-                transform: "scale(1.1)",
-              },
-            }}
-            onClick={() => handleCreatePaymentClick()}
-          >
-            <Badge
-              variant="dot"
-              color="warning"
+          {user && (
+            <IconButton
               sx={{
-                "& .MuiBadge-badge": {
-                  animation: "pulse 1.2s infinite",
-                },
-                "@keyframes pulse": {
-                  "0%": { transform: "scale(1)", opacity: 1 },
-                  "50%": { transform: "scale(1.5)", opacity: 0.5 },
-                  "100%": { transform: "scale(1)", opacity: 1 },
+                "&:hover svg": {
+                  transform: "scale(1.1)",
                 },
               }}
+              onClick={() => handleCreatePaymentClick()}
             >
-              <AttachMoney />
-            </Badge>
-          </IconButton>
+              <Badge
+                variant="dot"
+                color="warning"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    animation: "pulse 1.2s infinite",
+                  },
+                  "@keyframes pulse": {
+                    "0%": { transform: "scale(1)", opacity: 1 },
+                    "50%": { transform: "scale(1.5)", opacity: 0.5 },
+                    "100%": { transform: "scale(1)", opacity: 1 },
+                  },
+                }}
+              >
+                <AttachMoney />
+              </Badge>
+            </IconButton>
+          )}
           <LanguageToggle />
           <IconButton sx={{ color: "inherit" }} onClick={switchThemeToggle}>
             {themeMode === themeModes.light ? (
