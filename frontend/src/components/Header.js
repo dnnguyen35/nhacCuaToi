@@ -1,8 +1,17 @@
-import { AppBar, Toolbar, Stack, Button, IconButton } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Stack,
+  Button,
+  IconButton,
+  Badge,
+} from "@mui/material";
 import {
   SettingsOutlined,
   WbSunnyOutlined,
   DarkModeOutlined,
+  ImportContactsSharp,
+  AttachMoney,
 } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 import { setAuthModalOpen } from "../redux/slices/authModalSlice";
@@ -13,11 +22,17 @@ import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import LanguageToggle from "./LanguageToggle";
 import { useTranslation } from "react-i18next";
+import paymentApi from "../api/modules/payment.api";
+import Swal from "sweetalert2";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { themeMode } = useSelector((state) => state.themeMode);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const { t } = useTranslation();
 
@@ -25,6 +40,40 @@ const Header = () => {
     const theme =
       themeMode === themeModes.dark ? themeModes.light : themeModes.dark;
     dispatch(setThemeMode(theme));
+  };
+
+  const handleCreatePaymentClick = async () => {
+    if (isLoading) return;
+
+    const isConfirmedPay = await Swal.fire({
+      title: "Confirm Payment",
+      text: "You will have 5 more playlist slots(10.000 VND).",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+      theme: themeMode,
+    });
+
+    if (!isConfirmedPay.isConfirmed) return;
+
+    setIsLoading(true);
+
+    toast.info("Please wait for seconds");
+
+    const { response, error } = await paymentApi.createPayment({});
+
+    setIsLoading(false);
+
+    if (response) {
+      toast.success(response.message);
+
+      window.location.href = response.payUrl;
+    }
+
+    if (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -43,6 +92,31 @@ const Header = () => {
           alignItems="center"
           sx={{ display: { xs: "none", sm: "flex" } }}
         >
+          <IconButton
+            sx={{
+              "&:hover svg": {
+                transform: "scale(1.1)",
+              },
+            }}
+            onClick={() => handleCreatePaymentClick()}
+          >
+            <Badge
+              variant="dot"
+              color="warning"
+              sx={{
+                "& .MuiBadge-badge": {
+                  animation: "pulse 1.2s infinite",
+                },
+                "@keyframes pulse": {
+                  "0%": { transform: "scale(1)", opacity: 1 },
+                  "50%": { transform: "scale(1.5)", opacity: 0.5 },
+                  "100%": { transform: "scale(1)", opacity: 1 },
+                },
+              }}
+            >
+              <AttachMoney />
+            </Badge>
+          </IconButton>
           <LanguageToggle />
           <IconButton sx={{ color: "inherit" }} onClick={switchThemeToggle}>
             {themeMode === themeModes.light ? (

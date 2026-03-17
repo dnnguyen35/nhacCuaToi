@@ -4,6 +4,7 @@ import {
   ListItemText,
   Menu,
   Typography,
+  Badge,
 } from "@mui/material";
 import {
   LockResetOutlined,
@@ -27,6 +28,9 @@ import { useNavigate } from "react-router-dom";
 import socket from "../api/socket/socket";
 import { Link } from "react-router-dom";
 import { routesGen } from "../routes/routes";
+import paymentApi from "../api/modules/payment.api";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 const UserMenu = () => {
   const { user } = useSelector((state) => state.user);
@@ -41,6 +45,7 @@ const UserMenu = () => {
   const { t } = useTranslation();
 
   const toggleMenu = (e) => setAnchorEl(e.currentTarget);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSwitchLanguage = () => {
     const newLanguage =
@@ -53,6 +58,41 @@ const UserMenu = () => {
       themeMode === themeModes.dark ? themeModes.light : themeModes.dark;
     dispatch(setThemeMode(theme));
   };
+
+  const handleCreatePaymentClick = async () => {
+    if (isLoading) return;
+
+    const isConfirmedPay = await Swal.fire({
+      title: "Confirm Payment",
+      text: "You will have 5 more playlist slots(10.000 VND).",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+      theme: themeMode,
+    });
+
+    if (!isConfirmedPay.isConfirmed) return;
+
+    setIsLoading(true);
+
+    toast.info("Please wait for seconds");
+
+    const { response, error } = await paymentApi.createPayment({});
+
+    setIsLoading(false);
+
+    if (response) {
+      toast.success(response.message);
+
+      window.location.href = response.payUrl;
+    }
+
+    if (error) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <>
       {user && (
@@ -109,6 +149,22 @@ const UserMenu = () => {
                       ? t("userMenu.en")
                       : t("userMenu.vi")}
                   </Typography>
+                }
+              />
+            </ListItemButton>
+            <ListItemButton
+              sx={{ display: { xs: "flex", sm: "none" }, borderRadius: "10px" }}
+              onClick={() => {
+                handleCreatePaymentClick();
+              }}
+            >
+              <ListItemIcon>
+                <AttachMoney />
+              </ListItemIcon>
+              <ListItemText
+                disableTypography
+                primary={
+                  <Typography textTransform="uppercase">Upgrade</Typography>
                 }
               />
             </ListItemButton>
