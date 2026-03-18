@@ -167,7 +167,9 @@ const UserMenu = () => {
               <ListItemText
                 disableTypography
                 primary={
-                  <Typography textTransform="uppercase">Upgrade</Typography>
+                  <Typography textTransform="uppercase">
+                    {t("paymentTable.upgrade")}
+                  </Typography>
                 }
               />
             </ListItemButton>
@@ -208,7 +210,7 @@ const UserMenu = () => {
                 disableTypography
                 primary={
                   <Typography textTransform="uppercase">
-                    {t("paymentTable.upgrade")}
+                    {t("paymentTable.payment")}
                   </Typography>
                 }
               />
