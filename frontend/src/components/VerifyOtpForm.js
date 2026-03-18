@@ -182,6 +182,12 @@ const VerifyOtpForm = ({ email, otpExpireAt, setVefiryOtpStep }) => {
         </Button>
       )}
 
+      <Box sx={{ marginTop: 2 }}>
+        <Alert severity="warning" variant="outlined">
+          {t("responseSuccess.If your email exists")}
+        </Alert>
+      </Box>
+
       {errorMessage && (
         <Box sx={{ marginTop: 2 }}>
           <Alert severity="warning" variant="outlined">

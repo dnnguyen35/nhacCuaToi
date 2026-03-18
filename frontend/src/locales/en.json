@@ -59,7 +59,8 @@
     "status": "status",
     "payment": "payment",
     "total": "total(vnd)",
-    "thereNoPayment": "There is no payment now"
+    "thereNoPayment": "There is no payment now",
+    "upgrade": "Upgrade"
   },
   "formField": {
     "email": "Email",
@@ -102,7 +103,9 @@
     "Playlist created successfully": "Playlist created successfully",
     "Added song to playlist successfully": "Added song to playlist successfully",
     "Added song to wishlist successfully": "Added song to wishlist successfully",
-    "Changed playlist display status successfully": "Changed playlist display status successfully"
+    "Changed playlist display status successfully": "Changed playlist display status successfully",
+    "If your email exists": "If your email exists, you will receive an OTP",
+    "Please wait for seconds": "Please wait for seconds"
   },
   "responseError": {
     "Email already exists": "Email already exists",
@@ -172,6 +175,8 @@
     "Payment successfully": "Payment successfully",
     "Upgrade service": "Now you can create 5 more playlist",
     "Payment failed": "Payment failed",
-    "Upgrade service failed": "Service is temporary interrupt now, Please try later"
+    "Upgrade service failed": "Service is temporary interrupt now, Please try later",
+    "upgradeBenefits": "You will have 5 more playlist slot(10.000vnd)",
+    "payConfirm": "Pay now"
   }
 }

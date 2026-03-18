@@ -59,7 +59,8 @@
     "status": "trạng thái",
     "payment": "thanh toán",
     "total": "tổng(vnd)",
-    "thereNoPayment": "Chưa có thanh toán nào"
+    "thereNoPayment": "Chưa có thanh toán nào",
+    "upgrade": "Nâng cấp"
   },
   "formField": {
     "email": "Email",
@@ -102,7 +103,9 @@
     "Playlist created successfully": "Thêm playlist thành công",
     "Added song to playlist successfully": "Thêm vào playlist thành công",
     "Added song to wishlist successfully": "Thêm vào wishlist thành công",
-    "Changed playlist display status successfully": "Thay đổi trạng thái playlist thành công"
+    "Changed playlist display status successfully": "Thay đổi trạng thái playlist thành công",
+    "If your email exists": "Nếu email tồn tại, bạn sẽ nhận được mã OTP",
+    "Please wait for seconds": "Vui lòng đợi vài giây"
   },
   "responseError": {
     "Email already exists": "Email đã tồn tại",
@@ -171,6 +174,8 @@
     "Payment successfully": "Thanh toán thành công",
     "Upgrade service": "Bây giờ bạn có thể tạo thêm 5 playlist",
     "Payment failed": "Thanh toán thất bại",
-    "Upgrade service failed": "Dịch vụ đang gián đoạn, thử lại sau"
+    "Upgrade service failed": "Dịch vụ đang gián đoạn, thử lại sau",
+    "upgradeBenefits": "Bạn sẽ có thêm 5 slot playlist(10.000đ)",
+    "payConfirm": "Đồng ý"
   }
 }

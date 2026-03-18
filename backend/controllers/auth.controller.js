@@ -101,13 +101,13 @@ const verifyOtpAndSignup = async (req, res) => {
     const access_token = jsonwebtoken.sign(
       { data: newUser.id },
       process.env.ACTKN_SECRET_KEY,
-      { expiresIn: "15m" }
+      { expiresIn: "15m" },
     );
 
     const refresh_token = jsonwebtoken.sign(
       { data: newUser.id },
       process.env.REFRESHTKN_SECRET_KEY,
-      { expiresIn: "24h" }
+      { expiresIn: "24h" },
     );
 
     const userData = newUser.toJSON();
@@ -200,7 +200,7 @@ const signin = async (req, res) => {
       process.env.ACTKN_SECRET_KEY,
       {
         expiresIn: "15m",
-      }
+      },
     );
 
     const refresh_token = jsonwebtoken.sign(
@@ -208,7 +208,7 @@ const signin = async (req, res) => {
       process.env.REFRESHTKN_SECRET_KEY,
       {
         expiresIn: "24h",
-      }
+      },
     );
 
     const userData = user.toJSON();
@@ -301,13 +301,13 @@ const renewAccessToken = (req, res) => {
 
     const userData = jsonwebtoken.verify(
       refreshToken,
-      process.env.REFRESHTKN_SECRET_KEY
+      process.env.REFRESHTKN_SECRET_KEY,
     );
 
     const newAccessToken = jsonwebtoken.sign(
       { data: userData.data },
       process.env.ACTKN_SECRET_KEY,
-      { expiresIn: "15m" }
+      { expiresIn: "15m" },
     );
 
     res.status(200).json({ newAccessToken });

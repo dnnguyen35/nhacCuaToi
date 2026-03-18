@@ -46,12 +46,12 @@ const Header = () => {
     if (isLoading) return;
 
     const isConfirmedPay = await Swal.fire({
-      title: "Confirm Payment",
-      text: "You will have 5 more playlist slots(10.000 VND).",
+      title: "nhacCuaToi",
+      text: t("sweetalert.upgradeBenefits"),
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "Cancel",
+      confirmButtonText: t("sweetalert.payConfirm"),
+      cancelButtonText: t("sweetalert.Cancel"),
       theme: themeMode,
     });
 
@@ -59,7 +59,7 @@ const Header = () => {
 
     setIsLoading(true);
 
-    toast.info("Please wait for seconds");
+    toast.info(t("responseSuccess.Please wait for seconds"));
 
     const { response, error } = await paymentApi.createPayment({});
 
@@ -100,6 +100,7 @@ const Header = () => {
                 },
               }}
               onClick={() => handleCreatePaymentClick()}
+              disabled={isLoading}
             >
               <Badge
                 variant="dot"
