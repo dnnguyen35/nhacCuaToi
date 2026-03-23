@@ -56,6 +56,7 @@ const signup = async (req, res) => {
       .status(200)
       .json({ message: "OTP has beeen send to email", otpExpireAt });
   } catch (error) {
+    console.error("Error in signup:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
