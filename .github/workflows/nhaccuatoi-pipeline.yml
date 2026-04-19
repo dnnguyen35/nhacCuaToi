@@ -45,7 +45,7 @@ jobs:
           port: 22
           script: |
             set -e
-            cd /home/${{ secrets.EC2_USER_NHACCUATOI }}/nhacCuaToi
+            cd /home/${{ secrets.EC2_USER_NHACCUATOI }}
             {
               sudo docker compose pull
               sudo docker compose down
@@ -58,7 +58,7 @@ jobs:
           echo "${{ secrets.EC2_KEY_NHACCUATOI }}" > key.pem
           chmod 600 key.pem
           scp -i key.pem -o StrictHostKeyChecking=no \
-            ${{ secrets.EC2_USER_NHACCUATOI }}@${{ secrets.EC2_HOST_NHACCUATOI }}:/home/${{ secrets.EC2_USER_NHACCUATOI }}/nhacCuaToi/deploy.log \
+            ${{ secrets.EC2_USER_NHACCUATOI }}@${{ secrets.EC2_HOST_NHACCUATOI }}:/home/${{ secrets.EC2_USER_NHACCUATOI }}/deploy.log \
             ./deploy.log || true
           rm -f key.pem
 
