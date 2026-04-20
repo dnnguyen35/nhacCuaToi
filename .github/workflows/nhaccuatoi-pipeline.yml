@@ -30,10 +30,8 @@ jobs:
         with:
           context: ./frontend
           push: true
+          no-cache: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nhaccuatoi-frontend:latest
-          build-args: |
-            REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
-            REACT_APP_SOCKET_URL=${{ secrets.REACT_APP_SOCKET_URL }}
 
       - name: SSH into EC2 and deploy
         id: deploy
