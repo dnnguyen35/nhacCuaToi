@@ -28,7 +28,7 @@ socket.on("connect_error", async (error) => {
       const refreshToken = sessionStorage.getItem("refreshtkn");
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/auth/renew-accesstoken`,
-        { refreshToken }
+        { refreshToken },
       );
 
       const newAccessToken = response.data.newAccessToken;
