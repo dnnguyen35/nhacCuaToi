@@ -40,7 +40,7 @@ app.use(
 
 app.get("/api/v1/check", (req, res) => {
   res.json({
-    message: "Hello world! Everything still ok",
+    message: "Hhehehe! Everything still ok",
     timestamp: new Date().toLocaleString("en-US", {
       timeZone: "Asia/Ho_Chi_Minh",
     }),
