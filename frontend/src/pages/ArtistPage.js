@@ -67,7 +67,7 @@ const ArtistPage = () => {
   const { wishlist, user } = useSelector((state) => state.user);
 
   const { currentSong, isPlaying, queue, queueType } = useSelector(
-    (state) => state.player
+    (state) => state.player,
   );
   const dispatch = useDispatch();
 
@@ -128,7 +128,7 @@ const ArtistPage = () => {
     if (!currentArtist) return;
 
     const isCurrentArtistPlaying = currentArtist?.Songs?.some(
-      (song) => song.id === currentSong?.id
+      (song) => song.id === currentSong?.id,
     );
 
     if (
@@ -141,7 +141,7 @@ const ArtistPage = () => {
       const songs = currentArtist?.Songs;
       const startIndex = 0;
       dispatch(
-        playArtistSongs({ songs, startIndex, artistId: currentArtist?.id })
+        playArtistSongs({ songs, startIndex, artistId: currentArtist?.id }),
       );
     }
   };
@@ -151,10 +151,10 @@ const ArtistPage = () => {
 
     const songs = currentArtist?.Songs;
     const startIndex = currentArtist?.Songs.findIndex(
-      (s) => s.id === playSong.id
+      (s) => s.id === playSong.id,
     );
     dispatch(
-      playArtistSongs({ songs, startIndex, artistId: currentArtist?.id })
+      playArtistSongs({ songs, startIndex, artistId: currentArtist?.id }),
     );
   };
 
@@ -196,7 +196,7 @@ const ArtistPage = () => {
 
     if (response) {
       const isCurrentWishlistPlaying = wishlist.some(
-        (song) => song.id === currentSong?.id
+        (song) => song.id === currentSong?.id,
       );
 
       if (
@@ -210,7 +210,7 @@ const ArtistPage = () => {
       const newWishlist = wishlist.filter((s) => s.id !== deleteSong.id);
       dispatch(setWishlist([...newWishlist]));
       toast.success(
-        t("responseSuccess.Removed song from wishlist successfully")
+        t("responseSuccess.Removed song from wishlist successfully"),
       );
     }
 
@@ -241,18 +241,13 @@ const ArtistPage = () => {
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ duration: 0.9, ease: "easeInOut" }}
       >
-        <Box position="relative">
-          <Box
-            position="absolute"
-            inset={0}
-            sx={{
-              background:
-                "linear-gradient(to bottom, rgba(80,56,160,0.8), rgba(33,33,33,0.8), rgba(33,33,33,0.8))",
-              pointerEvents: "none",
-              zIndex: 0,
-            }}
-          />
-
+        <Box
+          position="relative"
+          // sx={{
+          //   background:
+          //     "linear-gradient(to bottom, rgba(80,56,160,0.8), rgba(33,33,33,0.95), rgba(18,18,18,1))",
+          // }}
+        >
           <Box
             position="relative"
             zIndex={1}
@@ -312,8 +307,8 @@ const ArtistPage = () => {
                       {formatDurationToHMS(
                         currentArtist?.Songs?.reduce(
                           (acc, cur) => acc + cur.duration,
-                          0
-                        )
+                          0,
+                        ),
                       )}
                     </Typography>
                   </Box>
@@ -342,7 +337,7 @@ const ArtistPage = () => {
                 currentArtist?.id === Number(queueType.split(":")[1]) &&
                 queueType.split(":")[0] === "artist" &&
                 currentArtist?.Songs?.some(
-                  (song) => song.id === currentSong?.id
+                  (song) => song.id === currentSong?.id,
                 ) ? (
                   <Pause sx={{ color: "black", fontSize: 28 }} />
                 ) : (
@@ -632,7 +627,7 @@ const ArtistPage = () => {
                 <ListItemAvatar sx={{ width: 70 }}>
                   <IconButton color="primary" size="small" sx={{ pr: 1 }}>
                     {wishlist.some(
-                      (s) => s.id === isMoreVertClickedSong?.id
+                      (s) => s.id === isMoreVertClickedSong?.id,
                     ) ? (
                       <Favorite />
                     ) : (

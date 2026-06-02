@@ -9,6 +9,8 @@ import {
   Volume2,
   VolumeX,
   Repeat1,
+  MicVocal,
+  Mic,
 } from "lucide-react";
 import { MusicOff } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,8 +26,12 @@ import {
 } from "../redux/slices/playerSlice";
 import Marquee from "react-fast-marquee";
 import { formatDurationToHMS } from "../utils/formatDurationToHMS";
+import { useNavigate } from "react-router-dom";
+import { routesGen } from "../routes/routes";
 
 const PlaybackController = () => {
+  const navigate = useNavigate();
+
   const { currentSong, isPlaying, repeatMode, isShuffle, queue, currentIndex } =
     useSelector((state) => state.player);
   const dispatch = useDispatch();
@@ -313,6 +319,12 @@ const PlaybackController = () => {
           gap: 1,
         }}
       >
+        <IconButton
+          onClick={() => navigate(routesGen.lyric)}
+          disabled={currentSong?.isNull}
+        >
+          <MicVocal />
+        </IconButton>
         <IconButton onClick={handleVolumeMute}>
           {!isMute ? <Volume2 /> : <VolumeX />}
         </IconButton>

@@ -30,7 +30,7 @@ const MainLayout = () => {
   const outletRef = useRef(null);
 
   const { user, allPlaylist, playlist } = useSelector(
-    (state) => state.user ?? {}
+    (state) => state.user ?? {},
   );
   const { queueType } = useSelector((state) => state.player);
 
@@ -51,16 +51,16 @@ const MainLayout = () => {
         title: t(
           resultCode === "00"
             ? "sweetalert.Payment successfully"
-            : "sweetalert.Payment failed"
+            : "sweetalert.Payment failed",
         ),
         html: `
           <p>${t(
             resultCode === "00"
               ? "sweetalert.Upgrade service"
-              : "sweetalert.Upgrade service failed"
+              : "sweetalert.Upgrade service failed",
           )}</p>
           <p><strong>${new Intl.NumberFormat("vi-VN").format(
-            amount
+            amount,
           )} VND</strong></p>
           <p>OrderId: <code>${orderId}</code></p>
         `,
@@ -101,8 +101,8 @@ const MainLayout = () => {
           //handled after signout
           dispatch(
             setPlaylist(
-              playlist?.isPublic ? { ...playlist } : { id: -1, isNull: true }
-            )
+              playlist?.isPublic ? { ...playlist } : { id: -1, isNull: true },
+            ),
           );
           dispatch(setAllPlaylist([]));
         }
@@ -160,9 +160,13 @@ const MainLayout = () => {
             ref={outletRef}
             sx={{
               flex: 1,
-              overflowY: appState === "search" ? "hidden" : "auto",
-              py: 2,
-              px: { xs: 1, sm: 2 },
+              overflowY:
+                appState === "search" || appState === "lyric"
+                  ? "hidden"
+                  : "auto",
+              pt: 0,
+              pb: 2,
+              px: { xs: 0, sm: 0 },
               scrollBehavior: "smooth",
               scrollbarWidth: "none",
               "&::-webkit-scrollbar": {

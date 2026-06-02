@@ -21,7 +21,7 @@ const getAllSongs = async (req, res) => {
           include: [
             [
               sequelize.literal(
-                `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`
+                `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`,
               ),
               "artist",
             ],
@@ -36,7 +36,7 @@ const getAllSongs = async (req, res) => {
       await redis.setex(
         "songs:all-songs:full",
         300,
-        JSON.stringify({ allSongs })
+        JSON.stringify({ allSongs }),
       );
 
       return res.status(200).json({ allSongs });
@@ -44,7 +44,7 @@ const getAllSongs = async (req, res) => {
       const offset = (parseInt(page) - 1) * parseInt(limit);
 
       const cachedAllSongs = await redis.get(
-        `songs:all-songs:${page}:${limit}`
+        `songs:all-songs:${page}:${limit}`,
       );
 
       if (cachedAllSongs) {
@@ -60,7 +60,7 @@ const getAllSongs = async (req, res) => {
             include: [
               [
                 sequelize.literal(
-                  `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`
+                  `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`,
                 ),
                 "artist",
               ],
@@ -79,7 +79,7 @@ const getAllSongs = async (req, res) => {
           allSongs,
           currentPage: parseInt(page),
           totalPages: Math.ceil(totalRows / parseInt(limit)),
-        })
+        }),
       );
 
       res.status(200).json({
@@ -108,7 +108,7 @@ const getTrendingSongs = async (req, res) => {
         include: [
           [
             sequelize.literal(
-              `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`
+              `(SELECT a.artist FROM artists AS a WHERE a.id = Song.artistId)`,
             ),
             "artist",
           ],
@@ -123,7 +123,7 @@ const getTrendingSongs = async (req, res) => {
     await redis.setex(
       "songs:trending-songs",
       300,
-      JSON.stringify(featuredSongs)
+      JSON.stringify(featuredSongs),
     );
 
     res.status(200).json(featuredSongs);
@@ -154,10 +154,10 @@ const searchSong = async (req, res) => {
         where: {
           [Op.or]: [
             sequelize.literal(
-              `title COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`
+              `title COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`,
             ),
             sequelize.literal(
-              `Artist.artist COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`
+              `Artist.artist COLLATE utf8mb4_0900_as_ci LIKE '%${keyword}%'`,
             ),
           ],
         },

@@ -99,7 +99,7 @@ const PlaylistList = () => {
       }
 
       const newPlaylistsList = allPlaylist.filter(
-        (pl) => pl.id !== playlist.id
+        (pl) => pl.id !== playlist.id,
       );
       dispatch(setAllPlaylist(newPlaylistsList));
     }

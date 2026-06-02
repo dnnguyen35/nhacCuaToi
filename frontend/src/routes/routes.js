@@ -6,6 +6,7 @@ import SearchPage from "../pages/SearchPage";
 import PaymentHistoryPage from "../pages/PaymentHistoryPage";
 import AlbumPage from "../pages/AlbumPage";
 import ArtistPage from "../pages/ArtistPage";
+import LyricPage from "../pages/LyricPage";
 
 export const routesGen = {
   home: "/",
@@ -14,6 +15,7 @@ export const routesGen = {
   payment: "/payment",
   album: (albumId) => `/album/${albumId}`,
   artist: (artistId) => `/artist/${artistId}`,
+  lyric: "/lyric",
 };
 
 const routes = [
@@ -59,6 +61,11 @@ const routes = [
     path: "/artist/:artistId",
     element: <ArtistPage />,
     state: "artist",
+  },
+  {
+    path: "/lyric",
+    element: <LyricPage />,
+    state: "lyric",
   },
 ];
 

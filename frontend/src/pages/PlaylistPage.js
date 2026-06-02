@@ -59,7 +59,7 @@ const PlaylistPage = () => {
   const { t } = useTranslation();
 
   const { currentSong, isPlaying, queue, queueType } = useSelector(
-    (state) => state.player
+    (state) => state.player,
   );
   const dispatch = useDispatch();
 
@@ -119,7 +119,7 @@ const PlaylistPage = () => {
     setDeletedSongListId((prev) =>
       prev.some((sId) => sId === songId)
         ? prev.filter((sId) => sId !== songId)
-        : [...prev, songId]
+        : [...prev, songId],
     );
   };
 
@@ -141,7 +141,7 @@ const PlaylistPage = () => {
     const confirm = await Swal.fire({
       title: t("sweetalert.Are you sure?"),
       text: `${t("sweetalert.Do you really want to delete")}${t(
-        "sweetalert.? This action cannot be undone."
+        "sweetalert.? This action cannot be undone.",
       )}`,
       icon: "warning",
       showCancelButton: true,
@@ -165,10 +165,10 @@ const PlaylistPage = () => {
 
     if (response) {
       toast.success(
-        t("responseSuccess.Removed song from playlist successfully")
+        t("responseSuccess.Removed song from playlist successfully"),
       );
       const isCurrentPlaylistPlaying = currentPlaylist?.Songs?.some(
-        (song) => song.id === currentSong?.id
+        (song) => song.id === currentSong?.id,
       );
 
       if (
@@ -181,7 +181,7 @@ const PlaylistPage = () => {
       }
 
       const newPlaylistSongs = currentPlaylist?.Songs.filter(
-        (s) => !deletedSongListId.includes(s.id)
+        (s) => !deletedSongListId.includes(s.id),
       );
 
       if (currentPlaylist?.id === playlist?.id)
@@ -201,7 +201,7 @@ const PlaylistPage = () => {
     if (!currentPlaylist) return;
 
     const isCurrentPlaylistPlaying = currentPlaylist?.Songs?.some(
-      (song) => song.id === currentSong?.id
+      (song) => song.id === currentSong?.id,
     );
 
     if (
@@ -223,7 +223,7 @@ const PlaylistPage = () => {
 
     const songs = currentPlaylist?.Songs;
     const startIndex = currentPlaylist?.Songs.findIndex(
-      (s) => s.id === playSong.id
+      (s) => s.id === playSong.id,
     );
     dispatch(playPlaylist({ songs, startIndex }));
     dispatch(setPlaylist(currentPlaylist));
@@ -259,10 +259,10 @@ const PlaylistPage = () => {
 
     if (response) {
       toast.success(
-        t("responseSuccess.Removed song from playlist successfully")
+        t("responseSuccess.Removed song from playlist successfully"),
       );
       const isCurrentPlaylistPlaying = currentPlaylist?.Songs.some(
-        (song) => song.id === currentSong?.id
+        (song) => song.id === currentSong?.id,
       );
 
       if (
@@ -275,7 +275,7 @@ const PlaylistPage = () => {
       }
 
       const newPlaylistSongs = currentPlaylist?.Songs.filter(
-        (s) => s.id !== deleteSong.id
+        (s) => s.id !== deleteSong.id,
       );
 
       if (currentPlaylist?.id === playlist?.id)
@@ -306,7 +306,7 @@ const PlaylistPage = () => {
         isPublic: !currentPlaylist.isPublic,
       });
       toast.success(
-        t("responseSuccess.Changed playlist display status successfully")
+        t("responseSuccess.Changed playlist display status successfully"),
       );
     }
 
@@ -342,18 +342,13 @@ const PlaylistPage = () => {
       exit={{ scale: 0.95, opacity: 0 }}
       transition={{ duration: 0.9, ease: "easeInOut" }}
     >
-      <Box position="relative">
-        <Box
-          position="absolute"
-          inset={0}
-          sx={{
-            background:
-              "linear-gradient(to bottom, rgba(80,56,160,0.8), rgba(33,33,33,0.8), rgba(33,33,33,0.8))",
-            pointerEvents: "none",
-            zIndex: 0,
-          }}
-        />
-
+      <Box
+        position="relative"
+        // sx={{
+        //   background:
+        //     "linear-gradient(to bottom, rgba(80,56,160,0.8), rgba(33,33,33,0.95), rgba(18,18,18,1))",
+        // }}
+      >
         <Box
           position="relative"
           zIndex={1}
@@ -419,8 +414,8 @@ const PlaylistPage = () => {
                     {formatDurationToHMS(
                       currentPlaylist?.Songs?.reduce(
                         (acc, cur) => acc + cur.duration,
-                        0
-                      )
+                        0,
+                      ),
                     )}
                   </Typography>
                 </Box>
@@ -487,7 +482,7 @@ const PlaylistPage = () => {
               currentPlaylist?.id === playlist?.id &&
               queueType === "playlist" &&
               currentPlaylist?.Songs?.some(
-                (song) => song?.id === currentSong?.id
+                (song) => song?.id === currentSong?.id,
               ) ? (
                 <Pause sx={{ color: "black", fontSize: 28 }} />
               ) : (

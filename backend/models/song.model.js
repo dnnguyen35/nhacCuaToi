@@ -43,11 +43,15 @@ const songModel = sequelize.define(
       },
       allowNull: true,
     },
+    lyrics: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
   },
   {
     tableName: "songs",
     timestamps: true,
-  }
+  },
 );
 
 export default songModel;

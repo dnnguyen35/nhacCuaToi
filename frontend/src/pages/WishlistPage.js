@@ -44,7 +44,7 @@ import Marquee from "react-fast-marquee";
 const WishlistPage = () => {
   const { wishlist } = useSelector((state) => state.user);
   const { currentSong, isPlaying, queue, queueType } = useSelector(
-    (state) => state.player
+    (state) => state.player,
   );
   const { themeMode } = useSelector((state) => state.themeMode);
 
@@ -65,7 +65,7 @@ const WishlistPage = () => {
     setDeletedSongListId((prev) =>
       prev.some((sId) => sId === songId)
         ? prev.filter((sId) => sId !== songId)
-        : [...prev, songId]
+        : [...prev, songId],
     );
   };
 
@@ -108,7 +108,7 @@ const WishlistPage = () => {
 
     if (response) {
       const isCurrentWishlistPlaying = wishlist.some(
-        (song) => song.id === currentSong?.id
+        (song) => song.id === currentSong?.id,
       );
 
       if (
@@ -120,11 +120,11 @@ const WishlistPage = () => {
       }
 
       toast.success(
-        t("responseSuccess.Removed song from wishlist successfully")
+        t("responseSuccess.Removed song from wishlist successfully"),
       );
 
       const newWishlist = wishlist.filter(
-        (s) => !deletedSongListId.includes(s.id)
+        (s) => !deletedSongListId.includes(s.id),
       );
       dispatch(setWishlist(newWishlist));
 
@@ -141,7 +141,7 @@ const WishlistPage = () => {
     if (!wishlist) return;
 
     const isCurrentWishlistPlaying = wishlist.some(
-      (song) => song.id === currentSong?.id
+      (song) => song.id === currentSong?.id,
     );
 
     if (isCurrentWishlistPlaying && queueType === "wishlist") {
@@ -176,7 +176,7 @@ const WishlistPage = () => {
 
     if (response) {
       const isCurrentWishlistPlaying = wishlist.some(
-        (song) => song.id === currentSong?.id
+        (song) => song.id === currentSong?.id,
       );
 
       if (
@@ -186,7 +186,7 @@ const WishlistPage = () => {
       ) {
         dispatch(deleteSongFromQueue(deleteSong));
         toast.success(
-          t("responseSuccess.Removed song from wishlist successfully")
+          t("responseSuccess.Removed song from wishlist successfully"),
         );
       }
 
@@ -220,18 +220,13 @@ const WishlistPage = () => {
       exit={{ scale: 0.95, opacity: 0 }}
       transition={{ duration: 0.9, ease: "easeInOut" }}
     >
-      <Box position="relative">
-        <Box
-          position="absolute"
-          inset={0}
-          sx={{
-            background:
-              "linear-gradient(to bottom, rgba(80,56,160,0.8), rgba(33,33,33,0.8), rgba(33,33,33,0.8))",
-            pointerEvents: "none",
-            zIndex: 0,
-          }}
-        />
-
+      <Box
+        position="relative"
+        // sx={{
+        //   background:
+        //     "linear-gradient(to bottom, rgba(80,56,160,0.8), rgba(33,33,33,0.95), rgba(18,18,18,1))",
+        // }}
+      >
         <Box
           position="relative"
           zIndex={1}
@@ -283,7 +278,7 @@ const WishlistPage = () => {
                   <Typography>
                     ~{" "}
                     {formatDurationToHMS(
-                      wishlist?.reduce((acc, cur) => acc + cur.duration, 0)
+                      wishlist?.reduce((acc, cur) => acc + cur.duration, 0),
                     )}
                   </Typography>
                 </Box>

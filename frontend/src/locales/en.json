@@ -2,6 +2,7 @@
   "songs": "songs",
   "pageNotFound": "Page not founded",
   "backToHome": "Back to Home",
+  "lyricsNotAvailable": "No lyrics available for this song",
   "artist": "Artist",
   "menu": {
     "home": "home",
