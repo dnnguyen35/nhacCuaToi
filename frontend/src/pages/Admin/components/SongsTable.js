@@ -92,7 +92,7 @@ const SongsTable = () => {
         .map((artist) =>
           artist.artist === song.artist
             ? { ...artist, songCount: artist.songCount - 1 }
-            : artist
+            : artist,
         )
         .filter((artist) => artist.songCount > 0);
 

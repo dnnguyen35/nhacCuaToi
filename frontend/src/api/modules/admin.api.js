@@ -77,7 +77,7 @@ const adminApi = {
   blockUser: async ({ userId }) => {
     try {
       const response = await privateClient.put(
-        adminEndpoints.blockUser({ userId })
+        adminEndpoints.blockUser({ userId }),
       );
 
       return { response };
@@ -88,7 +88,7 @@ const adminApi = {
   unBlockUser: async ({ userId }) => {
     try {
       const response = await privateClient.put(
-        adminEndpoints.unBlockUser({ userId })
+        adminEndpoints.unBlockUser({ userId }),
       );
 
       return { response };
@@ -100,7 +100,7 @@ const adminApi = {
     try {
       const response = await privateClient.post(
         adminEndpoints.createSong,
-        formData
+        formData,
       );
 
       return { response };
@@ -108,14 +108,15 @@ const adminApi = {
       return { error };
     }
   },
-  updateSong: async ({ songId, title = "", artist = "" }) => {
+  updateSong: async ({ songId, title = "", artist = "", lyrics = "" }) => {
     try {
       const response = await privateClient.put(
         adminEndpoints.updateSong({ songId }),
         {
           title,
           artist,
-        }
+          lyrics,
+        },
       );
 
       return { response };
@@ -126,7 +127,7 @@ const adminApi = {
   deleteSong: async ({ songId }) => {
     try {
       const response = await privateClient.delete(
-        adminEndpoints.deleteSong({ songId })
+        adminEndpoints.deleteSong({ songId }),
       );
 
       return { response };
@@ -139,7 +140,7 @@ const adminApi = {
     try {
       const response = await privateClient.post(
         adminEndpoints.createArtist,
-        formData
+        formData,
       );
 
       return { response };
@@ -152,7 +153,7 @@ const adminApi = {
     try {
       const response = await privateClient.put(
         adminEndpoints.updateArtist({ artistId }),
-        formData
+        formData,
       );
 
       return { response };
@@ -165,7 +166,7 @@ const adminApi = {
     try {
       const response = await privateClient.post(
         adminEndpoints.createAlbum,
-        formData
+        formData,
       );
 
       return { response };
@@ -178,7 +179,7 @@ const adminApi = {
     try {
       const response = await privateClient.put(
         adminEndpoints.updateAlbum({ albumId }),
-        formData
+        formData,
       );
 
       return { response };
@@ -191,7 +192,7 @@ const adminApi = {
     try {
       const response = await privateClient.post(
         adminEndpoints.addSongIntoAlbum({ albumId }),
-        { songIdArray }
+        { songIdArray },
       );
 
       return { response };

@@ -268,8 +268,11 @@ const deleteSong = async (req, res) => {
 
 const updateSong = async (req, res) => {
   try {
+    console.log("update song", req.body);
     const { songId } = req.params;
-    const { title, artist } = req.body;
+    const { title, artist, lyrics } = req.body;
+
+    console.log("type of lyrics", typeof lyrics);
     let tempArtist = null;
 
     const song = await songModel.findOne({ where: { id: songId } });
@@ -292,10 +295,16 @@ const updateSong = async (req, res) => {
       }
     }
 
-    song.title = title !== "" ? title : song.title;
-    song.artistId = tempArtist ? tempArtist.id : song.artistId;
+    await songModel.update(
+      {
+        title: title !== "" ? title : song.title,
+        artistId: tempArtist ? tempArtist.id : song.artistId,
+        lyrics: lyrics !== "" ? JSON.parse(lyrics) : song.lyrics,
+      },
+      { where: { id: songId } },
+    );
 
-    await song.save();
+    const updatedSong = await songModel.findOne({ where: { id: songId } });
 
     await Promise.all([
       redis.del("admin:song-stats"),
@@ -304,10 +313,11 @@ const updateSong = async (req, res) => {
 
     res.status(200).json({
       message: "Song updated successfully",
-      song: { ...song.toJSON(), artist: tempArtist.artist },
+      song: { ...updatedSong.toJSON(), artist: tempArtist.artist },
       newArtist: tempArtist,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -351,7 +361,7 @@ const getPlaylistStats = async (req, res) => {
     await redis.setex(
       "admin:playlist-stats",
       300,
-      JSON.stringify(playlistStats)
+      JSON.stringify(playlistStats),
     );
 
     res.status(200).json(playlistStats);
@@ -477,13 +487,13 @@ const getPaymentStats = async (req, res) => {
 
     const totalProfit = paymentStats.reduce(
       (sum, payment) => (payment.resultCode === 0 ? sum + payment.amount : sum),
-      0
+      0,
     );
 
     await redis.setex(
       "admin:payment-stats",
       300,
-      JSON.stringify({ paymentStats, totalProfit })
+      JSON.stringify({ paymentStats, totalProfit }),
     );
 
     res.status(200).json({ paymentStats, totalProfit });

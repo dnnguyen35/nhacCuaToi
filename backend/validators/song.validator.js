@@ -9,4 +9,5 @@ export const validateCreateSong = [
 export const validateUpdateSong = [
   body("title").exists().withMessage("Title is required"),
   body("artist").exists().withMessage("Artist is required"),
+  body("lyrics").optional(),
 ];

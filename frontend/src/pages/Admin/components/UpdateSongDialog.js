@@ -39,6 +39,7 @@ const UpdateSongDialog = ({
     oldArtistId: "",
     artist: "",
     newArtist: "",
+    lyrics: "",
   });
 
   useEffect(() => {
@@ -47,6 +48,7 @@ const UpdateSongDialog = ({
       oldArtistId: song.artistId,
       artist: song.artist,
       newArtist: "",
+      lyrics: song.lyrics || "",
     });
   }, [song]);
 
@@ -74,6 +76,7 @@ const UpdateSongDialog = ({
       songId: song.id,
       title: updateSong.title,
       artist: artistName,
+      lyrics: updateSong.lyrics,
     });
 
     setIsLoading(false);
@@ -87,7 +90,7 @@ const UpdateSongDialog = ({
         const newListArtists = listArtists.map((artist) =>
           artist.id === updateSong.oldArtistId
             ? { ...artist, songCount: artist.songCount - 1 }
-            : artist
+            : artist,
         );
 
         newListArtists.push({
@@ -130,13 +133,20 @@ const UpdateSongDialog = ({
               title: response.song.title,
               artist: response.song.artist,
               artistId: response.song.artistId,
+              lyrics: response.song.lyrics,
             }
-          : prevSong
+          : prevSong,
       );
 
       dispatch(setListSongs(newListSongs));
 
-      setUpdateSong({ title: "", artist: "", oldArtistId: "", newArtist: "" });
+      setUpdateSong({
+        title: "",
+        artist: "",
+        oldArtistId: "",
+        newArtist: "",
+        lyrics: "",
+      });
       setSong(null);
     }
   };
@@ -202,6 +212,20 @@ const UpdateSongDialog = ({
               }
             />
           )}
+
+          <TextField
+            sx={{ marginTop: 1 }}
+            label="Lyric"
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={3}
+            placeholder="Enter song's lyrics here"
+            value={JSON.stringify(updateSong.lyrics)}
+            onChange={(e) =>
+              setUpdateSong({ ...updateSong, lyrics: e.target.value })
+            }
+          />
         </DialogContent>
 
         <DialogActions>
