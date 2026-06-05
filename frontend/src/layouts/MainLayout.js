@@ -166,7 +166,7 @@ const MainLayout = () => {
                   : "auto",
               pt: 0,
               pb: 2,
-              px: { xs: 0, sm: 0 },
+              px: { xs: 1, sm: 1 },
               scrollBehavior: "smooth",
               scrollbarWidth: "none",
               "&::-webkit-scrollbar": {
