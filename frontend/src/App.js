@@ -30,7 +30,6 @@ const App = () => {
 
   useEffect(() => {
     socket.on("user_online", ({ userOnline }) => {
-      console.log("userOnline event: ", userOnline);
       dispatch(setUserOnline(userOnline));
     });
 
@@ -123,7 +122,7 @@ const App = () => {
                     )
                   }
                 />
-              )
+              ),
             )}
 
             <Route path="*" element={<PageNotFound />} />
